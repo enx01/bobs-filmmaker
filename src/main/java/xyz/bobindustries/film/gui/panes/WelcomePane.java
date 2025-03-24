@@ -2,9 +2,11 @@ package xyz.bobindustries.film.gui.panes;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
 
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 
@@ -34,27 +37,43 @@ public class WelcomePane extends JPanel {
         buttonsPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        JButton createNew = createButton("New project", "newproject.png");
-        JButton openExist = createButton("Open project", "openproject.png");
+        JButton createNew = createButton("new project", "newproject.png");
+        createNew.setName("button1");
+        JButton openExist = createButton("open project", "openproject.png");
+
+        // Create a title label
+        JLabel titleLabel = new JLabel("bob's filmmaker");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 32)); // Set font style and size
+        gbc.fill = GridBagConstraints.CENTER; // Center the title
+        gbc.weightx = 0; // Allow title to grow horizontally
+        gbc.weighty = 0; // Do not allow title to grow vertically
+        gbc.gridx = 0; // Column 0
+        gbc.gridy = 0; // Row 0
+        gbc.gridwidth = 2; // Span across two columns
+        gbc.insets = new Insets(10, 25, 10, 25); // Add spacing (top, left, bottom, right)
+        buttonsPanel.add(titleLabel, gbc);
 
         // Set constraints for button1
         gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
         gbc.weightx = 0; // Allow button1 to grow horizontally
         gbc.weighty = 0; // Allow button1 to grow vertically
         gbc.gridx = 0; // Column 0
-        gbc.gridy = 0; // Row 0
+        gbc.gridy = 1; // Row 0
+        gbc.gridwidth = 1;
         gbc.insets = new Insets(25, 25, 25, 25); // Add spacing (top, left, bottom, right)
         buttonsPanel.add(createNew, gbc);
 
         // Set constraints for button2
-        gbc.weightx = 0; // Allow button2 to grow horizontally
-        gbc.weighty = 0; // Allow button2 to grow vertically
+        gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
+        gbc.weightx = 0; // Allow button1 to grow horizontally
+        gbc.weighty = 0; // Allow button1 to grow vertically
         gbc.gridx = 1; // Column 1
-        gbc.gridy = 0; // Row 0
+        gbc.gridy = 1; // Row 0
+        gbc.gridwidth = 1;
         gbc.insets = new Insets(25, 25, 25, 25); // Add spacing (top, left, bottom, right)
         buttonsPanel.add(openExist, gbc);
 
-        add(buttonsPanel);
+        add(buttonsPanel, BorderLayout.CENTER);
     }
 
     private JButton createButton(String text, String imageName) {
@@ -68,7 +87,9 @@ public class WelcomePane extends JPanel {
                 BufferedImage img = ImageIO.read(is);
                 ImageIcon icon = new ImageIcon(img);
 
-                button.setIcon(icon);
+                Image resized = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+
+                button.setIcon(new ImageIcon(resized));
             }
         } catch (IOException e) {
             SimpleErrorDialog.showErrorDialog("Image Not Read :(");

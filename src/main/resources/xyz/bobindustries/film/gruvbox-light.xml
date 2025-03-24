@@ -1,0 +1,37 @@
+<synth>
+  <style id="backStyle">
+    <opaque value="FALSE"/>
+    <font name="Arial" size="20"/>
+    <state>
+      <color value="#282828" type="BACKGROUND"/> <!-- Gruvbox dark background color -->
+      <color value="WHITE" type="FOREGROUND"/> <!-- Light text color for contrast -->
+    </state>
+  </style>
+  <bind style="backStyle" type="region" key=".*"/>
+
+  <style id="labelStyle">
+    <font name="Arial" size="20"/>
+    <opaque value="FALSE"/>
+    <state>
+      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark label background color -->
+      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+    </state>
+  </style>
+  <bind style="labelStyle" type="region" key="Label"/>
+
+  <style id="buttonStyle">
+    <opaque value="TRUE"/>
+    <property key="Button.textShiftOffset" type="integer" value="1"/>
+    <insets top="5" left="5" right="5" bottom="5"/>
+    <state>
+      <color value="#7c6f64" type="BACKGROUND"/> <!-- Gruvbox dark button background color -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Gruvbox light text color -->
+    </state>
+    <state value="PRESSED">
+      <color value="#928374" type="BACKGROUND"/> <!-- Gruvbox dark pressed background color -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Gruvbox light pressed text color -->
+    </state>
+  </style>
+  <bind style="buttonStyle" type="region" key="Button"/>
+</synth>
+

@@ -4,11 +4,14 @@ import javax.swing.JFrame;
 import javax.swing.JWindow;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.UIManager;
+import javax.swing.plaf.synth.SynthLookAndFeel;
 
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
 import xyz.bobindustries.film.gui.panes.WelcomePane;
 
 import java.awt.*;
+import java.io.InputStream;
 
 /**
  * Hello world!
@@ -18,7 +21,21 @@ public class App {
 
     public static void main(String[] args) {
         System.out.println("[+] started filmmaker app.");
+        setCustomLAF();
         SwingUtilities.invokeLater(App::run);
+    }
+
+    private static void setCustomLAF() {
+        try {
+            SynthLookAndFeel synthLookAndFeel = new SynthLookAndFeel();
+            InputStream is = App.class.getResourceAsStream("gruvbox-light.xml");
+            synthLookAndFeel.load(is, App.class);
+
+            UIManager.setLookAndFeel(synthLookAndFeel);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void run() {
@@ -37,13 +54,14 @@ public class App {
                 frame.setSize(screenSize.width, screenSize.height);
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-                frame.setMinimumSize(new Dimension(600, 400));
+                frame.setMinimumSize(new Dimension(800, 600));
 
                 WelcomePane welcomePane = new WelcomePane();
 
                 frame.add(welcomePane);
 
                 frame.setVisible(true);
+
                 return null;
             }
 
