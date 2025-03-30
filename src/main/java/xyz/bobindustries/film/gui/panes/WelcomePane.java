@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 
 /**
@@ -32,6 +33,8 @@ public class WelcomePane extends JPanel {
 
     public WelcomePane() {
         setLayout(new BorderLayout());
+
+
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new GridBagLayout());
@@ -72,6 +75,11 @@ public class WelcomePane extends JPanel {
         gbc.gridwidth = 1;
         gbc.insets = new Insets(25, 25, 25, 25); // Add spacing (top, left, bottom, right)
         buttonsPanel.add(openExist, gbc);
+
+        openExist.addActionListener(ap -> {
+            App.frame.setContentPane(new EditorPane());
+            App.frame.revalidate();
+        });
 
         add(buttonsPanel, BorderLayout.CENTER);
     }
