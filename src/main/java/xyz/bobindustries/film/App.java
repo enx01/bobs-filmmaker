@@ -14,66 +14,59 @@ import java.io.InputStream;
  * Bob's filmmaker Application main class.
  */
 public class App {
-    private static JFrame frame;
+  public static JFrame frame;
 
-    public static void main(String[] args) {
-        System.out.println("[+] started filmmaker app.");
-        setCustomLAF();
-        SwingUtilities.invokeLater(App::run);
+  public static void main(String[] args) {
+    System.out.println("[+] started filmmaker app.");
+    setCustomLAF();
+    SwingUtilities.invokeLater(App::run);
+  }
+
+  private static void setCustomLAF() {
+    try {
+      SynthLookAndFeel synthLookAndFeel = new SynthLookAndFeel();
+      InputStream is = App.class.getResourceAsStream("gruvbox-light.xml");
+      synthLookAndFeel.load(is, App.class);
+
+      UIManager.setLookAndFeel(synthLookAndFeel);
+
+    } catch (Exception e) {
+      System.out.println("[+] failed to load synth look and feel : " + e.getMessage());
     }
+  }
 
-    private static void setCustomLAF() {
-        try {
-            SynthLookAndFeel synthLookAndFeel = new SynthLookAndFeel();
-            InputStream is = App.class.getResourceAsStream("gruvbox-light.xml");
-            synthLookAndFeel.load(is, App.class);
+  private static void run() {
+    LoadingWindow loadingWindow = new LoadingWindow("bob's filmmaker", 200, 200);
+    loadingWindow.setVisible(true);
+    loadingWindow.requestFocus();
 
-            UIManager.setLookAndFeel(synthLookAndFeel);
+    SwingWorker<Void, Void> worker = new SwingWorker<>() { // Classe anonyme d'initialisation de la frame.
+      @Override
+      protected Void doInBackground() {
+        /* Creation de la fenetre */
+        frame = new JFrame("bob's filmmaker");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        WelcomePane welcomePane = new WelcomePane();
 
-        } catch (Exception e) {
-            System.out.println("[+] failed to load synth look and feel : " + e.getMessage());
-        }
-    }
+        frame.setContentPane(welcomePane);
 
-    private static void run() {
-        LoadingWindow loadingWindow = new LoadingWindow("bob's filmmaker", 200, 200);
-        loadingWindow.setVisible(true);
-        loadingWindow.requestFocus();
+        frame.setMinimumSize(ConstantsProvider.WINDOW_MIN_SIZE);
 
-        SwingWorker<Void, Void> worker = new SwingWorker<>() { // Classe anonyme d'initialisation de la frame.
-            @Override
-            protected Void doInBackground() {
-                /* Creation de la fenetre */
-                frame = new JFrame("bob's filmmaker");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
 
-                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Recuperation de la taille de
-                                                                                    // l'ecran de
-                                                                                    // l'utilisateur.
-                frame.setSize(screenSize.width, screenSize.height);
-                frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        return null;
+      }
 
-                frame.setMinimumSize(ConstantsProvider.WINDOW_MIN_SIZE);
+      protected void done() {
+        loadingWindow.dispose();
+      }
+    };
 
-                WelcomePane welcomePane = new WelcomePane();
+    worker.execute();
+  }
 
-                frame.add(welcomePane);
-
-                frame.setVisible(true);
-
-                return null;
-            }
-
-            protected void done() {
-                loadingWindow.dispose();
-            }
-        };
-
-        worker.execute();
-    }
-
-    public static JFrame getFrame() {
-        return frame;
-    }
+  public static JFrame getFrame() {
+    return frame;
+  }
 
 }
