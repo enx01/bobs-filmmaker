@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 
 /**
@@ -38,7 +39,12 @@ public class WelcomePane extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
 
         JButton createNew = createButton("new project", "newproject.png");
-        createNew.setName("button1");
+
+        createNew.addActionListener(e -> {
+            NewProjectDialog newProjectDialog = new NewProjectDialog();
+            newProjectDialog.setVisible(true);
+        });
+
         JButton openExist = createButton("open project", "openproject.png");
 
         // Create a title label
