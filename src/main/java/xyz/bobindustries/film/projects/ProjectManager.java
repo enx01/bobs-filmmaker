@@ -28,12 +28,13 @@ public class ProjectManager {
         File projectDir = new File(projectLocation);
 
         if (!projectDir.exists() || !verifyLocationContent(projectDir)) {
+            System.out.println("splash");
             throw new InvalidProjectDirectoryException();
         }
 
         String projectName = projectDir.getName();
 
-        return new Project(projectName, projectDir, true);
+        return new Project(projectName, projectDir, false);
     }
 
     private static boolean verifyLocationContent(File file) {
@@ -43,7 +44,9 @@ public class ProjectManager {
 
         File[] contents = file.listFiles();
 
-        if (contents == null) { return false; }
+        if (contents == null) {
+            return false;
+        }
 
         boolean hasImagesDir = false;
         boolean hasTxtFile = false;

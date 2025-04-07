@@ -15,8 +15,6 @@ import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirecto
 
 public class Project {
 
-
-
     public static class ImageFile {
         private final String fileName;
         private byte[] content;
@@ -46,14 +44,16 @@ public class Project {
     private String scenarioContent;
     private final List<ImageFile> images;
 
-    public Project(String projectName, String projectDirPath, boolean create) throws IOException, InvalidProjectDirectoryException {
+    public Project(String projectName, String projectDirPath, boolean create)
+            throws IOException, InvalidProjectDirectoryException {
         this.projectName = projectName;
         this.projectDir = Paths.get(projectDirPath);
         this.images = new ArrayList<>();
         loadProject(create);
     }
 
-    public Project(String projectName, File projectDirFile, boolean create) throws IOException, InvalidProjectDirectoryException {
+    public Project(String projectName, File projectDirFile, boolean create)
+            throws IOException, InvalidProjectDirectoryException {
         this.projectName = projectName;
         this.projectDir = projectDirFile.toPath();
         this.images = new ArrayList<>();

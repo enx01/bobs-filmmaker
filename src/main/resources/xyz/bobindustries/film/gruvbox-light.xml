@@ -38,7 +38,7 @@
   <style id="fileChooserStyle">
     <opaque value="FALSE"/>
     <state>
-      <color value="#282828" type="BACKGROUND"/> <!-- Gruvbox dark background for JFileChooser -->
+      <color value="#282800" type="BACKGROUND"/> <!-- Gruvbox dark background for JFileChooser -->
       <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
     </state>
   </style>

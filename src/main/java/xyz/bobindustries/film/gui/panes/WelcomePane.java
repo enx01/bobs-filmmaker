@@ -18,6 +18,7 @@ import javax.swing.border.Border;
 
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
+import xyz.bobindustries.film.gui.elements.dialogs.OpenProjectDialog;
 import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
@@ -47,7 +48,8 @@ public class WelcomePane extends JPanel {
                 loadingWindow.setVisible(true);
                 loadingWindow.requestFocus();
 
-                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de la frame.
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de
+                                                                                 // la frame.
                     @Override
                     protected Void doInBackground() throws Exception {
                         /* Changement du contenu de la fenetre */
@@ -69,6 +71,36 @@ public class WelcomePane extends JPanel {
         });
 
         JButton openExist = ButtonFactory.createButton("open project", "openproject.png");
+        openExist.addActionListener(e -> {
+            int result = OpenProjectDialog.show(App.getFrame());
+
+            if (result == NewProjectDialog.SUCCESS) {
+                LoadingWindow loadingWindow = new LoadingWindow("loading project...", 200, 100);
+
+                loadingWindow.setVisible(true);
+                loadingWindow.requestFocus();
+
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de
+                                                                                 // la frame.
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        /* Changement du contenu de la fenetre */
+                        App.getFrame().getContentPane().removeAll();
+                        App.getFrame().add(new ProjectWelcomePane());
+
+                        Thread.sleep(2000);
+                        App.getFrame().revalidate();
+
+                        return null;
+                    }
+
+                    protected void done() {
+                        loadingWindow.dispose();
+                    }
+                };
+                worker.execute();
+            }
+        });
 
         // Create a title label
         JLabel titleLabel = new JLabel("bob's filmmaker");

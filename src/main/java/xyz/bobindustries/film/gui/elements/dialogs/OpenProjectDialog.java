@@ -42,7 +42,7 @@ public class OpenProjectDialog extends JDialog {
             }
         });
 
-        JButton createButton = new JButton("create");
+        JButton createButton = new JButton("open");
 
         // Create button action
         createButton.addActionListener(e -> {
@@ -51,7 +51,7 @@ public class OpenProjectDialog extends JDialog {
             if (!projectLocation.isEmpty()) {
                 try {
 
-                    Project newProject = ProjectManager.createProject(projectName, projectLocation);
+                    Project newProject = ProjectManager.openProject(projectLocation);
 
                     ProjectManager.setCurrent(newProject);
 
@@ -59,14 +59,14 @@ public class OpenProjectDialog extends JDialog {
                     dispose();
 
                 } catch (IOException | InvalidProjectDirectoryException ex) {
-                    SimpleErrorDialog.showErrorDialog("Error creating project : invalid project directory");
+                    SimpleErrorDialog.showErrorDialog("Error openning project : invalid project directory");
                     isSuccess = false;
                     dispose();
                 }
 
                 dispose();
             } else {
-                SimpleErrorDialog.showErrorDialog("Please provide a valid project name and location.");
+                SimpleErrorDialog.showErrorDialog("Please provide a valid location.");
                 isSuccess = false;
                 dispose();
             }
@@ -78,9 +78,11 @@ public class OpenProjectDialog extends JDialog {
         add(locationLabel, gbc);
 
         gbc.gridx = 1;
+        gbc.gridwidth = 2;
         add(locationField, gbc);
 
         gbc.gridx = 2;
+        gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         add(browseButton, gbc);
 
@@ -91,4 +93,11 @@ public class OpenProjectDialog extends JDialog {
         add(createButton, gbc);
 
     }
+
+    public static int show(Frame parent) {
+        OpenProjectDialog dialog = new OpenProjectDialog(parent);
+        dialog.setVisible(true); // Show the dialog modally
+        return dialog.isSuccess ? SUCCESS : FAILURE; // Return the result
+    }
+
 }

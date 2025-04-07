@@ -7,7 +7,6 @@ import xyz.bobindustries.film.projects.elements.Project;
 import javax.swing.*;
 import java.awt.*;
 
-
 public class ProjectWelcomePane extends JPanel {
 
     public ProjectWelcomePane() {
