@@ -33,5 +33,38 @@
     </state>
   </style>
   <bind style="buttonStyle" type="region" key="Button"/>
+
+  <!-- JFileChooser Styles -->
+  <style id="fileChooserStyle">
+    <opaque value="FALSE"/>
+    <state>
+      <color value="#282828" type="BACKGROUND"/> <!-- Gruvbox dark background for JFileChooser -->
+      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+    </state>
+  </style>
+  <bind style="fileChooserStyle" type="region" key="FileChooser"/>
+
+  <style id="fileChooserButtonStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#7c6f64" type="BACKGROUND"/> <!-- Gruvbox dark button background for JFileChooser -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Gruvbox light text color -->
+    </state>
+    <state value="PRESSED">
+      <color value="#928374" type="BACKGROUND"/> <!-- Gruvbox dark pressed background for JFileChooser -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Gruvbox light pressed text color -->
+    </state>
+  </style>
+  <bind style="fileChooserButtonStyle" type="region" key="FileChooser.button"/>
+
+  <style id="fileChooserLabelStyle">
+    <font name="Arial" size="20"/>
+    <opaque value="FALSE"/>
+    <state>
+      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark label background for JFileChooser -->
+      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+    </state>
+  </style>
+  <bind style="fileChooserLabelStyle" type="region" key="FileChooser.label"/>
 </synth>
 

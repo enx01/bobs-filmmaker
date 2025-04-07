@@ -39,7 +39,9 @@ public class App {
     }
 
     private static void run() {
-        LoadingWindow loadingWindow = new LoadingWindow();
+        LoadingWindow loadingWindow = new LoadingWindow("bob's filmmaker", 200, 200);
+        loadingWindow.setVisible(true);
+        loadingWindow.requestFocus();
 
         SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de la frame.
             @Override
@@ -60,6 +62,8 @@ public class App {
 
                 frame.add(welcomePane);
 
+                Thread.sleep(2000);
+
                 frame.setVisible(true);
 
                 return null;
@@ -71,6 +75,10 @@ public class App {
         };
 
         worker.execute();
+    }
+
+    public static JFrame getFrame() {
+        return frame;
     }
 
 }

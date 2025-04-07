@@ -13,15 +13,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.border.Border;
 
+import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
+import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
+import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 
 /**
@@ -38,14 +36,39 @@ public class WelcomePane extends JPanel {
         buttonsPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        JButton createNew = createButton("new project", "newproject.png");
+        JButton createNew = ButtonFactory.createButton("new project", "newproject.png");
 
         createNew.addActionListener(e -> {
-            NewProjectDialog newProjectDialog = new NewProjectDialog();
-            newProjectDialog.setVisible(true);
+            int result = NewProjectDialog.show(App.getFrame());
+
+            if (result == NewProjectDialog.SUCCESS) {
+                LoadingWindow loadingWindow = new LoadingWindow("loading project...", 200, 100);
+
+                loadingWindow.setVisible(true);
+                loadingWindow.requestFocus();
+
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de la frame.
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        /* Changement du contenu de la fenetre */
+                        App.getFrame().getContentPane().removeAll();
+                        App.getFrame().add(new ProjectWelcomePane());
+
+                        Thread.sleep(2000);
+                        App.getFrame().revalidate();
+
+                        return null;
+                    }
+
+                    protected void done() {
+                        loadingWindow.dispose();
+                    }
+                };
+                worker.execute();
+            }
         });
 
-        JButton openExist = createButton("open project", "openproject.png");
+        JButton openExist = ButtonFactory.createButton("open project", "openproject.png");
 
         // Create a title label
         JLabel titleLabel = new JLabel("bob's filmmaker");
@@ -80,38 +103,5 @@ public class WelcomePane extends JPanel {
         buttonsPanel.add(openExist, gbc);
 
         add(buttonsPanel, BorderLayout.CENTER);
-    }
-
-    private JButton createButton(String text, String imageName) {
-        JButton button = new JButton();
-        button.setLayout(new BorderLayout());
-
-        try (InputStream is = WelcomePane.class.getResourceAsStream(imageName)) {
-            if (is == null) {
-                SimpleErrorDialog.showErrorDialog("InputStream returned null! :(");
-            } else {
-                BufferedImage img = ImageIO.read(is);
-                ImageIcon icon = new ImageIcon(img);
-
-                Image resized = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-
-                button.setIcon(new ImageIcon(resized));
-            }
-        } catch (IOException e) {
-            SimpleErrorDialog.showErrorDialog("Image Not Read :(");
-        }
-
-        JLabel label = new JLabel(text, JLabel.CENTER);
-        label.setVerticalAlignment(JLabel.BOTTOM);
-        label.setHorizontalAlignment(JLabel.CENTER);
-
-        button.add(label, BorderLayout.SOUTH);
-        button.setVerticalTextPosition(SwingConstants.BOTTOM);
-        button.setHorizontalTextPosition(SwingConstants.CENTER);
-        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        button.setPreferredSize(new Dimension(250, 250));
-
-        return button;
     }
 }

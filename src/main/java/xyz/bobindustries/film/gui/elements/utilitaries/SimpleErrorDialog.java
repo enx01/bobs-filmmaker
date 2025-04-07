@@ -15,8 +15,7 @@ public class SimpleErrorDialog extends JDialog {
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");
         dialog.setModal(true); // Make the dialog modal
-        dialog.setSize(300, 150); // Set the size of the dialog
-        dialog.setLocationRelativeTo(null); // Center the dialog on the screen
+
 
         // Create a panel to hold the message and button
         JPanel panel = new JPanel();
@@ -36,6 +35,9 @@ public class SimpleErrorDialog extends JDialog {
 
         // Add the panel to the dialog
         dialog.add(panel);
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(null); // Center the dialog on the screen
         dialog.setVisible(true); // Show the dialog
     }
 }

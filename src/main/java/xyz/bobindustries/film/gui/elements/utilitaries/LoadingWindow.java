@@ -11,22 +11,21 @@ import java.awt.Font;
 
 public class LoadingWindow extends JWindow {
 
-    public LoadingWindow() {
-        setSize(200, 200);
+    public LoadingWindow(String text, int width, int height) {
+        setSize(width, height);
         setLocationRelativeTo(null);
 
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        JLabel loadingLabel = new JLabel("bob's filmmaker", JLabel.CENTER);
+        JLabel loadingLabel = new JLabel(text, JLabel.CENTER);
         loadingLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
         panel.add(loadingLabel, BorderLayout.CENTER);
 
         add(panel);
 
-        setVisible(true);
     }
 
 }

@@ -18,15 +18,50 @@ public class ProjectManager {
         File projectDir = new File(projectLocation, projectName);
 
         if (!projectDir.mkdir()) {
-            SimpleErrorDialog.showErrorDialog("Failed to create project directory");
+            throw new InvalidProjectDirectoryException();
         }
 
-        Project res = new Project(projectDir, true);
-
-        return res;
+        return new Project(projectName, projectDir, true);
     }
 
-    public Project getCurrent() {
+    public static Project openProject(String projectLocation) throws IOException, InvalidProjectDirectoryException {
+        File projectDir = new File(projectLocation);
+
+        if (!projectDir.exists() || !verifyLocationContent(projectDir)) {
+            throw new InvalidProjectDirectoryException();
+        }
+
+        String projectName = projectDir.getName();
+
+        return new Project(projectName, projectDir, true);
+    }
+
+    private static boolean verifyLocationContent(File file) {
+        if (!file.isDirectory()) {
+            return false;
+        }
+
+        File[] contents = file.listFiles();
+
+        if (contents == null) { return false; }
+
+        boolean hasImagesDir = false;
+        boolean hasTxtFile = false;
+
+        // Iterate through the contents of the directory
+        for (File content : contents) {
+            if (content.isDirectory() && content.getName().equals("images")) {
+                hasImagesDir = true;
+            } else if (content.isFile() && content.getName().equals("scenario.txt")) {
+                hasTxtFile = true;
+            }
+        }
+
+        // Check if there is exactly one directory "images" and one .txt file
+        return hasImagesDir && hasTxtFile && contents.length == 2;
+    }
+
+    public static Project getCurrent() {
         return current;
     }
 
