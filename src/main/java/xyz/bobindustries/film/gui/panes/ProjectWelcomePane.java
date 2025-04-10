@@ -2,7 +2,6 @@ package xyz.bobindustries.film.gui.panes;
 
 import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
 import xyz.bobindustries.film.projects.ProjectManager;
-import xyz.bobindustries.film.projects.elements.Project;
 
 import javax.swing.*;
 import java.awt.*;

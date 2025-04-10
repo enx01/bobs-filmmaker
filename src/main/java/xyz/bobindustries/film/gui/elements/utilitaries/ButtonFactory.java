@@ -1,7 +1,5 @@
 package xyz.bobindustries.film.gui.elements.utilitaries;
 
-import xyz.bobindustries.film.gui.panes.WelcomePane;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;

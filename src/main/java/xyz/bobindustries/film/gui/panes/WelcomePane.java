@@ -1,20 +1,11 @@
 package xyz.bobindustries.film.gui.panes;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Insets;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
@@ -22,7 +13,6 @@ import xyz.bobindustries.film.gui.elements.dialogs.OpenProjectDialog;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
-import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 
 /**
  * Welcome view of the application showing two buttons :
@@ -82,8 +72,8 @@ public class WelcomePane extends JPanel {
                 loadingWindow.setVisible(true);
                 loadingWindow.requestFocus();
 
-                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de
-                                                                                 // la frame.
+                SwingWorker<Void, Void> worker = new SwingWorker<>() { // Classe anonyme d'initialisation de
+                    // la frame.
                     @Override
                     protected Void doInBackground() throws Exception {
                         /* Changement du contenu de la fenetre */

@@ -7,11 +7,7 @@ import xyz.bobindustries.film.gui.panes.AboutPane;
 import xyz.bobindustries.film.gui.panes.ProjectWelcomePane;
 
 import javax.swing.*;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyVetoException;
 
 /**
@@ -79,8 +75,7 @@ public class Workspace extends JDesktopPane {
         protected boolean inBounds(JInternalFrame f, int newX, int newY, int newWidth, int newHeight) {
             if (newX < 0 || newY < 0) return false;
             if (newX + newWidth > f.getDesktopPane().getWidth()) return false;
-            if (newY + newHeight > f.getDesktopPane().getHeight()) return false;
-            return true;
+            return newY + newHeight <= f.getDesktopPane().getHeight();
         }
     }
 

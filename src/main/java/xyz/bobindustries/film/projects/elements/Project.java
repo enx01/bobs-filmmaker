@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;

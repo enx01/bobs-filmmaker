@@ -3,7 +3,6 @@ package xyz.bobindustries.film.projects;
 import java.io.File;
 import java.io.IOException;
 
-import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
 

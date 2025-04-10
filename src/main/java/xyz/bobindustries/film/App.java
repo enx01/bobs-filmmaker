@@ -5,7 +5,6 @@ import javax.swing.plaf.synth.SynthLookAndFeel;
 
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
-import xyz.bobindustries.film.gui.panes.WelcomePane;
 
 import java.awt.*;
 import java.io.InputStream;
@@ -31,7 +30,7 @@ public class App {
             UIManager.setLookAndFeel(synthLookAndFeel);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("[+] failed to load synth look and feel : " + e.getMessage());
         }
     }
 
@@ -40,16 +39,16 @@ public class App {
         loadingWindow.setVisible(true);
         loadingWindow.requestFocus();
 
-        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de la frame.
+        SwingWorker<Void, Void> worker = new SwingWorker<>() { // Classe anonyme d'initialisation de la frame.
             @Override
-            protected Void doInBackground() throws Exception {
-                /** Creation de la fenetre */
+            protected Void doInBackground() {
+                /* Creation de la fenetre */
                 frame = new JFrame("bob's filmmaker");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Recuperation de la taille de
-                                                                                    // l'ecran de
-                                                                                    // l'utilisateur.
+                // l'ecran de
+                // l'utilisateur.
                 frame.setSize(screenSize.width, screenSize.height);
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
