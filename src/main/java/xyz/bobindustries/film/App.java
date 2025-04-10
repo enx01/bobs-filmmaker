@@ -1,12 +1,9 @@
 package xyz.bobindustries.film;
 
-import javax.swing.JFrame;
-import javax.swing.JWindow;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
-import javax.swing.UIManager;
+import javax.swing.*;
 import javax.swing.plaf.synth.SynthLookAndFeel;
 
+import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
 import xyz.bobindustries.film.gui.panes.WelcomePane;
 
@@ -58,11 +55,13 @@ public class App {
 
                 frame.setMinimumSize(new Dimension(800, 600));
 
-                WelcomePane welcomePane = new WelcomePane();
+//                WelcomePane welcomePane = new WelcomePane();
 
-                frame.add(welcomePane);
+//                frame.add(welcomePane);
 
-                Thread.sleep(2000);
+                frame.add(Workspace.getInstance());
+
+//                Thread.sleep(2000);
 
                 frame.setVisible(true);
 

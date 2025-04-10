@@ -65,7 +65,18 @@ public class ProjectManager {
     }
 
     public static Project getCurrent() {
+        if (current == null) {
+            return new Project();
+        }
         return current;
+    }
+
+    public static void saveCurrent() throws IOException {
+        if (current == null) {
+            return;
+        }
+
+        current.save();
     }
 
     public static void setCurrent(Project newCurrent) {

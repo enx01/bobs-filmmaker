@@ -66,5 +66,109 @@
     </state>
   </style>
   <bind style="fileChooserLabelStyle" type="region" key="FileChooser.label"/>
+
+  <!-- JInternalFrame Styles -->
+  <style id="internalFrameStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark background for JInternalFrame -->
+      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+    </state>
+  </style>
+  <bind style="internalFrameStyle" type="region" key="InternalFrame"/>
+
+  <style id="internalFrameTitleStyle">
+  <font name="Arial" size="20"/>
+  <opaque value="TRUE"/>
+  <state>
+  <color value="#7c6f64" type="BACKGROUND"/> <!-- Title background color -->
+    <color value="#FBF1C1" type="FOREGROUND"/> <!-- Title text color -->
+  </state>
+  </style>
+  <bind style="internalFrameTitleStyle" type="region" key="InternalFrame.titlePane"/>
+
+  <style id="internalFrameCloseButtonStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#7c6f64" type="BACKGROUND"/> <!-- Close button background color -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Close button text color -->
+    </state>
+    <state value="PRESSED">
+      <color value="#928374" type="BACKGROUND"/> <!-- Close button pressed background color -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Close button pressed text color -->
+    </state>
+  </style>
+  <bind style="internalFrameCloseButtonStyle" type="region" key="InternalFrame.closeButton"/>
+
+  <style id="internalFrameMaximizeButtonStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#7c6f64" type="BACKGROUND"/> <!-- Maximize button background color -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Maximize button text color -->
+    </state>
+    <state value="PRESSED">
+      <color value="#928374" type="BACKGROUND"/> <!-- Maximize button pressed background color -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Maximize button pressed text color -->
+    </state>
+  </style>
+  <bind style="internalFrameMaximizeButtonStyle" type="region" key="InternalFrame.maximizeButton"/>
+
+  <style id="internalFrameMinimizeButtonStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#7c6f64" type="BACKGROUND"/> <!-- Minimize button background color -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Minimize button text color -->
+    </state>
+    <state value="PRESSED">
+      <color value="#928374" type="BACKGROUND"/> <!-- Minimize button pressed background color -->
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Minimize button pressed text color -->
+    </state>
+  </style>
+  <bind style="internalFrameMinimizeButtonStyle" type="region" key="InternalFrame.minimizeButton"/>
+
+  <!-- JMenuBar Styles -->
+  <style id="menuBarStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark background for JMenuBar -->
+      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+    </state>
+  </style>
+  <bind style="menuBarStyle" type="region" key="MenuBar"/>
+
+  <!-- JMenu Styles -->
+  <style id="menuStyle">
+    <opaque value="TRUE"/>
+    <insets top="5" left="10" right="10" bottom="5"/> <!-- Padding for JMenu -->
+    <state>
+      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark background for JMenu -->
+      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+    </state>
+    <state value="MOUSE_OVER">
+      <color value="#7c6f64" type="BACKGROUND"/> <!-- Gruvbox dark hover background for JMenu -->
+      <color value="#FBF1C1" type="FOREGROUND"/> <!-- Gruvbox light text color on hover -->
+    </state>
+  </style>
+  <bind style="menuStyle" type="region" key="Menu"/>
+
+  <!-- JMenuItem Styles -->
+  <style id="menuItemStyle">
+    <opaque value="TRUE"/>
+    <insets top="3" left="2" right="2" bottom="3"/> <!-- Padding for JMenuItem -->
+    <state>
+      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark background for JMenuItem -->
+      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+    </state>
+    <state value="MOUSE_OVER">
+      <color value="#7c6f64" type="BACKGROUND"/> <!-- Gruvbox dark hover background for JMenuItem -->
+      <color value="#FBF1C1" type="FOREGROUND"/> <!-- Gruvbox light text color on hover -->
+    </state>
+    <state value="SELECTED">
+      <color value="#928374" type="BACKGROUND"/> <!-- Gruvbox dark selected background for JMenuItem -->
+      <color value="#FBF1C1" type="FOREGROUND"/> <!-- Gruvbox light text color when selected -->
+    </state>
+  </style>
+  <bind style="menuItemStyle" type="region" key="MenuItem"/>
+
 </synth>
 

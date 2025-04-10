@@ -16,9 +16,9 @@ public class ProjectWelcomePane extends JPanel {
         buttonsPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        JButton editImagesButton = ButtonFactory.createButton("edit images", "base_image.png");
-        JButton editScenarioButton = ButtonFactory.createButton("edit scenario", "base_image.png");
-        JButton visualizerButton = ButtonFactory.createButton("view film", "base_image.png");
+        JButton editImagesButton = ButtonFactory.createButton("edit images", "base_image.png", 150, 150);
+        JButton editScenarioButton = ButtonFactory.createButton("edit scenario", "base_image.png", 150, 150);
+        JButton visualizerButton = ButtonFactory.createButton("view film", "base_image.png", 150, 150);
 
         JLabel projectTitleLabel = new JLabel(ProjectManager.getCurrent().getProjectName());
         projectTitleLabel.setFont(new Font("Arial", Font.BOLD, 32)); // Set font style and size

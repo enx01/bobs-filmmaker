@@ -19,6 +19,7 @@ import javax.swing.border.Border;
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
 import xyz.bobindustries.film.gui.elements.dialogs.OpenProjectDialog;
+import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
@@ -37,40 +38,41 @@ public class WelcomePane extends JPanel {
         buttonsPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        JButton createNew = ButtonFactory.createButton("new project", "newproject.png");
+        JButton createNew = ButtonFactory.createButton("new project", "newproject.png", 250, 250);
+//        createNew.addActionListener(e -> {
+//            int result = NewProjectDialog.show(App.getFrame());
+//
+//            if (result == NewProjectDialog.SUCCESS) {
+//                LoadingWindow loadingWindow = new LoadingWindow("loading project...", 200, 100);
+//
+//                loadingWindow.setVisible(true);
+//                loadingWindow.requestFocus();
+//
+//                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de
+//                                                                                 // la frame.
+//                    @Override
+//                    protected Void doInBackground() throws Exception {
+//                        /* Changement du contenu de la fenetre */
+//                        App.getFrame().getContentPane().removeAll();
+//                        App.getFrame().add(new ProjectWelcomePane());
+//
+//                        Thread.sleep(2000);
+//                        App.getFrame().revalidate();
+//
+//                        return null;
+//                    }
+//
+//                    protected void done() {
+//                        loadingWindow.dispose();
+//                    }
+//                };
+//                worker.execute();
+//            }
+//        });
 
-        createNew.addActionListener(e -> {
-            int result = NewProjectDialog.show(App.getFrame());
+        createNew.addActionListener(ActionListenerProvider::getNewProjectDialogAction);
 
-            if (result == NewProjectDialog.SUCCESS) {
-                LoadingWindow loadingWindow = new LoadingWindow("loading project...", 200, 100);
-
-                loadingWindow.setVisible(true);
-                loadingWindow.requestFocus();
-
-                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de
-                                                                                 // la frame.
-                    @Override
-                    protected Void doInBackground() throws Exception {
-                        /* Changement du contenu de la fenetre */
-                        App.getFrame().getContentPane().removeAll();
-                        App.getFrame().add(new ProjectWelcomePane());
-
-                        Thread.sleep(2000);
-                        App.getFrame().revalidate();
-
-                        return null;
-                    }
-
-                    protected void done() {
-                        loadingWindow.dispose();
-                    }
-                };
-                worker.execute();
-            }
-        });
-
-        JButton openExist = ButtonFactory.createButton("open project", "openproject.png");
+        JButton openExist = ButtonFactory.createButton("open project", "openproject.png", 250, 250);
         openExist.addActionListener(e -> {
             int result = OpenProjectDialog.show(App.getFrame());
 

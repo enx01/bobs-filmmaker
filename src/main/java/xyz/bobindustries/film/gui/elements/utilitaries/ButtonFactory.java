@@ -11,7 +11,7 @@ import java.io.InputStream;
 
 public class ButtonFactory {
 
-    public static JButton createButton(String text, String imageName) {
+    public static JButton createButton(String text, String imageName, int width, int height) {
         JButton button = new JButton();
         button.setLayout(new BorderLayout());
 
@@ -39,7 +39,8 @@ public class ButtonFactory {
         button.setHorizontalTextPosition(SwingConstants.CENTER);
         button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        button.setPreferredSize(new Dimension(250, 250));
+        button.setPreferredSize(new Dimension(width, height));
+        button.setMaximumSize(new Dimension(width, height));
 
         return button;
     }

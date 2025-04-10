@@ -74,15 +74,15 @@ public class OpenProjectDialog extends JDialog {
         });
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
         add(locationLabel, gbc);
 
         gbc.gridx = 1;
-        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         add(locationField, gbc);
 
         gbc.gridx = 2;
-        gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         add(browseButton, gbc);
 

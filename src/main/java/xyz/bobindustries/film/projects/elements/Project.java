@@ -60,6 +60,12 @@ public class Project {
         loadProject(create);
     }
 
+    public Project() {
+        this.projectDir = null;
+        this.projectName = "null_project";
+        this.images = new ArrayList<>();
+    }
+
     private void loadProject(boolean create) throws IOException, InvalidProjectDirectoryException {
         if (create) {
             File scenarioFile = new File(projectDir.toString(), "scenario.txt");
