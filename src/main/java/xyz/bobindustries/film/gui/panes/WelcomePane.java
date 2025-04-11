@@ -29,70 +29,10 @@ public class WelcomePane extends JPanel {
         GridBagConstraints gbc = new GridBagConstraints();
 
         JButton createNew = ButtonFactory.createButton("new project", "newproject.png", 250, 250);
-//        createNew.addActionListener(e -> {
-//            int result = NewProjectDialog.show(App.getFrame());
-//
-//            if (result == NewProjectDialog.SUCCESS) {
-//                LoadingWindow loadingWindow = new LoadingWindow("loading project...", 200, 100);
-//
-//                loadingWindow.setVisible(true);
-//                loadingWindow.requestFocus();
-//
-//                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de
-//                                                                                 // la frame.
-//                    @Override
-//                    protected Void doInBackground() throws Exception {
-//                        /* Changement du contenu de la fenetre */
-//                        App.getFrame().getContentPane().removeAll();
-//                        App.getFrame().add(new ProjectWelcomePane());
-//
-//                        Thread.sleep(2000);
-//                        App.getFrame().revalidate();
-//
-//                        return null;
-//                    }
-//
-//                    protected void done() {
-//                        loadingWindow.dispose();
-//                    }
-//                };
-//                worker.execute();
-//            }
-//        });
-
         createNew.addActionListener(ActionListenerProvider::getNewProjectDialogAction);
 
         JButton openExist = ButtonFactory.createButton("open project", "openproject.png", 250, 250);
-        openExist.addActionListener(e -> {
-            int result = OpenProjectDialog.show(App.getFrame());
-
-            if (result == NewProjectDialog.SUCCESS) {
-                LoadingWindow loadingWindow = new LoadingWindow("loading project...", 200, 100);
-
-                loadingWindow.setVisible(true);
-                loadingWindow.requestFocus();
-
-                SwingWorker<Void, Void> worker = new SwingWorker<>() { // Classe anonyme d'initialisation de
-                    // la frame.
-                    @Override
-                    protected Void doInBackground() throws Exception {
-                        /* Changement du contenu de la fenetre */
-                        App.getFrame().getContentPane().removeAll();
-                        App.getFrame().add(new ProjectWelcomePane());
-
-                        Thread.sleep(2000);
-                        App.getFrame().revalidate();
-
-                        return null;
-                    }
-
-                    protected void done() {
-                        loadingWindow.dispose();
-                    }
-                };
-                worker.execute();
-            }
-        });
+        openExist.addActionListener(ActionListenerProvider::getOpenProjectDialogAction);
 
         // Create a title label
         JLabel titleLabel = new JLabel("bob's filmmaker");

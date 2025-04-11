@@ -128,7 +128,7 @@ public class ActionListenerProvider {
                 protected Void doInBackground() throws Exception {
                     /* Changement du contenu de la fenetre */
                     App.getFrame().getContentPane().removeAll();
-                    App.getFrame().add(new Workspace());
+                    App.getFrame().add(Workspace.newInstance());
 
                     Thread.sleep(2000);
                     App.getFrame().revalidate();

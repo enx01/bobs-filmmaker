@@ -5,12 +5,13 @@ import javax.swing.plaf.synth.SynthLookAndFeel;
 
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
+import xyz.bobindustries.film.gui.panes.WelcomePane;
 
 import java.awt.*;
 import java.io.InputStream;
 
 /**
- * Hello world!
+ * Bob's filmmaker Application main class.
  */
 public class App {
     private static JFrame frame;
@@ -54,13 +55,9 @@ public class App {
 
                 frame.setMinimumSize(new Dimension(800, 600));
 
-                // WelcomePane welcomePane = new WelcomePane();
+                WelcomePane welcomePane = new WelcomePane();
 
-                // frame.add(welcomePane);
-
-                frame.add(Workspace.getInstance());
-
-                // Thread.sleep(2000);
+                frame.add(welcomePane);
 
                 frame.setVisible(true);
 

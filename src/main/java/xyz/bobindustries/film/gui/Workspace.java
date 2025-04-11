@@ -170,6 +170,13 @@ public class Workspace extends JDesktopPane {
         return instance;
     }
 
+    public static Workspace newInstance() {
+        /* Return a clean instance of the workspace */
+        instance = new Workspace();
+
+        return instance;
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
