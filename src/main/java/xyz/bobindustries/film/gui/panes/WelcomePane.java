@@ -7,12 +7,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.*;
 
-import xyz.bobindustries.film.App;
-import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
-import xyz.bobindustries.film.gui.elements.dialogs.OpenProjectDialog;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
-import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
 
 /**
  * Welcome view of the application showing two buttons :

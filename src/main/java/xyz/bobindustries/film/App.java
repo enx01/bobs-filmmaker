@@ -3,7 +3,6 @@ package xyz.bobindustries.film;
 import javax.swing.*;
 import javax.swing.plaf.synth.SynthLookAndFeel;
 
-import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
 import xyz.bobindustries.film.gui.panes.WelcomePane;
 

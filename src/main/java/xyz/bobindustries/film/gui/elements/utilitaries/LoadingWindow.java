@@ -2,7 +2,6 @@ package xyz.bobindustries.film.gui.elements.utilitaries;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JWindow;
 
 import java.awt.BorderLayout;
