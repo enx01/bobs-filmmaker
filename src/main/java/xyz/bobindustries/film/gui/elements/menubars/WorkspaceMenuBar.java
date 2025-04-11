@@ -12,10 +12,11 @@ public class WorkspaceMenuBar extends JMenuBar {
         JMenu projectMenu = new JMenu("project");
 
         JMenuItem newProjectItem = new JMenuItem("new project");
-
         newProjectItem.addActionListener(ActionListenerProvider::getNewProjectDialogAction);
 
         JMenuItem openProjectItem = new JMenuItem("open project");
+        openProjectItem.addActionListener(ActionListenerProvider::getOpenProjectDialogAction);
+
         JMenuItem saveProjectItem = new JMenuItem("save project");
 
         projectMenu.add(newProjectItem);
@@ -31,8 +32,10 @@ public class WorkspaceMenuBar extends JMenuBar {
         JMenuItem filmVisualizerItem = new JMenuItem("film visualizer");
         JMenuItem aboutItem = new JMenuItem("about");
 
-
+        welcomeItem.addActionListener(ActionListenerProvider::getShowWelcomeFrameAction);
         imageEditorItem.addActionListener(ActionListenerProvider::getShowImageEditorFrameAction);
+        scenarioEditorItem.addActionListener(ActionListenerProvider::getShowScenarioEditorFrameAction);
+        filmVisualizerItem.addActionListener(ActionListenerProvider::getShowFilmVisualizerFrameAction);
         aboutItem.addActionListener(ActionListenerProvider::getShowAboutFrameAction);
 
         windowMenu.add(welcomeItem);

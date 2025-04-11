@@ -2,11 +2,7 @@ package xyz.bobindustries.film.gui.elements.dialogs;
 
 import javax.swing.JDialog;
 
-import xyz.bobindustries.film.App;
-import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
-import xyz.bobindustries.film.gui.panes.ProjectWelcomePane;
-import xyz.bobindustries.film.gui.panes.WelcomePane;
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;

@@ -1,28 +1,12 @@
 package xyz.bobindustries.film.gui.panes;
 
 import javax.swing.*;
+
+import xyz.bobindustries.film.gui.elements.utilitaries.Bob;
+
 import java.awt.*;
 
 public class AboutPane extends JPanel {
-
-    static class Bob extends JPanel {
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            /* Bob's face */
-            g.setColor(Color.GREEN);
-            g.fillOval(50, 50, 100, 100);
-
-            /* Bob's eyes */
-            g.setColor(Color.BLACK);
-            g.fillOval(75, 80, 10, 10);
-            g.fillOval(115, 80, 10, 10);
-
-            /* Bob's mouth */
-            g.setColor(Color.BLACK);
-            g.fillArc(75, 80, 50, 30, 0, -180);
-        }
-    }
 
     public AboutPane() {
         setLayout(new BorderLayout());
@@ -45,9 +29,8 @@ public class AboutPane extends JPanel {
 
         Bob bob = new Bob();
         bob.setPreferredSize(new Dimension(200, 200)); // Set preferred size for Bob's panel
+
         leftPanel.add(bob, gbc);
-
-
 
         // Create the right panel with labels
         JPanel rightPanel = new JPanel();

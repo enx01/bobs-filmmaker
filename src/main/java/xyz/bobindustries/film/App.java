@@ -54,13 +54,13 @@ public class App {
 
                 frame.setMinimumSize(new Dimension(800, 600));
 
-//                WelcomePane welcomePane = new WelcomePane();
+                // WelcomePane welcomePane = new WelcomePane();
 
-//                frame.add(welcomePane);
+                // frame.add(welcomePane);
 
                 frame.add(Workspace.getInstance());
 
-//                Thread.sleep(2000);
+                // Thread.sleep(2000);
 
                 frame.setVisible(true);
 
