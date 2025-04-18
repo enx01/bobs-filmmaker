@@ -20,6 +20,7 @@ public class EditorPane extends JPanel {
   private final Rectangle blueSquare;
   private BufferedImage gridImage;
   private JSlider scaleSlider;
+  private Point lastDragPoint = null;
 
   public EditorPane(Color[][] gridColors, int gridWidth, int gridHeight) {
 
@@ -73,13 +74,14 @@ public class EditorPane extends JPanel {
         Point adjustedPoint = new Point(
             (int) ((e.getX() - origin.x) / scale),
             (int) ((e.getY() - origin.y) / scale));
-
+        lastDragPoint = adjustedPoint;
         hoveredGridX = -1;
         hoveredGridY = -1;
         if (blueSquare.contains(adjustedPoint)) {
           colorGridSquare(adjustedPoint);
-          updateImage(adjustedPoint);
-          // drawGridImage();
+          // updateImage(adjustedPoint);
+          drawGridImage();
+
           repaint();
         }
       }
@@ -102,18 +104,38 @@ public class EditorPane extends JPanel {
 
       @Override
       public void mouseDragged(MouseEvent e) {
+
         Point adjustedPoint = new Point(
             (int) ((e.getX() - origin.x) / scale),
             (int) ((e.getY() - origin.y) / scale));
-
-        if (blueSquare.contains(adjustedPoint)) {
-          colorGridSquare(adjustedPoint);
-          updateImage(adjustedPoint);
-          // drawGridImage();
+        /*
+         * if (blueSquare.contains(adjustedPoint)) {
+         * colorGridSquare(adjustedPoint);
+         * // updateImage(adjustedPoint);
+         * drawGridImage();
+         * SwingUtilities.invokeLater(() -> repaint());
+         * }
+         */
+        if (lastDragPoint != null) {
+          int steps = Math.max(Math.abs(adjustedPoint.x - lastDragPoint.x),
+              Math.abs(adjustedPoint.y - lastDragPoint.y));
+          System.out.println(steps);
+          for (int i = 0; i <= steps; i++) {
+            int x = lastDragPoint.x + (adjustedPoint.x - lastDragPoint.x) * i / steps;
+            int y = lastDragPoint.y + (adjustedPoint.y - lastDragPoint.y) * i / steps;
+            Point interp = new Point(x, y);
+            colorGridSquare(interp);
+          }
+          drawGridImage();
           repaint();
         }
+        lastDragPoint = adjustedPoint;
       }
 
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        lastDragPoint = null;
+      }
     };
 
     addMouseMotionListener(mouseHandler);
