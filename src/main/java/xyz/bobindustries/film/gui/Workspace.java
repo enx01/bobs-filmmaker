@@ -187,7 +187,17 @@ public class Workspace extends JDesktopPane {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        bob.paintComponent(g);
+        int bobWidth = bob.getPreferredSize().width;
+        int bobHeigth = bob.getPreferredSize().height;
+
+        int x = (getWidth() - bobWidth) / 2;
+        int y = (getHeight() - bobHeigth) / 2;
+
+        Graphics g2 = g.create();
+        g2.translate(x, y);
+        bob.paintComponent(g2);
+
+        g2.dispose();
     }
 
 }
