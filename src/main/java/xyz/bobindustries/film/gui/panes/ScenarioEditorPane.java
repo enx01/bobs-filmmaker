@@ -66,166 +66,6 @@ public class ScenarioEditorPane extends JPanel {
     }
 
     static class TimelinePane extends JPanel {
-        private final List<TimelineElement> elements;
-        private final JPanel contentPane;
-
-        TimelinePane(String scenarioContent) throws InvalidScenarioContentException {
-            setLayout(new BorderLayout());
-            elements = new ArrayList<>();
-
-            contentPane = new JPanel();
-            contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
-            contentPane.setBackground(Color.DARK_GRAY);
-
-            Project current = ProjectManager.getCurrent();
-
-            if (current != null) {
-                List<ImageFile> images = current.getImages();
-
-                String[] lines = scenarioContent.split("\\r?\n");
-
-                if (lines.length >= 1 && !lines[0].equals("")) {
-                    int i = 0;
-                    for (String line : lines) {
-                        String[] lineData = line.split(",");
-
-                        if (lineData.length != 2) {
-                            throw new InvalidScenarioContentException("Error line " + i + ". : Wrong file format.");
-                        } else {
-                            String fileName = lineData[0].trim();
-                            Double time = Double.parseDouble(lineData[1].trim());
-
-                            if (fileName.equals(""))
-                                throw new InvalidScenarioContentException("Error line " + i + ". : Empty file name.");
-
-                            if (time > 1 || time < 0.05)
-                                throw new InvalidScenarioContentException(
-                                        "Error line " + i + ". : Invalid time. Must be < 1 && > .2");
-
-                            boolean foundFile = false;
-                            for (ImageFile imf : images) {
-                                if (imf.getFileName().equals(lineData[0].trim())) {
-                                    elements.add(
-                                            new TimelineElement(
-                                                    this,
-                                                    imf,
-                                                    Double.parseDouble(lineData[1].trim())));
-                                    foundFile = true;
-                                    break;
-                                }
-                            }
-                            if (!foundFile) {
-                                throw new InvalidScenarioContentException(
-                                        "Error line " + i + ". : File : " + lineData[0].trim() + " not found.");
-                            }
-                        }
-                        i++;
-                    }
-                }
-            }
-
-            JScrollPane scrollPane = new JScrollPane(contentPane);
-            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-            scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
-
-            JPanel centerContainer = new JPanel();
-            centerContainer.setLayout(new BoxLayout(centerContainer, BoxLayout.Y_AXIS));
-            centerContainer.setBackground(Color.BLACK);
-            centerContainer.add(Box.createVerticalGlue());
-
-            JPanel fixedHeightPanel = new JPanel(new BorderLayout());
-            fixedHeightPanel.setOpaque(false);
-            fixedHeightPanel.add(scrollPane, BorderLayout.CENTER);
-            centerContainer.add(fixedHeightPanel);
-
-            centerContainer.add(Box.createVerticalGlue());
-
-            addComponentListener(new java.awt.event.ComponentAdapter() {
-                @Override
-                public void componentResized(java.awt.event.ComponentEvent e) {
-                    int halfHeight = getHeight() / 2;
-                    fixedHeightPanel.setPreferredSize(new Dimension(getWidth(), halfHeight));
-                    fixedHeightPanel.revalidate();
-                    updateLayout();
-                }
-            });
-
-            add(centerContainer, BorderLayout.CENTER);
-            updateLayout();
-        }
-
-        /**
-         * Updates the layout of the timeline elements.
-         * Ensures that no elements overlap, and if one element is
-         * stretched (i.e., increased in width based on its time attribute),
-         * the subsequent elements are shifted to the right.
-         */
-        void updateLayout() {
-            int currentX = 10; // initial margin
-            int gap = 10; // gap between elements
-
-            for (TimelineElement elem : elements) {
-                // The width is a function of the time attribute.
-                // For simplicity, assume a base width and then additional width by time
-                // (scaled)
-
-                boolean contains = false;
-                for (Component c : contentPane.getComponents()) {
-                    if (c.equals(elem)) {
-                        contains = true;
-                        break;
-                    }
-                }
-
-                if (!contains) {
-                    contentPane.add(elem);
-                }
-
-                int baseWidth = 100;
-                int additionalWidth = (int) (elem.getTime() * 200); // scale factor for demo
-                int totalWidth = baseWidth + additionalWidth;
-                elem.setPreferredSize(new Dimension(totalWidth, 50));
-                elem.setMinimumSize(new Dimension(totalWidth, 50));
-                elem.setMaximumSize(new Dimension(totalWidth, 50));
-                // Set location in container: x coordinate is currentX
-                // In a BoxLayout, we can simulate the horizontal shift with a left border
-                // margin.
-                elem.setBorder(BorderFactory.createEmptyBorder(0, currentX, 0, 0));
-                currentX += totalWidth + gap;
-                elem.revalidate();
-                elem.repaint();
-            }
-
-            // Refresh layout
-            contentPane.revalidate();
-            contentPane.repaint();
-        }
-
-        void addTimelineElement(ImageFile droppedImageFile) {
-            elements.add(new TimelineElement(this, droppedImageFile));
-            updateLayout();
-        }
-
-        String getScenarioFileContent() {
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < elements.size(); i++) {
-                String fileName = elements.get(i).getData().getFileName();
-                double time = elements.get(i).getTime();
-                sb
-                        .append(fileName)
-                        .append(",")
-                        .append(time);
-
-                if (i < elements.size() - 1) {
-                    sb.append(System.lineSeparator());
-                }
-            }
-
-            return sb.toString();
-        }
-
         static class TimelineElement extends JPanel {
             private static final double DEFAULT_TIME = 0.2;
             private static final double MIN_TIME = 0.05;
@@ -358,8 +198,6 @@ public class ScenarioEditorPane extends JPanel {
             private Rectangle getHandleBounds() {
                 int width = getWidth();
                 int height = getHeight();
-                int handleX = width - HANDLE_WIDTH - HANDLE_PADDING;
-                // Make the clickable area slightly larger than the visual handle
                 int clickableHandleWidth = HANDLE_WIDTH + 2 * HANDLE_PADDING;
                 int clickableHandleX = width - clickableHandleWidth;
                 return new Rectangle(clickableHandleX, 0, clickableHandleWidth, height);
@@ -375,12 +213,11 @@ public class ScenarioEditorPane extends JPanel {
 
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    // Check if the press occurred within the handle's bounds
                     if (getHandleBounds().contains(e.getPoint())) {
                         isDragging = true;
-                        dragStartX = e.getXOnScreen(); // Use screen coordinates for consistency
+                        dragStartX = e.getXOnScreen();
                         timeAtDragStart = time;
-                        setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)); // Change cursor
+                        setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
                     }
                 }
 
@@ -390,12 +227,10 @@ public class ScenarioEditorPane extends JPanel {
                         int currentX = e.getXOnScreen();
                         int deltaX = currentX - dragStartX;
 
-                        // Apply precision factor: mouse moves more than the time changes
                         double deltaTime = (double) deltaX / PIXELS_PER_SECOND / DRAG_PRECISION_FACTOR;
 
-                        // Calculate new time and apply constraints
                         double newTime = timeAtDragStart + deltaTime;
-                        setTime(newTime); // setTime handles constraints and repaint/revalidate
+                        setTime(newTime);
                         pane.updateLayout();
                     }
                 }
@@ -404,14 +239,12 @@ public class ScenarioEditorPane extends JPanel {
                 public void mouseReleased(MouseEvent e) {
                     if (isDragging) {
                         isDragging = false;
-                        setCursor(Cursor.getDefaultCursor()); // Restore default cursor
-                        // Optional: Snap to grid or perform final actions here
+                        setCursor(Cursor.getDefaultCursor());
                     }
                 }
 
                 @Override
                 public void mouseMoved(MouseEvent e) {
-                    // Change cursor when hovering over the handle
                     if (getHandleBounds().contains(e.getPoint())) {
                         setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
                     } else {
@@ -421,13 +254,167 @@ public class ScenarioEditorPane extends JPanel {
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    // Ensure cursor resets if mouse leaves while not dragging
                     if (!isDragging) {
                         setCursor(Cursor.getDefaultCursor());
                     }
                 }
             }
         }
+
+        private final List<TimelineElement> elements;
+        private final JPanel contentPane;
+
+        TimelinePane(String scenarioContent) throws InvalidScenarioContentException {
+            setLayout(new BorderLayout());
+            elements = new ArrayList<>();
+
+            contentPane = new JPanel();
+            contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
+            contentPane.setBackground(Color.DARK_GRAY);
+
+            Project current = ProjectManager.getCurrent();
+
+            if (current != null) {
+                List<ImageFile> images = current.getImages();
+
+                String[] lines = scenarioContent.split("\\r?\n");
+
+                if (lines.length >= 1 && !lines[0].equals("")) {
+                    int i = 0;
+                    for (String line : lines) {
+                        String[] lineData = line.split(",");
+
+                        if (lineData.length != 2) {
+                            throw new InvalidScenarioContentException("Error line " + i + ". : Wrong file format.");
+                        } else {
+                            String fileName = lineData[0].trim();
+                            Double time = Double.parseDouble(lineData[1].trim());
+
+                            if (fileName.equals(""))
+                                throw new InvalidScenarioContentException("Error line " + i + ". : Empty file name.");
+
+                            if (time > 1 || time < 0.05)
+                                throw new InvalidScenarioContentException(
+                                        "Error line " + i + ". : Invalid time. Must be < 1 && > .2");
+
+                            boolean foundFile = false;
+                            for (ImageFile imf : images) {
+                                if (imf.getFileName().equals(lineData[0].trim())) {
+                                    elements.add(
+                                            new TimelineElement(
+                                                    this,
+                                                    imf,
+                                                    Double.parseDouble(lineData[1].trim())));
+                                    foundFile = true;
+                                    break;
+                                }
+                            }
+                            if (!foundFile) {
+                                throw new InvalidScenarioContentException(
+                                        "Error line " + i + ". : File : " + lineData[0].trim() + " not found.");
+                            }
+                        }
+                        i++;
+                    }
+                }
+            }
+
+            JScrollPane scrollPane = new JScrollPane(contentPane);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+            scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+
+            JPanel centerContainer = new JPanel();
+            centerContainer.setLayout(new BoxLayout(centerContainer, BoxLayout.Y_AXIS));
+            centerContainer.setBackground(Color.BLACK);
+            centerContainer.add(Box.createVerticalGlue());
+
+            JPanel fixedHeightPanel = new JPanel(new BorderLayout());
+            fixedHeightPanel.setOpaque(false);
+            fixedHeightPanel.add(scrollPane, BorderLayout.CENTER);
+            centerContainer.add(fixedHeightPanel);
+
+            centerContainer.add(Box.createVerticalGlue());
+
+            addComponentListener(new java.awt.event.ComponentAdapter() {
+                @Override
+                public void componentResized(java.awt.event.ComponentEvent e) {
+                    int halfHeight = getHeight() / 2;
+                    fixedHeightPanel.setPreferredSize(new Dimension(getWidth(), halfHeight));
+                    fixedHeightPanel.revalidate();
+                    updateLayout();
+                }
+            });
+
+            add(centerContainer, BorderLayout.CENTER);
+            updateLayout();
+        }
+
+        /**
+         * Updates the layout of the timeline elements.
+         * Ensures that no elements overlap, and if one element is
+         * stretched (i.e., increased in width based on its time attribute),
+         * the subsequent elements are shifted to the right.
+         */
+        void updateLayout() {
+            int currentX = 10; // initial margin
+            int gap = 10; // gap between elements
+
+            for (TimelineElement elem : elements) {
+                boolean contains = false;
+                for (Component c : contentPane.getComponents()) {
+                    if (c.equals(elem)) {
+                        contains = true;
+                        break;
+                    }
+                }
+
+                if (!contains) {
+                    contentPane.add(elem);
+                }
+
+                int baseWidth = 100;
+                int additionalWidth = (int) (elem.getTime() * 200); // scale factor for demo
+                int totalWidth = baseWidth + additionalWidth;
+                elem.setPreferredSize(new Dimension(totalWidth, 50));
+                elem.setMinimumSize(new Dimension(totalWidth, 50));
+                elem.setMaximumSize(new Dimension(totalWidth, 50));
+
+                elem.setBorder(BorderFactory.createEmptyBorder(0, currentX, 0, 0));
+                currentX += totalWidth + gap;
+                elem.revalidate();
+                elem.repaint();
+            }
+
+            // Refresh layout
+            contentPane.revalidate();
+            contentPane.repaint();
+        }
+
+        void addTimelineElement(ImageFile droppedImageFile) {
+            elements.add(new TimelineElement(this, droppedImageFile));
+            updateLayout();
+        }
+
+        String getScenarioFileContent() {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < elements.size(); i++) {
+                String fileName = elements.get(i).getData().getFileName();
+                double time = elements.get(i).getTime();
+                sb
+                        .append(fileName)
+                        .append(",")
+                        .append(time);
+
+                if (i < elements.size() - 1) {
+                    sb.append(System.lineSeparator());
+                }
+            }
+
+            return sb.toString();
+        }
+
     }
 
     private JPanel imagesListPane,
@@ -456,11 +443,8 @@ public class ScenarioEditorPane extends JPanel {
         imageListScrollPane.setPreferredSize(new Dimension(150, 0));
         imageListScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        currentImageView = new JLabel(); // Initialize the JLabel
-        currentImageView.setHorizontalAlignment(SwingConstants.CENTER); // Center the image.
-
-        // Timeline setup (using a placeholder for now)
-        // timelinePane.add(new JLabel("Timeline Placeholder"));
+        currentImageView = new JLabel();
+        currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void layoutComponents() {
@@ -532,20 +516,10 @@ public class ScenarioEditorPane extends JPanel {
                     return false;
                 }
                 try {
-                    // Extract the ImageFile from the transferable data.
                     Transferable transferable = support.getTransferable();
                     ImageFile droppedImageFile = (ImageFile) transferable.getTransferData(ImagePanel.DATA_FLAVOR);
 
-                    //// Here you would add the logic to transfer the ImageFile to the timelinePane.
-                    //// For demonstration, we'll add a label representing the dropped image.
-                    // JLabel droppedLabel = new JLabel(droppedImageFile.getFileName());
-                    // droppedLabel.setForeground(new Color(0xEBDBB2));
-
-                    //// Revalidate and repaint to display the update.
-
                     timelinePane.addTimelineElement(droppedImageFile);
-                    timelinePane.revalidate();
-                    timelinePane.repaint();
                     return true;
                 } catch (UnsupportedFlavorException | java.io.IOException ex) {
                     ex.printStackTrace();
