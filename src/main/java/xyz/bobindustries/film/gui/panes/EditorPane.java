@@ -19,6 +19,7 @@ public class EditorPane extends JPanel {
   private int gridHeight;
   private final Rectangle blueSquare;
   private BufferedImage gridImage;
+  private JSlider scaleSlider;
 
   public EditorPane(Color[][] gridColors, int gridWidth, int gridHeight) {
 
@@ -30,6 +31,25 @@ public class EditorPane extends JPanel {
 
     gridImage = new BufferedImage(blueSquare.width, blueSquare.height, BufferedImage.TYPE_INT_ARGB);
     drawGridImage();
+
+    setLayout(new BorderLayout());
+
+    // Create the slider
+    scaleSlider = new JSlider(JSlider.HORIZONTAL, 1, 200, 100); // Scale from 1% to 200%
+    scaleSlider.setMajorTickSpacing(50);
+    scaleSlider.setMinorTickSpacing(10);
+    scaleSlider.setPaintTicks(true);
+    scaleSlider.setPaintLabels(true);
+    scaleSlider.addChangeListener(e -> {
+      scale = scaleSlider.getValue() / 100.0; // Update scale based on slider value
+      repaint();
+    });
+
+    // Add the slider to the bottom right
+    JPanel sliderPanel = new JPanel();
+    sliderPanel.setLayout(new BorderLayout());
+    sliderPanel.add(scaleSlider, BorderLayout.EAST);
+    add(sliderPanel, BorderLayout.SOUTH);
 
     MouseAdapter mouseHandler = new MouseAdapter() {
       @Override
