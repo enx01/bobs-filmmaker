@@ -3,6 +3,7 @@ package xyz.bobindustries.film;
 import javax.swing.*;
 import javax.swing.plaf.synth.SynthLookAndFeel;
 
+import xyz.bobindustries.film.gui.elements.utilitaries.ConstantsProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
 import xyz.bobindustries.film.gui.panes.WelcomePane;
 
@@ -47,12 +48,12 @@ public class App {
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Recuperation de la taille de
-                // l'ecran de
-                // l'utilisateur.
+                                                                                    // l'ecran de
+                                                                                    // l'utilisateur.
                 frame.setSize(screenSize.width, screenSize.height);
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-                frame.setMinimumSize(new Dimension(800, 600));
+                frame.setMinimumSize(ConstantsProvider.WINDOW_MIN_SIZE);
 
                 WelcomePane welcomePane = new WelcomePane();
 

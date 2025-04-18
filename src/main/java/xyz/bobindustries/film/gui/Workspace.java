@@ -3,9 +3,11 @@ package xyz.bobindustries.film.gui;
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.menubars.WorkspaceMenuBar;
 import xyz.bobindustries.film.gui.elements.utilitaries.Bob;
+import xyz.bobindustries.film.gui.elements.utilitaries.ConstantsProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.panes.AboutPane;
 import xyz.bobindustries.film.gui.panes.ProjectWelcomePane;
+import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
 
 import javax.swing.*;
 import java.awt.*;
@@ -107,8 +109,8 @@ public class Workspace extends JDesktopPane {
                 true,
                 true,
                 true);
-        welcomeFrame.setSize(600, 300);
-        welcomeFrame.setMinimumSize(new Dimension(600, 300));
+        welcomeFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
+        welcomeFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         welcomeFrame.setContentPane(new ProjectWelcomePane());
         try {
             welcomeFrame.setMaximum(true);
@@ -123,8 +125,8 @@ public class Workspace extends JDesktopPane {
                 true,
                 true,
                 true);
-        imageEditorFrame.setSize(600, 300);
-        imageEditorFrame.setMinimumSize(new Dimension(600, 300));
+        imageEditorFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
+        imageEditorFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         imageEditorFrame.setContentPane(new JPanel());
 
         scenarioEditorFrame = new JInternalFrame(
@@ -133,9 +135,9 @@ public class Workspace extends JDesktopPane {
                 true,
                 true,
                 true);
-        scenarioEditorFrame.setSize(600, 300);
-        scenarioEditorFrame.setMinimumSize(new Dimension(600, 300));
-        scenarioEditorFrame.setContentPane(new JPanel());
+        scenarioEditorFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
+        scenarioEditorFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
+        scenarioEditorFrame.setContentPane(new ScenarioEditorPane());
 
         filmVisualizerFrame = new JInternalFrame(
                 "film visualizer",
@@ -143,8 +145,8 @@ public class Workspace extends JDesktopPane {
                 true,
                 true,
                 true);
-        filmVisualizerFrame.setSize(600, 300);
-        filmVisualizerFrame.setMinimumSize(new Dimension(600, 300));
+        filmVisualizerFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
+        filmVisualizerFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         filmVisualizerFrame.setContentPane(new JPanel());
 
         aboutFrame = new JInternalFrame(
@@ -153,10 +155,9 @@ public class Workspace extends JDesktopPane {
                 true,
                 false,
                 false);
-        aboutFrame.setSize(600, 300);
-        aboutFrame.setMinimumSize(new Dimension(600, 300));
+        aboutFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
+        aboutFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         aboutFrame.setContentPane(new AboutPane());
-        aboutFrame.setVisible(true);
 
     }
 

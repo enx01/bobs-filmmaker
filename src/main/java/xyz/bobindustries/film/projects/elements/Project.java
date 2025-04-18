@@ -13,30 +13,6 @@ import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
 
 public class Project {
-
-    public static class ImageFile {
-        private final String fileName;
-        private byte[] content;
-
-        public ImageFile(String fileName, byte[] content) {
-            this.fileName = fileName;
-            this.content = content;
-        }
-
-        public String getFileName() {
-            return fileName;
-        }
-
-        public byte[] getContent() {
-            return content;
-        }
-
-        public void setContent(byte[] content) {
-            this.content = content;
-        }
-
-    }
-
     private final Path projectDir;
     private final String projectName;
 
