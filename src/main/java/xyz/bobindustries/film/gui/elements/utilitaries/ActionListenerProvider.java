@@ -4,10 +4,15 @@ import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
 import xyz.bobindustries.film.gui.elements.dialogs.OpenProjectDialog;
+import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
+import xyz.bobindustries.film.projects.ProjectManager;
+import xyz.bobindustries.film.projects.elements.Project;
+import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
+import java.io.IOException;
 
 public class ActionListenerProvider {
 
@@ -31,6 +36,44 @@ public class ActionListenerProvider {
         int result = OpenProjectDialog.show(App.getFrame());
 
         showWorkspace(result);
+    }
+
+    /**
+     * Saves the current project by extracting ScenarioEditorPane's state into
+     * scenario.txt
+     * as well as saving the edited images.
+     */
+    public static void saveCurrentProject(ActionEvent ignoredActionEvent) {
+        LoadingWindow loadingWindow = new LoadingWindow("loading project...", 200, 100);
+
+        loadingWindow.setVisible(true);
+        loadingWindow.requestFocus();
+
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                Workspace workspace = Workspace.getInstance();
+                Project project = ProjectManager.getCurrent();
+                ScenarioEditorPane sep = workspace.getScenarioEditorPane();
+
+                project.setScenarioContent(sep.extractScenarioContent());
+
+                try {
+                    project.save();
+                } catch (IOException ioe) {
+                    SimpleErrorDialog.show("Failed to save project :(");
+                }
+
+                return null;
+            }
+
+            protected void done() {
+                SimpleHappyDialog.show("Project saved succesfully !");
+                loadingWindow.dispose();
+            }
+        };
+        worker.execute();
+
     }
 
     /*
@@ -127,13 +170,25 @@ public class ActionListenerProvider {
             SwingWorker<Void, Void> worker = new SwingWorker<>() {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    /* Changement du contenu de la fenetre */
-                    App.getFrame().getContentPane().removeAll();
-                    App.getFrame().add(Workspace.newInstance());
+                    /*
+                     * Since getting workspace instance throws InvalidScenarioContentException, try
+                     * to fetch it here
+                     */
+                    Workspace instance = null;
+                    try {
+                        instance = Workspace.newInstance();
+                    } catch (InvalidScenarioContentException isce) {
+                        SimpleErrorDialog.show(isce.getMessage());
+                    }
 
-                    Thread.sleep(2000);
-                    App.getFrame().revalidate();
+                    if (instance != null) {
+                        /* Changement du contenu de la fenetre */
+                        App.getFrame().getContentPane().removeAll();
+                        App.getFrame().add(instance);
 
+                        Thread.sleep(2000);
+                        App.getFrame().revalidate();
+                    }
                     return null;
                 }
 

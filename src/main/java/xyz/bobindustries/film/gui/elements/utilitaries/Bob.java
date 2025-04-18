@@ -10,6 +10,7 @@ public class Bob extends JPanel {
     Color skin = new Color(127, 153, 26);
 
     public Bob() {
+        setPreferredSize(new Dimension(100, 100));
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent ignoredMouseEvent) {
@@ -30,15 +31,15 @@ public class Bob extends JPanel {
         super.paintComponent(g);
         /* Bob's face */
         g.setColor(skin);
-        g.fillOval(50, 50, 100, 100);
+        g.fillOval(0, 0, 100, 100);
 
         /* Bob's eyes */
         g.setColor(Color.BLACK);
-        g.fillOval(75, 80, 10, 10);
-        g.fillOval(115, 80, 10, 10);
+        g.fillOval(25, 30, 10, 10);
+        g.fillOval(65, 30, 10, 10);
 
         /* Bob's mouth */
         g.setColor(Color.BLACK);
-        g.fillArc(75, 80, 50, 30, 0, -180);
+        g.fillArc(25, 30, 50, 30, 0, -180);
     }
 }

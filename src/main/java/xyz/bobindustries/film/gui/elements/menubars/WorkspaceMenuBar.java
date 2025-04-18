@@ -18,6 +18,7 @@ public class WorkspaceMenuBar extends JMenuBar {
         openProjectItem.addActionListener(ActionListenerProvider::getOpenProjectDialogAction);
 
         JMenuItem saveProjectItem = new JMenuItem("save");
+        saveProjectItem.addActionListener(ActionListenerProvider::saveCurrentProject);
 
         projectMenu.add(newProjectItem);
         projectMenu.add(openProjectItem);

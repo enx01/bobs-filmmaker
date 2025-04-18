@@ -25,7 +25,7 @@ public class AboutPane extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.anchor = GridBagConstraints.CENTER; // Center Bob
-        gbc.insets = new Insets(10, 10, -10, 10); // Add some padding
+        gbc.insets = new Insets(50, 105, -100, 10); // Add some padding
 
         Bob bob = new Bob();
         bob.setPreferredSize(new Dimension(200, 200)); // Set preferred size for Bob's panel

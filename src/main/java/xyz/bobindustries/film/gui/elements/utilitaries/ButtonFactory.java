@@ -15,7 +15,7 @@ public class ButtonFactory {
 
         try (InputStream is = ButtonFactory.class.getResourceAsStream(imageName)) {
             if (is == null) {
-                SimpleErrorDialog.showErrorDialog("InputStream returned null! :(");
+                SimpleErrorDialog.show("InputStream returned null! :(");
             } else {
                 BufferedImage img = ImageIO.read(is);
                 ImageIcon icon = new ImageIcon(img);
@@ -25,7 +25,7 @@ public class ButtonFactory {
                 button.setIcon(new ImageIcon(resized));
             }
         } catch (IOException e) {
-            SimpleErrorDialog.showErrorDialog("Image Not Read :(");
+            SimpleErrorDialog.show("Image Not Read :(");
         }
 
         JLabel label = new JLabel(text, JLabel.CENTER);

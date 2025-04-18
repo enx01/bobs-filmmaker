@@ -59,14 +59,14 @@ public class OpenProjectDialog extends JDialog {
                     dispose();
 
                 } catch (IOException | InvalidProjectDirectoryException ex) {
-                    SimpleErrorDialog.showErrorDialog("Error openning project : invalid project directory");
+                    SimpleErrorDialog.show("Error openning project : invalid project directory");
                     isSuccess = false;
                     dispose();
                 }
 
                 dispose();
             } else {
-                SimpleErrorDialog.showErrorDialog("Please provide a valid location.");
+                SimpleErrorDialog.show("Please provide a valid location.");
                 isSuccess = false;
                 dispose();
             }

@@ -45,12 +45,12 @@ public class Project {
         if (create) {
             File scenarioFile = new File(projectDir.toString(), "scenario.txt");
             if (!scenarioFile.createNewFile()) {
-                SimpleErrorDialog.showErrorDialog("Couldn't create scenario.txt file.");
+                SimpleErrorDialog.show("Couldn't create scenario.txt file.");
             }
 
             File imagesDir = new File(projectDir.toString(), "images");
             if (!imagesDir.mkdir()) {
-                SimpleErrorDialog.showErrorDialog("Couldn't create images directory");
+                SimpleErrorDialog.show("Couldn't create images directory");
             }
         }
 

@@ -8,6 +8,7 @@ import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.panes.AboutPane;
 import xyz.bobindustries.film.gui.panes.ProjectWelcomePane;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
+import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,6 +26,8 @@ public class Workspace extends JDesktopPane {
             scenarioEditorFrame,
             filmVisualizerFrame,
             aboutFrame;
+
+    private final ScenarioEditorPane scenarioEditorPane;
 
     private final Bob bob;
 
@@ -46,6 +49,10 @@ public class Workspace extends JDesktopPane {
 
     public JInternalFrame getAboutFrame() {
         return aboutFrame;
+    }
+
+    public ScenarioEditorPane getScenarioEditorPane() {
+        return scenarioEditorPane;
     }
 
     /**
@@ -91,7 +98,7 @@ public class Workspace extends JDesktopPane {
         }
     }
 
-    public Workspace() {
+    public Workspace() throws InvalidScenarioContentException {
         setDesktopManager(new BoundedDesktopManager());
 
         App.getFrame().setJMenuBar(new WorkspaceMenuBar());
@@ -115,7 +122,7 @@ public class Workspace extends JDesktopPane {
         try {
             welcomeFrame.setMaximum(true);
         } catch (PropertyVetoException e) {
-            SimpleErrorDialog.showErrorDialog("Error maximizing welcome frame :(");
+            SimpleErrorDialog.show("Error maximizing welcome frame :(");
         }
         welcomeFrame.setVisible(true);
 
@@ -137,7 +144,10 @@ public class Workspace extends JDesktopPane {
                 true);
         scenarioEditorFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         scenarioEditorFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
-        scenarioEditorFrame.setContentPane(new ScenarioEditorPane());
+
+        scenarioEditorPane = new ScenarioEditorPane();
+
+        scenarioEditorFrame.setContentPane(scenarioEditorPane);
 
         filmVisualizerFrame = new JInternalFrame(
                 "film visualizer",
@@ -162,14 +172,11 @@ public class Workspace extends JDesktopPane {
     }
 
     public static Workspace getInstance() {
-        // Create the instance if it doesn't exist
-        if (instance == null) {
-            instance = new Workspace();
-        }
+        assert (instance != null);
         return instance;
     }
 
-    public static Workspace newInstance() {
+    public static Workspace newInstance() throws InvalidScenarioContentException {
         /* Return a clean instance of the workspace */
         instance = new Workspace();
 
