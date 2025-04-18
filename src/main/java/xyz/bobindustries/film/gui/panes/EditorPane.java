@@ -6,21 +6,30 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 public class EditorPane extends JPanel {
   private double scale = 1.0;
   private Point origin = new Point(0, 0);
-  private Color[][] gridColors = new Color[10][10];
+  private Color[][] gridColors;
   private int hoveredGridX = -1;
   private int hoveredGridY = -1;
-  private final Rectangle blueSquare = new Rectangle(50, 50, 100, 100);
+  private final int gridSquareSize = 10;
+  private int gridWidth;
+  private int gridHeight;
+  private final Rectangle blueSquare;
+  private BufferedImage gridImage;
 
-  public EditorPane() {
-    for (int i = 0; i < gridColors.length; i++) {
-      for (int j = 0; j < gridColors[i].length; j++) {
-        gridColors[i][j] = Color.WHITE;
-      }
-    }
+  public EditorPane(Color[][] gridColors, int gridWidth, int gridHeight) {
+
+    this.gridColors = gridColors;
+    this.gridWidth = gridWidth;
+    this.gridHeight = gridHeight;
+
+    blueSquare = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
+
+    gridImage = new BufferedImage(blueSquare.width, blueSquare.height, BufferedImage.TYPE_INT_ARGB);
+    drawGridImage();
 
     MouseAdapter mouseHandler = new MouseAdapter() {
       @Override
@@ -49,6 +58,8 @@ public class EditorPane extends JPanel {
         hoveredGridY = -1;
         if (blueSquare.contains(adjustedPoint)) {
           colorGridSquare(adjustedPoint);
+          updateImage(adjustedPoint);
+          // drawGridImage();
           repaint();
         }
       }
@@ -77,6 +88,8 @@ public class EditorPane extends JPanel {
 
         if (blueSquare.contains(adjustedPoint)) {
           colorGridSquare(adjustedPoint);
+          updateImage(adjustedPoint);
+          // drawGridImage();
           repaint();
         }
       }
@@ -96,40 +109,100 @@ public class EditorPane extends JPanel {
     g2d.translate(origin.x, origin.y);
     g2d.scale(scale, scale);
 
-    drawGrid(g2d);
+    // drawGrid(g2d);
+
+    g2d.drawImage(gridImage, blueSquare.x, blueSquare.y, null);
+
+    // Dessiner le carré survolé
+    if (hoveredGridX >= 0 && hoveredGridY >= 0) {
+      int hoverX = blueSquare.x + (hoveredGridX * gridSquareSize);
+      int hoverY = blueSquare.y + (hoveredGridY * gridSquareSize);
+      g2d.setColor(Color.GRAY);
+      g2d.fillRect(hoverX, hoverY, gridSquareSize, gridSquareSize);
+    }
 
     g2d.setTransform(at);
   }
 
   private void drawGrid(Graphics2D g2d) {
-    int gridSize = 10;
     int startX = blueSquare.x;
     int startY = blueSquare.y;
 
-    for (int i = 0; i < 10; i++) {
-      for (int j = 0; j < 10; j++) {
-        int x = startX + (i * gridSize);
-        int y = startY + (j * gridSize);
+    for (int i = 0; i < gridHeight; i++) {
+      for (int j = 0; j < gridWidth; j++) {
+        int x = startX + (i * gridSquareSize);
+        int y = startY + (j * gridSquareSize);
 
-        g2d.setColor(gridColors[i][j]);
-        g2d.fillRect(x, y, gridSize, gridSize);
+        g2d.setColor(gridColors[j][i]);
+        g2d.fillRect(x, y, gridSquareSize, gridSquareSize);
 
         if (i == hoveredGridX && j == hoveredGridY) {
           g2d.setColor(Color.GRAY);
-          g2d.fillRect(x, y, gridSize, gridSize);
+          g2d.fillRect(x, y, gridSquareSize, gridSquareSize);
         }
       }
     }
+  }
 
+  private void drawGridImage() {
+    Graphics2D g2d = gridImage.createGraphics();
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+    g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+    g2d.setColor(Color.WHITE);
+    g2d.fillRect(0, 0, gridImage.getHeight(), gridImage.getWidth());
+
+    for (int i = 0; i < gridWidth; i++) {
+      for (int j = 0; j < gridHeight; j++) {
+        int x = j * gridSquareSize;
+        int y = i * gridSquareSize;
+
+        g2d.setColor(gridColors[i][j]);
+        g2d.fillRect(x, y, gridSquareSize, gridSquareSize);
+      }
+    }
+
+    g2d.dispose(); // Libérer les ressources graphiques
+  }
+
+  private void updateImage(Point p) {
+    Graphics2D g2d = gridImage.createGraphics();
+    int gridX = (p.x - blueSquare.x) / gridSquareSize;
+    int gridY = (p.y - blueSquare.y) / gridSquareSize;
+    int x = gridY * gridSquareSize;
+    int y = gridX * gridSquareSize;
+    g2d.setColor(gridColors[gridY][gridX]);
+    g2d.fillRect(y, x, gridSquareSize, gridSquareSize);
+    g2d.dispose();
   }
 
   private void colorGridSquare(Point p) {
-    int gridSize = 10;
+    int gridSize = gridSquareSize;
     int gridX = (p.x - blueSquare.x) / gridSize;
     int gridY = (p.y - blueSquare.y) / gridSize;
 
-    if (gridX >= 0 && gridX < 10 && gridY >= 0 && gridY < 10) {
-      gridColors[gridX][gridY] = Color.RED;
+    if (gridX >= 0 && gridX < gridHeight && gridY >= 0 && gridY < gridWidth) {
+      gridColors[gridY][gridX] = Color.RED;
     }
+  }
+
+  public void setScale(double scale) {
+    this.scale = scale;
+  }
+
+  public void setOrigin(Point origin) {
+    this.origin = origin;
+  }
+
+  public void setGridColors(Color[][] gridColors) {
+    this.gridColors = gridColors;
+  }
+
+  public void setHoveredGridX(int hoveredGridX) {
+    this.hoveredGridX = hoveredGridX;
+  }
+
+  public void setHoveredGridY(int hoveredGridY) {
+    this.hoveredGridY = hoveredGridY;
   }
 }
