@@ -1,41 +1,15 @@
 package xyz.bobindustries.film.gui.panes;
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.RenderingHints;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingConstants;
-import javax.swing.TransferHandler;
-import javax.swing.border.Border;
+import javax.swing.*;
 
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
@@ -43,9 +17,9 @@ import xyz.bobindustries.film.projects.elements.Project;
 
 public class ScenarioEditorPane extends JPanel {
 
-    class ImagePanel extends JPanel implements Transferable {
-        private ImageFile imageFile;
-        private JLabel nameLabel;
+    static class ImagePanel extends JPanel implements Transferable {
+        private final ImageFile imageFile;
+        private final JLabel nameLabel;
         private static final DataFlavor DATA_FLAVOR = new DataFlavor(ImageFile.class, "ImageFile");
 
         public ImagePanel(ImageFile imageFile) {
@@ -90,12 +64,11 @@ public class ScenarioEditorPane extends JPanel {
         }
     }
 
-    class TimelinePane extends JPanel {
-        private List<TimelineElement> elements;
-        private JPanel contentPane;
-        private JScrollPane scrollPane;
+    static class TimelinePane extends JPanel {
+        private final List<TimelineElement> elements;
+        private final JPanel contentPane;
 
-        public TimelinePane() {
+        public TimelinePane(String scenarioContent) {
             setLayout(new BorderLayout());
             elements = new ArrayList<>();
 
@@ -106,23 +79,14 @@ public class ScenarioEditorPane extends JPanel {
 
             // Create default TimelineElements (using default time values, e.g., 0.2, 0.5,
             // 0.8)
-            TimelineElement defaultElem1 = new TimelineElement(this);
-            TimelineElement defaultElem2 = new TimelineElement(this);
-            TimelineElement defaultElem3 = new TimelineElement(this);
-            TimelineElement defaultElem4 = new TimelineElement(this);
-            elements.add(defaultElem1);
-            elements.add(defaultElem2);
-            elements.add(defaultElem3);
-            elements.add(defaultElem4);
 
             // Add each TimelineElement to the content pane with spacing to avoid overlap.
-            for (TimelineElement elem : elements) {
-                contentPane.add(elem);
-            }
+
 
             // Wrap the contentPane into a JScrollPane to allow vertical scrolling
-            scrollPane = new JScrollPane(contentPane);
+            JScrollPane scrollPane = new JScrollPane(contentPane);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
             scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
 
             JPanel centerContainer = new JPanel();
@@ -168,6 +132,19 @@ public class ScenarioEditorPane extends JPanel {
                 // The width is a function of the time attribute.
                 // For simplicity, assume a base width and then additional width by time
                 // (scaled)
+
+                boolean contains = false;
+                for (Component c : contentPane.getComponents()) {
+                    if (c.equals(elem)) {
+                        contains = true;
+                        break;
+                    }
+                }
+
+                if (!contains) {
+                    contentPane.add(elem);
+                }
+
                 int baseWidth = 100;
                 int additionalWidth = (int) (elem.getTime() * 200); // scale factor for demo
                 int totalWidth = baseWidth + additionalWidth;
@@ -188,126 +165,212 @@ public class ScenarioEditorPane extends JPanel {
             contentPane.repaint();
         }
 
-        class TimelineElement extends JPanel {
+        public void addTimelineElement(ImageFile droppedImageFile) {
+            System.out.println("adding new element");
+            elements.add(new TimelineElement(this, droppedImageFile));
+            updateLayout();
+        }
 
-            // Conversion factor: each pixel will correspond to 0.01 time units.
-            private static final double PIXEL_TO_TIME = .01;
-            // Minimum width for the component (in pixels)
-            private static final int MIN_WIDTH = 50;
-            // Thickness of the drag handle area at the right edge (in pixels)
-            private static final int HANDLE_WIDTH = 5;
-            // Arc diameter for rounded corners
-            private static final int ARC_WIDTH = 20;
-            private static final int ARC_HEIGHT = 20;
+        static class TimelineElement extends JPanel {
+            private static final double DEFAULT_TIME = 0.2;
+            private static final double MIN_TIME = 0.05;
+            private static final double MAX_TIME = 1.0;
+            private static final int PIXELS_PER_SECOND = 300; // How many pixels represent 1 second
+            private static final int DEFAULT_HEIGHT = 50;
+            private static final int ARC_WIDTH = 15;
+            private static final int ARC_HEIGHT = 15;
+            private static final int HANDLE_WIDTH = 3;
+            private static final int HANDLE_PADDING = 3; // Padding from the right edge
+            private static final double DRAG_PRECISION_FACTOR = 1.0; // Higher value = less sensitive drag
 
-            // Double time attribute. Default is 0.2 seconds (depends on conversion factor
-            // and initial width)
-            private double time;
+            private double time; // Duration of this element in seconds
+            private final Color backgroundColor = new Color(0x25, 0x65, 0x68); // Default background color
+            private final Color handleColor = new Color(0x68, 0x9d, 0x6a);    // Handle color
+            private final Color textColor = new Color(0xeb, 0xdb, 0xb2);                  // Text color
 
-            // To keep track of resizing
-            private boolean dragging = false;
-            private int dragOffset;
+            private boolean isDragging = false;
+            private int dragStartX;
+            private double timeAtDragStart;
 
-            public TimelineElement(TimelinePane timelinePane) {
-                // Set default preferred size
-                int initialWidth = (int) (0.2 / PIXEL_TO_TIME); // e.g., if 0.2 sec then width=20 but ensure it is above
-                                                                // MIN_WIDTH
-                if (initialWidth < MIN_WIDTH) {
-                    initialWidth = MIN_WIDTH;
-                }
-                this.time = initialWidth * PIXEL_TO_TIME;
-                setPreferredSize(new Dimension(initialWidth, 50));
-                // Enable mouse events for resize drag
-                MouseAdapter mouseAdapter = new MouseAdapter() {
-                    @Override
-                    public void mousePressed(MouseEvent e) {
-                        // If the pressed point is near the right edge (drag handle area), start
-                        // dragging.
-                        if (isOverHandle(e.getX())) {
-                            dragging = true;
-                            // Compute the offset between the right edge and the actual click x-coordinate.
-                            Point absLocation = getLocationOnScreen();
-                            int rightEdge = absLocation.x + getWidth();
-                            dragOffset = rightEdge - e.getXOnScreen();
-                        }
-                    }
+            private final ImageFile data;
 
-                    @Override
-                    public void mouseReleased(MouseEvent e) {
-                        dragging = false;
-                    }
+            TimelineElement(TimelinePane timelinePane, ImageFile imageFile) {
+                this.time = DEFAULT_TIME;
+                this.data = imageFile;
+                updatePreferredSize();
 
-                    @Override
-                    public void mouseDragged(MouseEvent e) {
-                        if (dragging) {
-                            int leftX = getLocationOnScreen().x;
+                // Add mouse listeners for dragging the handle
+                HandleDragListener listener = new HandleDragListener(timelinePane);
+                System.out.println("created timeline element : " + data.getFileName());
 
-                            int newWidth = e.getXOnScreen() - leftX + dragOffset;
+                addMouseListener(listener);
+                addMouseMotionListener(listener);
 
-                            newWidth = Math.max(newWidth, MIN_WIDTH);
-                            setPreferredSize(new Dimension(newWidth, getHeight()));
-                            setSize(newWidth, getHeight());
-                            time = newWidth * PIXEL_TO_TIME;
-                            timelinePane.updateLayout();
-                            revalidate();
-                            repaint();
-                        }
-                    }
-                };
-
-                addMouseListener(mouseAdapter);
-                addMouseMotionListener(mouseAdapter);
+                // Set opaque to false if you want the parent's background to show through
+                 setOpaque(false);
             }
 
-            /**
-             * Checks if a given x coordinate is over the drag handle (the right edge area).
-             */
-            private boolean isOverHandle(int x) {
-                return x >= getWidth() - 10 - HANDLE_WIDTH;
+            TimelineElement(TimelinePane timelinePane, ImageFile imageFile, double time) {
+                this(timelinePane, imageFile);
+                this.time = time;
+            }
+
+            public double getTime() {
+                return time;
+            }
+
+            public void setTime(double time) {
+                this.time = Math.max(MIN_TIME, Math.min(MAX_TIME, time));
+                updatePreferredSize();
+                revalidate(); // Notify layout manager of size change
+                repaint();    // Redraw the component
             }
 
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                // Enable antialiasing for smoother corners and text
-                Graphics2D g2 = (Graphics2D) g.create();
-                try {
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                Graphics2D g2d = (Graphics2D) g.create();
 
-                    // Calculate rounded rectangle dimensions
-                    int width = getWidth();
-                    int height = getHeight();
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                    // Draw the main rounded rectangle background
-                    Shape roundedRect = new RoundRectangle2D.Double(0, 0, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
-                    g2.setColor(new Color(173, 216, 230)); // light blue color for example
-                    g2.fill(roundedRect);
+                int width = getWidth();
+                int height = getHeight();
 
-                    // Draw border
-                    g2.setColor(Color.GRAY);
-                    g2.draw(roundedRect);
+                /*
+                 * Drawing background rectangle
+                 */
+                g2d.setColor(backgroundColor);
+                RoundRectangle2D roundedRect = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
+                g2d.fill(roundedRect);
 
-                    // Draw drag handle indicator (a vertical line or a shaded rectangle at the
-                    // right edge)
-                    g2.setColor(Color.DARK_GRAY);
-                    g2.fillRect(width - 10 - HANDLE_WIDTH, 0, HANDLE_WIDTH, height);
 
-                    // Draw time label at the center
-                    g2.setColor(Color.BLACK);
-                    String timeStr = String.format("%.2f sec", time);
-                    FontMetrics fm = g2.getFontMetrics();
-                    int textWidth = fm.stringWidth(timeStr);
-                    int textHeight = fm.getAscent();
-                    int centerX = (width - textWidth) / 2;
-                    int centerY = (height + textHeight) / 2 - 2;
-                    g2.drawString(timeStr, centerX, centerY);
-                } finally {
-                    g2.dispose();
+                /*
+                 * Drawing handle bar
+                 */
+                int handleHeight = (int) (height * 0.75);
+                int handleY = (height - handleHeight) / 2;
+                int handleX = width - HANDLE_WIDTH - HANDLE_PADDING;
+                g2d.setColor(handleColor);
+                g2d.fillRect(handleX, handleY, HANDLE_WIDTH, handleHeight);
+
+
+                /*
+                 * Drawing text
+                 */
+                g2d.setColor(textColor);
+                String timeString = String.format("%.2fs", time);
+                FontMetrics fm = g2d.getFontMetrics();
+                int textWidth = fm.stringWidth(timeString);
+                int textHeight = fm.getAscent();
+                int textX = 0;
+                int textY = height - fm.getDescent();
+
+                if (textX + textWidth > handleX - HANDLE_PADDING) {
+                    textX = handleX - HANDLE_PADDING - textWidth;
                 }
+                textX = Math.max(5, textX);
+
+                g2d.drawString(timeString, textX, textY);
+
+                String filename = data.getFileName();
+                textWidth = fm.stringWidth(filename);
+                textHeight = fm.getAscent();
+                textX = (width - textWidth) / 2;
+                textY = (height + textHeight) / 2 - fm.getDescent();
+
+                if (textX + textWidth > handleX - HANDLE_PADDING) {
+                    textX = handleX - HANDLE_PADDING - textWidth;
+                }
+                textX = Math.max(5, textX);
+
+                g2d.drawString(filename, textX, textY);
+
+
+                g2d.dispose();
             }
 
-            public double getTime() {
-                return time;
+            // Sizing stuff
+
+            private int calculatePreferredWidth() {
+                return (int) (time * PIXELS_PER_SECOND);
+            }
+
+            private void updatePreferredSize() {
+                setPreferredSize(new Dimension(calculatePreferredWidth(), DEFAULT_HEIGHT));
+            }
+
+            private Rectangle getHandleBounds() {
+                int width = getWidth();
+                int height = getHeight();
+                int handleX = width - HANDLE_WIDTH - HANDLE_PADDING;
+                // Make the clickable area slightly larger than the visual handle
+                int clickableHandleWidth = HANDLE_WIDTH + 2 * HANDLE_PADDING;
+                int clickableHandleX = width - clickableHandleWidth;
+                return new Rectangle(clickableHandleX, 0, clickableHandleWidth, height);
+            }
+
+
+            // Private HandleDragListener class
+            private class HandleDragListener extends MouseAdapter {
+                TimelinePane pane;
+
+                public HandleDragListener(TimelinePane pane) {
+                    this.pane = pane;
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    // Check if the press occurred within the handle's bounds
+                    if (getHandleBounds().contains(e.getPoint())) {
+                        isDragging = true;
+                        dragStartX = e.getXOnScreen(); // Use screen coordinates for consistency
+                        timeAtDragStart = time;
+                        setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)); // Change cursor
+                    }
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    if (isDragging) {
+                        int currentX = e.getXOnScreen();
+                        int deltaX = currentX - dragStartX;
+
+                        // Apply precision factor: mouse moves more than the time changes
+                        double deltaTime = (double) deltaX / PIXELS_PER_SECOND / DRAG_PRECISION_FACTOR;
+
+                        // Calculate new time and apply constraints
+                        double newTime = timeAtDragStart + deltaTime;
+                        setTime(newTime); // setTime handles constraints and repaint/revalidate
+                        pane.updateLayout();
+                    }
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    if (isDragging) {
+                        isDragging = false;
+                        setCursor(Cursor.getDefaultCursor()); // Restore default cursor
+                        // Optional: Snap to grid or perform final actions here
+                    }
+                }
+
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    // Change cursor when hovering over the handle
+                    if (getHandleBounds().contains(e.getPoint())) {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+                    } else {
+                        setCursor(Cursor.getDefaultCursor());
+                    }
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    // Ensure cursor resets if mouse leaves while not dragging
+                    if (!isDragging) {
+                        setCursor(Cursor.getDefaultCursor());
+                    }
+                }
             }
         }
     }
@@ -322,7 +385,7 @@ public class ScenarioEditorPane extends JPanel {
     private void initializeComponents() {
         imagesListPane = new JPanel();
         visualizerPane = new JPanel();
-        timelinePane = new TimelinePane();
+        timelinePane = new TimelinePane(ProjectManager.getCurrent().getScenarioContent());
         imagesPanelList = new JPanel();
 
         imagesListPane.setBackground(Color.LIGHT_GRAY);
@@ -346,28 +409,24 @@ public class ScenarioEditorPane extends JPanel {
     }
 
     private void layoutComponents() {
-        // Main layout using BorderLayout
         add(timelinePane, BorderLayout.SOUTH);
         add(visualizerPane, BorderLayout.CENTER);
         add(imagesListPane, BorderLayout.WEST);
 
-        // Images list layout (using GridBagLayout for more flexibility)
         imagesListPane.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1;
         gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.BOTH; // Make the list fill its space
-        imagesListPane.add(imageListScrollPane, gbc); // Wrap the JList in a JScrollPane
+        gbc.fill = GridBagConstraints.BOTH;
+        imagesListPane.add(imageListScrollPane, gbc);
 
-        // Image viewer layout (basic - just add the label)
         visualizerPane.setLayout(new BorderLayout());
         visualizerPane.add(currentImageView, BorderLayout.CENTER);
 
         timelinePane.setPreferredSize(new Dimension(0, (int) (this.getPreferredSize().height * 0.8)));
 
-        // Set the preferred size of the imagesListPane. This is crucial.
         imagesListPane.setPreferredSize(new Dimension((int) (this.getPreferredSize().width * 0.6), 0));
     }
 
@@ -378,7 +437,7 @@ public class ScenarioEditorPane extends JPanel {
         populateImageList();
 
         /*
-         * Resize compenents dynamically.
+         * Resize components dynamically.
          */
         addComponentListener(new ComponentListener() {
             @Override
@@ -403,11 +462,12 @@ public class ScenarioEditorPane extends JPanel {
     }
 
     private void enableDragAndDrop() {
-        // Set up the timelinePane to accept drops of type ImageFile.
+        /*
+         * Set up the timelinePane to accept drops of type ImageFile.
+         */
         timelinePane.setTransferHandler(new TransferHandler() {
             @Override
             public boolean canImport(TransferSupport support) {
-                // Only accept drops if the DataFlavor matches ImageFile.
                 return support.isDataFlavorSupported(ImagePanel.DATA_FLAVOR);
             }
 
@@ -427,8 +487,11 @@ public class ScenarioEditorPane extends JPanel {
                     // droppedLabel.setForeground(new Color(0xEBDBB2));
 
                     //// Revalidate and repaint to display the update.
-                    // timelinePane.revalidate();
-                    // timelinePane.repaint();
+
+
+                    timelinePane.addTimelineElement(droppedImageFile);
+                     timelinePane.revalidate();
+                     timelinePane.repaint();
                     return true;
                 } catch (UnsupportedFlavorException | java.io.IOException ex) {
                     ex.printStackTrace();
@@ -437,13 +500,13 @@ public class ScenarioEditorPane extends JPanel {
             }
         });
 
-        // For each ImagePanel in the images list, set up a TransferHandler and
-        // MouseMotionListener for dragging.
-        // We assume the ImagePanel items are already added as children of
-        // imagesPanelList.
+        /*
+        *   For each ImagePanel in the images list, set up a TransferHandler and
+        *   MouseMotionListener for dragging.
+        *   We assume the ImagePanel items are already added as children of imagesPanelList.
+        */
         for (Component comp : imagesPanelList.getComponents()) {
-            if (comp instanceof ImagePanel) {
-                ImagePanel imagePanel = (ImagePanel) comp;
+            if (comp instanceof ImagePanel imagePanel) { // Pattern variable
                 // We set a dummy TransferHandler to enable dragging using the custom
                 // transferable.
                 imagePanel.setTransferHandler(new TransferHandler() {
@@ -458,7 +521,6 @@ public class ScenarioEditorPane extends JPanel {
                     }
                 });
 
-                // Add a MouseMotionListener to initiate the drag when the mouse is dragged.
                 imagePanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
                     @Override
                     public void mouseDragged(java.awt.event.MouseEvent e) {

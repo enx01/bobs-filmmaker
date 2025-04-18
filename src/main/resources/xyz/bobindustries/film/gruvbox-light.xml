@@ -1,35 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Custom Synth Look and Feel definition file.
+  This file defines a set of component styles for a Java Swing Synth look-and-feel
+  designed with a Gruvbox-inspired color scheme.
+
+  Note: The scrollbar was previously invisible because its states were not rendering
+  a visible thumb and track. The following changes ensure that the ScrollBar.thumb and
+  ScrollBar.track regions have visible background colors in all states.
+
+  For more details on Synth file format and look-and-feel, see:
+    https://docs.oracle.com/javase/8/docs/api/javax/swing/plaf/synth/doc-files/synthFileFormat.html
+    https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/synth.html
+-->
 <synth>
+
+  <!-- Global Background Style: Inherited by any region that is not otherwise bound -->
   <style id="backStyle">
     <opaque value="FALSE"/>
     <font name="Arial" size="20"/>
     <state>
-      <color value="#282828" type="BACKGROUND"/> <!-- Gruvbox dark background color -->
-      <color value="WHITE" type="FOREGROUND"/> <!-- Light text color for contrast -->
+      <color value="#282828" type="BACKGROUND"/>
+      <color value="WHITE" type="FOREGROUND"/>
     </state>
   </style>
+  <!-- Bind backStyle to every region by default -->
   <bind style="backStyle" type="region" key=".*"/>
 
+  <!-- Label Style -->
   <style id="labelStyle">
     <font name="Arial" size="20"/>
     <opaque value="FALSE"/>
     <state>
-      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark label background color -->
-      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+      <color value="#3C3836" type="BACKGROUND"/>
+      <color value="#EBDBB2" type="FOREGROUND"/>
     </state>
   </style>
   <bind style="labelStyle" type="region" key="Label"/>
 
+  <!-- Button Style -->
   <style id="buttonStyle">
     <opaque value="TRUE"/>
     <property key="Button.textShiftOffset" type="integer" value="1"/>
     <insets top="5" left="5" right="5" bottom="5"/>
     <state>
-      <color value="#7c6f64" type="BACKGROUND"/> <!-- Gruvbox dark button background color -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Gruvbox light text color -->
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
     <state value="PRESSED">
-      <color value="#928374" type="BACKGROUND"/> <!-- Gruvbox dark pressed background color -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Gruvbox light pressed text color -->
+      <color value="#928374" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
   </style>
   <bind style="buttonStyle" type="region" key="Button"/>
@@ -38,8 +57,8 @@
   <style id="fileChooserStyle">
     <opaque value="FALSE"/>
     <state>
-      <color value="#282800" type="BACKGROUND"/> <!-- Gruvbox dark background for JFileChooser -->
-      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+      <color value="#282800" type="BACKGROUND"/>
+      <color value="#EBDBB2" type="FOREGROUND"/>
     </state>
   </style>
   <bind style="fileChooserStyle" type="region" key="FileChooser"/>
@@ -47,12 +66,12 @@
   <style id="fileChooserButtonStyle">
     <opaque value="TRUE"/>
     <state>
-      <color value="#7c6f64" type="BACKGROUND"/> <!-- Gruvbox dark button background for JFileChooser -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Gruvbox light text color -->
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
     <state value="PRESSED">
-      <color value="#928374" type="BACKGROUND"/> <!-- Gruvbox dark pressed background for JFileChooser -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Gruvbox light pressed text color -->
+      <color value="#928374" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
   </style>
   <bind style="fileChooserButtonStyle" type="region" key="FileChooser.button"/>
@@ -61,8 +80,8 @@
     <font name="Arial" size="20"/>
     <opaque value="FALSE"/>
     <state>
-      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark label background for JFileChooser -->
-      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+      <color value="#3C3836" type="BACKGROUND"/>
+      <color value="#EBDBB2" type="FOREGROUND"/>
     </state>
   </style>
   <bind style="fileChooserLabelStyle" type="region" key="FileChooser.label"/>
@@ -71,105 +90,133 @@
   <style id="internalFrameStyle">
     <opaque value="TRUE"/>
     <state>
-      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark background for JInternalFrame -->
-      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+      <color value="#3C3836" type="BACKGROUND"/>
+      <color value="#EBDBB2" type="FOREGROUND"/>
     </state>
   </style>
   <bind style="internalFrameStyle" type="region" key="InternalFrame"/>
 
+  <!-- InternalFrame Title Style -->
   <style id="internalFrameTitleStyle">
-  <font name="Arial" size="20"/>
-  <opaque value="TRUE"/>
-  <state>
-  <color value="#7c6f64" type="BACKGROUND"/> <!-- Title background color -->
-    <color value="#FBF1C1" type="FOREGROUND"/> <!-- Title text color -->
-  </state>
+    <font name="Arial" size="20"/>
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="FOREGROUND"/>
+    </state>
   </style>
   <bind style="internalFrameTitleStyle" type="region" key="InternalFrame.titlePane"/>
 
+  <!-- InternalFrame Close Button -->
   <style id="internalFrameCloseButtonStyle">
     <opaque value="TRUE"/>
     <state>
-      <color value="#7c6f64" type="BACKGROUND"/> <!-- Close button background color -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Close button text color -->
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
     <state value="PRESSED">
-      <color value="#928374" type="BACKGROUND"/> <!-- Close button pressed background color -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Close button pressed text color -->
+      <color value="#928374" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
   </style>
   <bind style="internalFrameCloseButtonStyle" type="region" key="InternalFrame.closeButton"/>
 
+  <!-- InternalFrame Maximize Button -->
   <style id="internalFrameMaximizeButtonStyle">
     <opaque value="TRUE"/>
     <state>
-      <color value="#7c6f64" type="BACKGROUND"/> <!-- Maximize button background color -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Maximize button text color -->
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
     <state value="PRESSED">
-      <color value="#928374" type="BACKGROUND"/> <!-- Maximize button pressed background color -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Maximize button pressed text color -->
+      <color value="#928374" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
   </style>
   <bind style="internalFrameMaximizeButtonStyle" type="region" key="InternalFrame.maximizeButton"/>
 
+  <!-- InternalFrame Minimize Button -->
   <style id="internalFrameMinimizeButtonStyle">
     <opaque value="TRUE"/>
     <state>
-      <color value="#7c6f64" type="BACKGROUND"/> <!-- Minimize button background color -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Minimize button text color -->
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
     <state value="PRESSED">
-      <color value="#928374" type="BACKGROUND"/> <!-- Minimize button pressed background color -->
-      <color value="#FBF1C1" type="TEXT_FOREGROUND"/> <!-- Minimize button pressed text color -->
+      <color value="#928374" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
   </style>
   <bind style="internalFrameMinimizeButtonStyle" type="region" key="InternalFrame.minimizeButton"/>
 
-  <!-- JMenuBar Styles -->
+  <!-- JMenuBar Style -->
   <style id="menuBarStyle">
     <opaque value="TRUE"/>
     <state>
-      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark background for JMenuBar -->
-      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+      <color value="#3C3836" type="BACKGROUND"/>
+      <color value="#EBDBB2" type="FOREGROUND"/>
     </state>
   </style>
   <bind style="menuBarStyle" type="region" key="MenuBar"/>
 
-  <!-- JMenu Styles -->
+  <!-- JMenu Style -->
   <style id="menuStyle">
-    <opaque value="TRUE"/>
-    <insets top="5" left="10" right="10" bottom="5"/> <!-- Padding for JMenu -->
+    <opaque value="FALSE"/>
+    <insets top="5" left="10" right="10" bottom="5"/>
     <state>
-      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark background for JMenu -->
-      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+      <color value="#3C3836" type="BACKGROUND"/>
+      <color value="#EBDBB2" type="FOREGROUND"/>
     </state>
     <state value="MOUSE_OVER">
-      <color value="#7c6f64" type="BACKGROUND"/> <!-- Gruvbox dark hover background for JMenu -->
-      <color value="#FBF1C1" type="FOREGROUND"/> <!-- Gruvbox light text color on hover -->
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="FOREGROUND"/>
     </state>
   </style>
   <bind style="menuStyle" type="region" key="Menu"/>
 
-  <!-- JMenuItem Styles -->
+  <!-- JMenuItem Style -->
   <style id="menuItemStyle">
     <opaque value="TRUE"/>
-    <insets top="3" left="2" right="2" bottom="3"/> <!-- Padding for JMenuItem -->
+    <insets top="3" left="2" right="2" bottom="3"/>
     <state>
-      <color value="#3C3836" type="BACKGROUND"/> <!-- Gruvbox dark background for JMenuItem -->
-      <color value="#EBDBB2" type="FOREGROUND"/> <!-- Gruvbox light text color -->
+      <color value="#3C3836" type="BACKGROUND"/>
+      <color value="#EBDBB2" type="FOREGROUND"/>
     </state>
     <state value="MOUSE_OVER">
-      <color value="#7c6f64" type="BACKGROUND"/> <!-- Gruvbox dark hover background for JMenuItem -->
-      <color value="#FBF1C1" type="FOREGROUND"/> <!-- Gruvbox light text color on hover -->
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="FOREGROUND"/>
     </state>
     <state value="SELECTED">
-      <color value="#928374" type="BACKGROUND"/> <!-- Gruvbox dark selected background for JMenuItem -->
-      <color value="#FBF1C1" type="FOREGROUND"/> <!-- Gruvbox light text color when selected -->
+      <color value="#928374" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="FOREGROUND"/>
     </state>
   </style>
   <bind style="menuItemStyle" type="region" key="MenuItem"/>
 
+  <!-- JScrollBar Style -->
+  <style id="scrollBarStyle">
+    <opaque value="true"/>
+    <state>
+      <color value="#a89984" type="BACKGROUND"/>
+    </state>
+  </style>
+  <bind style="scrollBarStyle" type="region" key="ScrollBar"/>
+
+  <style id="scrollBarTrackStyle">
+    <opaque value="true"/>
+    <state>
+      <color value="#504945" type="BACKGROUND"/>
+    </state>
+  </style>
+  <bind style="scrollBarTrackStyle" type="region" key="ScrollBarTrack"/>
+
+  <style id="scrollBarThumbStyle">
+    <opaque value="true"/>
+    <state>
+      <color value="#a89984" type="BACKGROUND"/>
+      <color value="#a89984" type="FOREGROUND"/>
+    </state>
+  </style>
+  <bind style="scrollBarThumbStyle" type="region" key="ScrollBarThumb"/>
 
 </synth>
-

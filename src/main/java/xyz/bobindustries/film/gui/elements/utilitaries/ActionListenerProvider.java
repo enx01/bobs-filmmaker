@@ -107,12 +107,13 @@ public class ActionListenerProvider {
             try {
                 frame.setSelected(true);
             } catch (PropertyVetoException e) {
-                e.printStackTrace();
+                System.err.println(e.getMessage());
             }
 
             workspace.add(frame);
         } else {
             frame.dispose();
+            workspace.remove(frame);
         }
     }
 

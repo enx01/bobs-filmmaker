@@ -11,13 +11,13 @@ public class WorkspaceMenuBar extends JMenuBar {
         // Project Menu :
         JMenu projectMenu = new JMenu("project");
 
-        JMenuItem newProjectItem = new JMenuItem("new project");
+        JMenuItem newProjectItem = new JMenuItem("new");
         newProjectItem.addActionListener(ActionListenerProvider::getNewProjectDialogAction);
 
-        JMenuItem openProjectItem = new JMenuItem("open project");
+        JMenuItem openProjectItem = new JMenuItem("open");
         openProjectItem.addActionListener(ActionListenerProvider::getOpenProjectDialogAction);
 
-        JMenuItem saveProjectItem = new JMenuItem("save project");
+        JMenuItem saveProjectItem = new JMenuItem("save");
 
         projectMenu.add(newProjectItem);
         projectMenu.add(openProjectItem);
