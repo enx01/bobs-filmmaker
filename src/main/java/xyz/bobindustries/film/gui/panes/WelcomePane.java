@@ -6,9 +6,21 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.*;
+import java.awt.*;
 
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.imageio.ImageIO;
+import javax.swing.border.Border;
+
+import xyz.bobindustries.film.App;
+import xyz.bobindustries.film.gui.elements.ToolBoxUI;
+import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
+import xyz.bobindustries.film.utils.ImageUtils;
 
 /**
  * Welcome view of the application showing two buttons :
@@ -65,6 +77,20 @@ public class WelcomePane extends JPanel {
     openExist.addActionListener(ap -> {
       // App.frame.setContentPane(new EditorPane());
       // App.frame.revalidate();
+      Color[][] res = ImageUtils.importImage("images/image.png");
+      App.frame.setContentPane(new EditorPane(res, res.length, res[0].length));
+      JDialog toolDialog = new JDialog(App.frame, "Outils", false); // false = non-modal
+      toolDialog.setSize(80, 250);
+      toolDialog.setAlwaysOnTop(true);
+      toolDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+      ToolBoxUI toolPanel = new ToolBoxUI();
+
+      toolDialog.add(toolPanel);
+
+      toolDialog.setLocationRelativeTo(App.frame);
+      toolDialog.setVisible(true);
+      App.frame.revalidate();
     });
 
     add(buttonsPanel, BorderLayout.CENTER);
