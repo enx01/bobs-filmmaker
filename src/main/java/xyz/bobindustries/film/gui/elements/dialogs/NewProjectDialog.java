@@ -4,6 +4,7 @@ import javax.swing.JDialog;
 
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.projects.ProjectManager;
+import xyz.bobindustries.film.projects.RecentProjectsProvider;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
 
@@ -59,6 +60,9 @@ public class NewProjectDialog extends JDialog {
                     Project newProject = ProjectManager.createProject(projectName, projectLocation);
 
                     ProjectManager.setCurrent(newProject);
+
+                    System.out.println(newProject.getProjectDir().toString());
+                    RecentProjectsProvider.writeConfigFile(newProject.getProjectDir().toString());
 
                     isSuccess = true;
                     dispose();

@@ -219,4 +219,46 @@
   </style>
   <bind style="scrollBarThumbStyle" type="region" key="ScrollBarThumb"/>
 
+  <!-- JRadioButton Style -->
+  <style id="radioButtonStyle">
+    <opaque value="TRUE"/>
+    <font name="Arial" size="20"/>
+    <state>
+      <color value="#3C3836" type="BACKGROUND"/>
+      <color value="#EBDBB2" type="FOREGROUND"/>
+    </state>
+    <state value="PRESSED">
+      <color value="#928374" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="FOREGROUND"/>
+    </state>
+    <state value="MOUSE_OVER">
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="FOREGROUND"/>
+    </state>
+    <state value="SELECTED">
+      <color value="#7c6f64" type="BACKGROUND"/>
+      <color value="#FBF1C1" type="FOREGROUND"/>
+    </state>
+  </style>
+  <bind style="radioButtonStyle" type="region" key="RadioButton"/>
+  <bind style="radioButtonStyle" type="region" key="RadioButton.icon"/>
+
+  <!-- JRadioButton (selected) Icon Style -->
+  <style id="radioButtonSelectedIconStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#928374" type="BACKGROUND"/>
+    </state>
+  </style>
+  <bind style="radioButtonSelectedIconStyle" type="region" key="RadioButton.icon.selected"/>
+
+  <!-- JRadioButton (not selected) Icon Style -->
+  <style id="radioButtonUnselectedIconStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#EBDBB2" type="BACKGROUND"/>
+    </state>
+  </style>
+  <bind style="radioButtonUnselectedIconStyle" type="region" key="RadioButton.icon.unselected"/>
+
 </synth>

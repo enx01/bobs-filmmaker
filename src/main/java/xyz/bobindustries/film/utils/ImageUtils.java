@@ -9,31 +9,6 @@ import java.io.IOException;
 
 public class ImageUtils {
 
-  public static Color[][] importImage(String path) {
-    try {
-      BufferedImage image = ImageIO.read(new File(path));
-
-      int width = image.getWidth();
-      int height = image.getHeight();
-
-      Color[][] colorArray = new Color[height][width];
-
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          int rgb = image.getRGB(x, y);
-          colorArray[y][x] = new Color(rgb);
-        }
-      }
-      System.out.println("Image importée avec succès dans un tableau de couleurs.");
-      System.out.println(colorArray.length);
-      return colorArray;
-    } catch (IOException e) {
-      System.out.println("une erreur est survenue");
-      e.printStackTrace();
-      return null;
-    }
-  }
-
   public static boolean exportImage(Color[][] image, String outputPath) {
     int width = image[0].length;
     int height = image.length;

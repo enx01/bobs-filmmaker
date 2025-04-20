@@ -75,6 +75,10 @@ public class Project {
         }
     }
 
+    public Path getProjectDir() {
+        return projectDir;
+    }
+
     public String getProjectName() {
         return projectName;
     }
@@ -104,6 +108,10 @@ public class Project {
         if (!found) {
             images.add(new ImageFile(fileName, content));
         }
+    }
+
+    public void addImage(ImageFile imageFileToAdd) {
+        images.add(imageFileToAdd);
     }
 
     public void save() throws IOException {
