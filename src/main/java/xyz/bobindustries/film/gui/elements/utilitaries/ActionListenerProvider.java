@@ -162,9 +162,25 @@ public class ActionListenerProvider {
 
     System.out.println("image");
 
-    OpenImageDialog.show(App.getFrame());
+    int result = OpenImageDialog.show(App.getFrame());
 
-    openImageEditor(editorFrame, ProjectManager.getCurrent().getImages().get(0).getColorMatrix());
+    if (result==1) {
+      openImageEditor(editorFrame, ProjectManager.getCurrent().getImages().get(0).getColorMatrix());
+    }
+  }
+
+  public static void openEditorToolbox(ActionEvent ignorActionEvent) {
+    Workspace workspace = Workspace.getInstance();
+    JInternalFrame toolboxFrame = workspace.getEditorToolbox();
+
+    showFrameIfClosed(workspace, toolboxFrame);
+
+    try {
+      toolboxFrame.setSelected(true);
+      toolboxFrame.toFront();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
   /*

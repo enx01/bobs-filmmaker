@@ -1,6 +1,7 @@
 package xyz.bobindustries.film.gui;
 
 import xyz.bobindustries.film.App;
+import xyz.bobindustries.film.gui.elements.ToolBoxUI;
 import xyz.bobindustries.film.gui.elements.menubars.WorkspaceMenuBar;
 import xyz.bobindustries.film.gui.elements.utilitaries.Bob;
 import xyz.bobindustries.film.gui.elements.utilitaries.ConstantsProvider;
@@ -13,6 +14,8 @@ import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioConten
 import xyz.bobindustries.film.gui.panes.*;
 
 import javax.swing.*;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 import java.awt.*;
 import java.beans.PropertyVetoException;
 
@@ -23,11 +26,16 @@ import java.beans.PropertyVetoException;
 public class Workspace extends JDesktopPane {
   private static Workspace instance;
 
+  private WorkspaceMenuBar menubar;
+
   private final JInternalFrame welcomeFrame,
       imageEditorFrame,
       scenarioEditorFrame,
       filmVisualizerFrame,
       aboutFrame;
+
+  private final JInternalFrame editorToolbox;
+  //private final JInternalFrame editorColors;
 
   private final ScenarioEditorPane scenarioEditorPane;
 
@@ -55,6 +63,10 @@ public class Workspace extends JDesktopPane {
 
   public ScenarioEditorPane getScenarioEditorPane() {
     return scenarioEditorPane;
+  }
+
+  public JInternalFrame getEditorToolbox() {
+    return editorToolbox;
   }
 
   /**
@@ -103,7 +115,9 @@ public class Workspace extends JDesktopPane {
   public Workspace() throws InvalidScenarioContentException {
     setDesktopManager(new BoundedDesktopManager());
 
-    App.getFrame().setJMenuBar(new WorkspaceMenuBar());
+    menubar = new WorkspaceMenuBar();
+
+    App.getFrame().setJMenuBar(menubar);
 
     setLayout(null);
 
@@ -171,6 +185,32 @@ public class Workspace extends JDesktopPane {
     aboutFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
     aboutFrame.setContentPane(new AboutPane());
 
+    editorToolbox = new JInternalFrame(
+            "tools",
+            false,
+            true,
+            false,
+            false
+    );
+    editorToolbox.setContentPane(new ToolBoxUI());
+    editorToolbox.pack();
+
+    imageEditorFrame.addInternalFrameListener(new InternalFrameAdapter() {
+      @Override
+      public void internalFrameActivated(InternalFrameEvent e) {
+        menubar.displayEditorOptions();
+        menubar.revalidate();
+        menubar.repaint();
+        editorToolbox.toFront();
+      }
+
+      @Override
+      public void internalFrameDeactivated(InternalFrameEvent e) {
+        menubar.displayDefaultOptions();
+        menubar.revalidate();
+        menubar.repaint();
+      }
+    });
   }
 
   public static Workspace getInstance() {

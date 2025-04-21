@@ -6,8 +6,14 @@ import javax.swing.*;
 
 public class WorkspaceMenuBar extends JMenuBar {
 
-    public WorkspaceMenuBar() {
+    private boolean toolboxOpened = false;
 
+    public WorkspaceMenuBar() {
+        displayDefaultOptions();
+    }
+
+    public void displayDefaultOptions() {
+        removeAll();
         // Project Menu :
         JMenu projectMenu = new JMenu("project");
 
@@ -47,6 +53,26 @@ public class WorkspaceMenuBar extends JMenuBar {
 
         this.add(projectMenu);
         this.add(windowMenu);
+    }
+
+    public void displayEditorOptions() {
+        displayDefaultOptions();
+        JMenu windowMenu = new JMenu("editor");
+
+        JMenuItem showToolsItem = new JMenuItem("Show tools");
+        JMenuItem showColorsItem = new JMenuItem("Show colors");
+        JMenuItem resizeItem = new JMenuItem("Resize image");
+        JMenuItem canvasSizeItem = new JMenuItem("Resize drawing area");
+        JMenuItem saveItem = new JMenuItem("Save image");
+
+        windowMenu.add(showToolsItem);
+        windowMenu.add(showColorsItem);
+        windowMenu.add(resizeItem);
+        windowMenu.add(canvasSizeItem);
+        windowMenu.add(saveItem);
+
+        showToolsItem.addActionListener(ActionListenerProvider::openEditorToolbox);
+        add(windowMenu);
     }
 
 }
