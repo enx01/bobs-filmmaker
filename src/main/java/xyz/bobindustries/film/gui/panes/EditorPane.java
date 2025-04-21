@@ -1,9 +1,7 @@
 package xyz.bobindustries.film.gui.panes;
 
-import xyz.bobindustries.film.ImageEditor.EditorModel;
-import xyz.bobindustries.film.ImageEditor.Pen;
+import xyz.bobindustries.film.ImageEditor.*;
 import xyz.bobindustries.film.gui.elements.CoordinateBar;
-import xyz.bobindustries.film.ImageEditor.Tools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +14,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+
 
 public class EditorPane extends JPanel {
 
@@ -133,6 +132,25 @@ public class EditorPane extends JPanel {
 
   public void printPaintPanelSize(int width, int height) {
     coordinatToolbar.getFrameSize().setText(width + ",  " + height + " px");
+  }
+
+  public void setSelectedTool(ToolsList chosenToolsList) {
+    switch (chosenToolsList) {
+      case PEN -> selectedTool = new Pen();
+      case BRUSH -> selectedTool = new Brush(10);
+      /*case ERASE -> selectedTool = new Eraser();
+      case TEXT -> selectedTool = new TextTool();
+      case RECTANGLE -> selectedTool = new RectangleTool();
+      case CIRCLE -> selectedTool = new CircleTool();
+      case MOVE -> selectedTool = new MoveTool();
+      case SELECT -> selectedTool = new SelectTool();
+      case MOVE_SELECTION -> selectedTool = new MoveSelectionTool();
+      case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionAreaTool();
+      case UNDO -> selectedTool = new UndoTool();
+      case REDO -> selectedTool = new RedoTool();*/
+      default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
+    }
+    scheduleRepaint();
   }
 
 }

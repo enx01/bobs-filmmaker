@@ -1,6 +1,7 @@
 package xyz.bobindustries.film.gui.elements.utilitaries;
 
 import xyz.bobindustries.film.App;
+import xyz.bobindustries.film.ImageEditor.ToolsList;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.ImageLayers;
 import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
@@ -181,6 +182,13 @@ public class ActionListenerProvider {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
+  }
+
+  public static void setTool(ActionEvent e) {
+    Workspace workspace = Workspace.getInstance();
+    JInternalFrame editorFrame = workspace.getImageEditorFrame();
+    EditorPane editor = (EditorPane) editorFrame.getContentPane();
+    editor.setSelectedTool(ToolsList.valueOf(e.getActionCommand()));
   }
 
   /*

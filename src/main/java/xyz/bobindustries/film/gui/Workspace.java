@@ -185,6 +185,7 @@ public class Workspace extends JDesktopPane {
     aboutFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
     aboutFrame.setContentPane(new AboutPane());
 
+
     editorToolbox = new JInternalFrame(
             "tools",
             false,
@@ -220,8 +221,9 @@ public class Workspace extends JDesktopPane {
 
   public static Workspace newInstance() throws InvalidScenarioContentException {
     /* Return a clean instance of the workspace */
+    System.out.println("debut creation workspace");
     instance = new Workspace();
-
+    System.out.println("fin creation workspace");
     return instance;
   }
 

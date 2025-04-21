@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.VolatileImage;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -29,6 +31,7 @@ public class EditorModel {
 
     private Point lastDragPoint = null;
     private final BlockingQueue<Point> drawQueue = new LinkedBlockingQueue<>();
+    private final HashSet<Point> drawSet = new HashSet<>();
     private final ExecutorService drawExecutor = Executors.newSingleThreadExecutor();
 
 
@@ -174,6 +177,46 @@ public class EditorModel {
         }
     }
 
+    public void interpolatePoints(Point p1, Point p2, ArrayList<Point> brushOffsets) {
+        int dx = p2.x - p1.x;
+        int dy = p2.y - p1.y;
+        int steps = Math.max(Math.abs(dx), Math.abs(dy));
+        int squareSize = getGridSquareSize();
+
+        int lastGridX = -1;
+        int lastGridY = -1;
+
+        for (int i = 1; i <= steps; i++) {
+            int x = p1.x + i * dx / steps;
+            int y = p1.y + i * dy / steps;
+
+            int centerX = x / squareSize;
+            int centerY = y / squareSize;
+
+            if (centerX == lastGridX && centerY == lastGridY) continue; // Skip duplicate points
+
+            lastGridX = centerX;
+            lastGridY = centerY;
+
+            for (Point offset : brushOffsets) {
+                int gridX = centerX + offset.x;
+                int gridY = centerY + offset.y;
+
+                if (gridX >= 0 && gridY >= 0) {
+                    Point gridPoint = new Point(gridX * squareSize, gridY * squareSize);
+                    if (drawSet.add(gridPoint)) {
+                        try {
+                            drawQueue.put(gridPoint); // Insert point into queue
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt(); // Handle interruption
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     public int getHoveredGridX() {
         return hoveredGridX;
     }
@@ -232,5 +275,9 @@ public class EditorModel {
 
     public ExecutorService getDrawExecutor() {
         return drawExecutor;
+    }
+
+    public HashSet<Point> getDrawSet() {
+        return drawSet;
     }
 }
