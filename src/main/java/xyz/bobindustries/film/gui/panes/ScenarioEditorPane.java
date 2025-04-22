@@ -8,9 +8,16 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
+import xyz.bobindustries.film.App;
+import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
+import xyz.bobindustries.film.gui.elements.popups.SimpleValueChangerPopUp;
+import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
@@ -30,8 +37,8 @@ public class ScenarioEditorPane extends JPanel {
             add(nameLabel, BorderLayout.CENTER);
             setPreferredSize(new Dimension(100, 50)); // Adjust as needed
             setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Add a border
-            setBackground(new Color(0x3C3836));
-            nameLabel.setForeground(new Color(0xEBDBB2));
+            // setBackground(new Color(0x3C3836));
+            // nameLabel.setForeground(new Color(0xEBDBB2));
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // indicate draggable
         }
 
@@ -68,7 +75,7 @@ public class ScenarioEditorPane extends JPanel {
     static class TimelinePane extends JPanel {
         static class TimelineElement extends JPanel {
             private static final double DEFAULT_TIME = 0.2;
-            private static final double MIN_TIME = 0.05;
+            private static final double MIN_TIME = 0.10;
             private static final double MAX_TIME = 1.0;
             private static final int PIXELS_PER_SECOND = 300; // How many pixels represent 1 second
             private static final int DEFAULT_HEIGHT = 50;
@@ -99,6 +106,22 @@ public class ScenarioEditorPane extends JPanel {
 
                 addMouseListener(listener);
                 addMouseMotionListener(listener);
+
+                ContextualMenu contxtMenu = new ContextualMenu.Builder()
+                        .addItem(imageFile.getFileName(), null)
+                        .addSeparator()
+                        .addItem("remove element", e -> timelinePane.removeTimelineElement(this))
+                        .addItem("change time", e -> {
+                            double newTime = SimpleValueChangerPopUp.show(time, App.getFrame());
+
+                            if (newTime >= MIN_TIME && newTime <= MAX_TIME) {
+                                time = newTime;
+                                timelinePane.updateLayout();
+                            }
+                        })
+                        .build();
+
+                contxtMenu.attachTo(this);
 
                 // Set opaque to false if you want the parent's background to show through
                 setOpaque(false);
@@ -293,7 +316,7 @@ public class ScenarioEditorPane extends JPanel {
                             if (fileName.equals(""))
                                 throw new InvalidScenarioContentException("Error line " + i + ". : Empty file name.");
 
-                            if (time > 1 || time < 0.05)
+                            if (time > TimelineElement.MAX_TIME || time < TimelineElement.MIN_TIME)
                                 throw new InvalidScenarioContentException(
                                         "Error line " + i + ". : Invalid time. Must be < 1 && > .2");
 
@@ -391,6 +414,12 @@ public class ScenarioEditorPane extends JPanel {
             contentPane.repaint();
         }
 
+        void removeTimelineElement(TimelineElement elem) {
+            contentPane.remove(elem);
+            elements.remove(elem);
+            updateLayout();
+        }
+
         void addTimelineElement(ImageFile droppedImageFile) {
             elements.add(new TimelineElement(this, droppedImageFile));
             updateLayout();
@@ -415,6 +444,16 @@ public class ScenarioEditorPane extends JPanel {
             return sb.toString();
         }
 
+        List<Pair<ImageFile, Double>> getCurrentState() {
+            List<Pair<ImageFile, Double>> state = new ArrayList<>();
+
+            for (TimelineElement elem : elements) {
+                state.add(new Pair<ImageFile, Double>(elem.data, elem.time));
+            }
+
+            return state;
+        }
+
     }
 
     private JPanel imagesListPane,
@@ -434,9 +473,10 @@ public class ScenarioEditorPane extends JPanel {
         visualizerPane.setBackground(Color.WHITE);
         timelinePane.setBackground(Color.GRAY);
 
-        imagesListPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        visualizerPane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        timelinePane.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        Border common = BorderFactory.createEtchedBorder(new Color(0x3C3836), new Color(0x7c6f64));
+        imagesListPane.setBorder(common);
+        visualizerPane.setBorder(common);
+        timelinePane.setBorder(common);
 
         imagesPanelList.setLayout(new BoxLayout(imagesPanelList, BoxLayout.Y_AXIS));
         imageListScrollPane = new JScrollPane(imagesPanelList);
@@ -470,6 +510,7 @@ public class ScenarioEditorPane extends JPanel {
     }
 
     public ScenarioEditorPane() throws InvalidScenarioContentException {
+
         setLayout(new BorderLayout());
         initializeComponents();
         layoutComponents();
@@ -498,6 +539,11 @@ public class ScenarioEditorPane extends JPanel {
         });
 
         enableDragAndDrop();
+
+        visualizerPane.removeAll();
+        remove(visualizerPane);
+        visualizerPane = new VisualizerPane(this);
+        add(visualizerPane);
     }
 
     private void enableDragAndDrop() {
@@ -553,9 +599,11 @@ public class ScenarioEditorPane extends JPanel {
                 imagePanel.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
                     @Override
                     public void mouseDragged(java.awt.event.MouseEvent e) {
-                        JComponent c = (JComponent) e.getSource();
-                        TransferHandler handler = c.getTransferHandler();
-                        handler.exportAsDrag(c, e, TransferHandler.COPY);
+                        if (SwingUtilities.isLeftMouseButton(e)) {
+                            JComponent c = (JComponent) e.getSource();
+                            TransferHandler handler = c.getTransferHandler();
+                            handler.exportAsDrag(c, e, TransferHandler.COPY);
+                        }
                     }
                 });
             }
@@ -581,6 +629,13 @@ public class ScenarioEditorPane extends JPanel {
 
             for (ImageFile imf : images) {
                 ImagePanel imagePanel = new ImagePanel(imf);
+
+                ContextualMenu imgPanelContxt = new ContextualMenu.Builder()
+
+                        .addItem("insert into timeline", e -> timelinePane.addTimelineElement(imf))
+                        .build();
+
+                imgPanelContxt.attachTo(imagePanel);
 
                 imagesPanelList.add(imagePanel);
             }
@@ -618,5 +673,14 @@ public class ScenarioEditorPane extends JPanel {
 
     public String extractScenarioContent() {
         return timelinePane.getScenarioFileContent();
+    }
+
+    public List<Pair<ImageFile, Double>> getCurrentState(long timeout, TimeUnit unit) {
+        // throws InterruptedException, TimeoutException {
+        // if (initializationLatch.await(timeout, unit)) {
+        return timelinePane.getCurrentState();
+        // } else {
+        // throw new TimeoutException("Timed out waiting for initialization");
+        // }
     }
 }

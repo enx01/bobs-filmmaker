@@ -36,7 +36,7 @@ public class App {
     }
 
     private static void run() {
-        LoadingWindow loadingWindow = new LoadingWindow("bob's filmmaker", 200, 200);
+        LoadingWindow loadingWindow = new LoadingWindow("", 200, 200);
         loadingWindow.setVisible(true);
         loadingWindow.requestFocus();
 
@@ -50,6 +50,12 @@ public class App {
                 Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Recuperation de la taille de
                                                                                     // l'ecran de
                                                                                     // l'utilisateur.
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+
                 frame.setSize(screenSize.width, screenSize.height);
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 

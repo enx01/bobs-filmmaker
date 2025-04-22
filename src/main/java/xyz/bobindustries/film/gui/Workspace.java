@@ -8,52 +8,21 @@ import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.panes.AboutPane;
 import xyz.bobindustries.film.gui.panes.ProjectWelcomePane;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
+import xyz.bobindustries.film.gui.panes.VisualizerPane;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.beans.PropertyVetoException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Classe Workspace permettant l'affichage des multiples outils d'editions du
  * film comme l'utilisateur le souhaite.
  */
 public class Workspace extends JDesktopPane {
-    private static Workspace instance;
-
-    private final JInternalFrame welcomeFrame,
-            imageEditorFrame,
-            scenarioEditorFrame,
-            filmVisualizerFrame,
-            aboutFrame;
-
-    private final ScenarioEditorPane scenarioEditorPane;
-
-    private final Bob bob;
-
-    public JInternalFrame getWelcomeFrame() {
-        return welcomeFrame;
-    }
-
-    public JInternalFrame getImageEditorFrame() {
-        return imageEditorFrame;
-    }
-
-    public JInternalFrame getScenarioEditorFrame() {
-        return scenarioEditorFrame;
-    }
-
-    public JInternalFrame getFilmVisualizerFrame() {
-        return filmVisualizerFrame;
-    }
-
-    public JInternalFrame getAboutFrame() {
-        return aboutFrame;
-    }
-
-    public ScenarioEditorPane getScenarioEditorPane() {
-        return scenarioEditorPane;
-    }
 
     /**
      * Internal class BoundedDesktopManager allowing us to prevent the user from
@@ -98,8 +67,52 @@ public class Workspace extends JDesktopPane {
         }
     }
 
+    private static Workspace instance;
+
+    private final BoundedDesktopManager desktopManager;
+
+    private final JInternalFrame welcomeFrame,
+            imageEditorFrame,
+            scenarioEditorFrame,
+            filmVisualizerFrame,
+            aboutFrame;
+
+    private final ScenarioEditorPane scenarioEditorPane;
+
+    private final Bob bob;
+
+    public JInternalFrame getWelcomeFrame() {
+        return welcomeFrame;
+    }
+
+    public JInternalFrame getImageEditorFrame() {
+        return imageEditorFrame;
+    }
+
+    public JInternalFrame getScenarioEditorFrame() {
+        return scenarioEditorFrame;
+    }
+
+    public JInternalFrame getFilmVisualizerFrame() {
+        return filmVisualizerFrame;
+    }
+
+    public JInternalFrame getAboutFrame() {
+        return aboutFrame;
+    }
+
+    public ScenarioEditorPane getScenarioEditorPane() {
+        return scenarioEditorPane;
+    }
+
+    public BoundedDesktopManager getDesktopManager() {
+        return desktopManager;
+    }
+
     public Workspace() throws InvalidScenarioContentException {
-        setDesktopManager(new BoundedDesktopManager());
+
+        desktopManager = new BoundedDesktopManager();
+        setDesktopManager(desktopManager);
 
         App.getFrame().setJMenuBar(new WorkspaceMenuBar());
 
@@ -157,7 +170,8 @@ public class Workspace extends JDesktopPane {
                 true);
         filmVisualizerFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         filmVisualizerFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
-        filmVisualizerFrame.setContentPane(new JPanel());
+        VisualizerPane visualizerPane = new VisualizerPane(scenarioEditorPane);
+        filmVisualizerFrame.setContentPane(visualizerPane);
 
         aboutFrame = new JInternalFrame(
                 "about",
@@ -173,6 +187,7 @@ public class Workspace extends JDesktopPane {
 
     public static Workspace getInstance() {
         assert (instance != null);
+
         return instance;
     }
 
@@ -181,6 +196,10 @@ public class Workspace extends JDesktopPane {
         instance = new Workspace();
 
         return instance;
+    }
+
+    public void initializeVisualizer() {
+
     }
 
     @Override
@@ -198,6 +217,10 @@ public class Workspace extends JDesktopPane {
         bob.paintComponent(g2);
 
         g2.dispose();
+    }
+
+    public void setActiveFrame(JInternalFrame frame) {
+        desktopManager.activateFrame(frame);
     }
 
 }

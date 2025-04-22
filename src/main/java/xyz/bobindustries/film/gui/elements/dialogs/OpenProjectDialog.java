@@ -42,10 +42,10 @@ public class OpenProjectDialog extends JDialog {
             }
         });
 
-        JButton createButton = new JButton("open");
+        JButton openButton = new JButton("open");
 
         // Create button action
-        createButton.addActionListener(e -> {
+        openButton.addActionListener(e -> {
             String projectLocation = locationField.getText().trim();
 
             if (!projectLocation.isEmpty()) {
@@ -90,7 +90,7 @@ public class OpenProjectDialog extends JDialog {
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER; // Center the button
-        add(createButton, gbc);
+        add(openButton, gbc);
 
     }
 

@@ -219,4 +219,28 @@
   </style>
   <bind style="scrollBarThumbStyle" type="region" key="ScrollBarThumb"/>
 
+  <style id="sliderStyle">
+    <opaque value="FALSE"/>
+    <property key="Slider.paintValue" type="boolean" value="false"/>
+    <state>
+      <color value="#3C3836" type="BACKGROUND"/> <color value="#EBDBB2" type="FOREGROUND"/> </state>
+  </style>
+  <bind style="sliderStyle" type="region" key="Slider"/>
+
+  <style id="sliderTrackStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#504945" type="BACKGROUND"/>
+    </state>
+  </style>
+  <bind style="sliderTrackStyle" type="region" key="SliderTrack"/>
+
+  <style id="sliderThumbStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#a89984" type="BACKGROUND"/>
+      <color value="#a89984" type="FOREGROUND"/> </state>
+    </style>
+  <bind style="sliderThumbStyle" type="region" key="SliderThumb"/>
+
 </synth>

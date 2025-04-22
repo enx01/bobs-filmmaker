@@ -154,6 +154,7 @@ public class ActionListenerProvider {
             }
 
             workspace.add(frame);
+            workspace.setActiveFrame(frame);
         } else {
             frame.dispose();
             workspace.remove(frame);
@@ -178,6 +179,7 @@ public class ActionListenerProvider {
                     try {
                         instance = Workspace.newInstance();
                     } catch (InvalidScenarioContentException isce) {
+
                         SimpleErrorDialog.show(isce.getMessage());
                     }
 
@@ -188,6 +190,7 @@ public class ActionListenerProvider {
 
                         Thread.sleep(2000);
                         App.getFrame().revalidate();
+                    } else {
                     }
                     return null;
                 }

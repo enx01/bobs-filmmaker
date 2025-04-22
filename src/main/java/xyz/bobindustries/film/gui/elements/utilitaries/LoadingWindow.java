@@ -18,13 +18,17 @@ public class LoadingWindow extends JWindow {
         panel.setLayout(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        JLabel loadingLabel = new JLabel(text, JLabel.CENTER);
-        loadingLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        if (text.equals("")) {
+            Bob bob = new Bob();
+            bob.setScale(2);
+            panel.add(bob, BorderLayout.CENTER);
+        } else {
+            JLabel loadingLabel = new JLabel(text, JLabel.CENTER);
+            loadingLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
-        panel.add(loadingLabel, BorderLayout.CENTER);
-
+            panel.add(loadingLabel, BorderLayout.CENTER);
+        }
         add(panel);
-
     }
 
 }

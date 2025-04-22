@@ -1,9 +1,10 @@
 package xyz.bobindustries.film.gui.elements.utilitaries;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -11,33 +12,34 @@ import javax.swing.JPanel;
 public class SimpleHappyDialog {
 
     public static void show(String message) {
-        // Create a JDialog
         JDialog dialog = new JDialog();
         dialog.setTitle("bob is happy");
-        dialog.setModal(true); // Make the dialog modal
+        dialog.setModal(true);
         dialog.setResizable(false);
 
-        // Create a panel to hold the message and button
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding
 
-        // Create a label to display the error message
-        panel.add(new Bob(), BorderLayout.CENTER);
+        JLabel label = new JLabel(message);
+        panel.add(label, BorderLayout.CENTER);
 
-        // Create an OK button to close the dialog
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(e -> dialog.dispose()); // Close the dialog when clicked
+        Bob bob = new Bob(.5);
+        bob.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent ignoredMouseEvent) {
+                dialog.dispose();
+            }
+        });
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(okButton);
+        buttonPanel.add(bob);
 
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Add the panel to the dialog
         dialog.add(panel);
 
         dialog.pack();
-        dialog.setLocationRelativeTo(null); // Center the dialog on the screen
-        dialog.setVisible(true); // Show the dialog
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
     }
 }
