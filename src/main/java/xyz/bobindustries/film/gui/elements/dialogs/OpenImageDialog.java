@@ -20,6 +20,8 @@ public class OpenImageDialog extends JDialog {
 
     private boolean isSuccess = false;
 
+//    private static final ImageLayers layers = new ImageLayers();
+
     public OpenImageDialog(Frame owner) {
         super(owner, "open project", true);
 

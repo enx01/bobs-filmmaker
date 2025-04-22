@@ -164,7 +164,7 @@ public class ActionListenerProvider {
 
         int result = OpenImageDialog.show(App.getFrame());
 
-        if (result == 1) {
+        if (result==1) {
             openImageEditor(editorFrame, ProjectManager.getCurrent().getImages().get(0).getColorMatrix());
         }
     }
@@ -265,8 +265,7 @@ public class ActionListenerProvider {
         if (imageMatrix == null) {
             Color[][] defaultCanvas = new Color[600][800];
             for (Color[] currentTab : defaultCanvas) {
-                for (@SuppressWarnings("unused")
-                Color currentColor : currentTab) {
+                for (Color currentColor : currentTab) {
                     currentColor = Color.WHITE;
                 }
             }
