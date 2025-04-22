@@ -34,9 +34,8 @@ public class EditorModel {
     private final HashSet<Point> drawSet = new HashSet<>();
     private final ExecutorService drawExecutor = Executors.newSingleThreadExecutor();
 
-
     public EditorModel(EditorPane parent, Color[][] gridColors, int gridWidth, int gridHeight) {
-        this.parent=parent;
+        this.parent = parent;
         this.gridColors = gridColors;
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
@@ -108,7 +107,8 @@ public class EditorModel {
     private void createVolatileImage() {
         GraphicsConfiguration gc = parent.getGraphicsConfiguration();
         if (gc != null) {
-            gridImage = gc.createCompatibleVolatileImage(drawingArea.width, drawingArea.height, Transparency.TRANSLUCENT);
+            gridImage = gc.createCompatibleVolatileImage(drawingArea.width, drawingArea.height,
+                    Transparency.TRANSLUCENT);
             drawGridImage(); // Dessine dessus dès la création
         }
     }
@@ -144,7 +144,8 @@ public class EditorModel {
     }
 
     public void updateImage(Point p) {
-        if (gridImage == null) return;
+        if (gridImage == null)
+            return;
         Graphics2D g2d = gridImage.createGraphics();
         int gridX = (p.x - drawingArea.x) / gridSquareSize;
         int gridY = (p.y - drawingArea.y) / gridSquareSize;
@@ -193,7 +194,8 @@ public class EditorModel {
             int centerX = x / squareSize;
             int centerY = y / squareSize;
 
-            if (centerX == lastGridX && centerY == lastGridY) continue; // Skip duplicate points
+            if (centerX == lastGridX && centerY == lastGridY)
+                continue; // Skip duplicate points
 
             lastGridX = centerX;
             lastGridY = centerY;
@@ -215,7 +217,6 @@ public class EditorModel {
             }
         }
     }
-
 
     public int getHoveredGridX() {
         return hoveredGridX;

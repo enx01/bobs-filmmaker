@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import javax.swing.border.Border;
 
 import xyz.bobindustries.film.App;
+import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.utils.ImageUtils;
 
@@ -21,89 +22,57 @@ import xyz.bobindustries.film.utils.ImageUtils;
  */
 public class WelcomePane extends JPanel {
 
-  public WelcomePane() {
-    setLayout(new BorderLayout());
+    public WelcomePane() {
+        setLayout(new BorderLayout());
 
-    JPanel buttonsPanel = new JPanel();
-    buttonsPanel.setLayout(new GridBagLayout());
-    GridBagConstraints gbc = new GridBagConstraints();
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
-    JButton createNew = createButton("new project", "newproject.png");
-    createNew.setName("button1");
-    JButton openExist = createButton("open project", "openproject.png");
+        JButton createNew = ButtonFactory.createButton("new project", "newproject.png", 250, 250);
+        createNew.setName("button1");
+        JButton openExist = ButtonFactory.createButton("open project", "openproject.png", 250, 250);
 
-    // Create a title label
-    JLabel titleLabel = new JLabel("bob's filmmaker");
-    titleLabel.setFont(new Font("Arial", Font.BOLD, 32)); // Set font style and size
-    gbc.fill = GridBagConstraints.CENTER; // Center the title
-    gbc.weightx = 0; // Allow title to grow horizontally
-    gbc.weighty = 0; // Do not allow title to grow vertically
-    gbc.gridx = 0; // Column 0
-    gbc.gridy = 0; // Row 0
-    gbc.gridwidth = 2; // Span across two columns
-    gbc.insets = new Insets(10, 25, 10, 25); // Add spacing (top, left, bottom, right)
-    buttonsPanel.add(titleLabel, gbc);
+        // Create a title label
+        JLabel titleLabel = new JLabel("bob's filmmaker");
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 32)); // Set font style and size
+        gbc.fill = GridBagConstraints.CENTER; // Center the title
+        gbc.weightx = 0; // Allow title to grow horizontally
+        gbc.weighty = 0; // Do not allow title to grow vertically
+        gbc.gridx = 0; // Column 0
+        gbc.gridy = 0; // Row 0
+        gbc.gridwidth = 2; // Span across two columns
+        gbc.insets = new Insets(10, 25, 10, 25); // Add spacing (top, left, bottom, right)
+        buttonsPanel.add(titleLabel, gbc);
 
-    // Set constraints for button1
-    gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
-    gbc.weightx = 0; // Allow button1 to grow horizontally
-    gbc.weighty = 0; // Allow button1 to grow vertically
-    gbc.gridx = 0; // Column 0
-    gbc.gridy = 1; // Row 0
-    gbc.gridwidth = 1;
-    gbc.insets = new Insets(25, 25, 25, 25); // Add spacing (top, left, bottom, right)
-    buttonsPanel.add(createNew, gbc);
+        // Set constraints for button1
+        gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
+        gbc.weightx = 0; // Allow button1 to grow horizontally
+        gbc.weighty = 0; // Allow button1 to grow vertically
+        gbc.gridx = 0; // Column 0
+        gbc.gridy = 1; // Row 0
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(25, 25, 25, 25); // Add spacing (top, left, bottom, right)
+        buttonsPanel.add(createNew, gbc);
 
-    // Set constraints for button2
-    gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
-    gbc.weightx = 0; // Allow button1 to grow horizontally
-    gbc.weighty = 0; // Allow button1 to grow vertically
-    gbc.gridx = 1; // Column 1
-    gbc.gridy = 1; // Row 0
-    gbc.gridwidth = 1;
-    gbc.insets = new Insets(25, 25, 25, 25); // Add spacing (top, left, bottom, right)
-    buttonsPanel.add(openExist, gbc);
+        // Set constraints for button2
+        gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
+        gbc.weightx = 0; // Allow button1 to grow horizontally
+        gbc.weighty = 0; // Allow button1 to grow vertically
+        gbc.gridx = 1; // Column 1
+        gbc.gridy = 1; // Row 0
+        gbc.gridwidth = 1;
+        gbc.insets = new Insets(25, 25, 25, 25); // Add spacing (top, left, bottom, right)
+        buttonsPanel.add(openExist, gbc);
 
-    openExist.addActionListener(ap -> {
-      Color[][] res = ImageUtils.importImage("images/image.png");
-      App.frame.setContentPane(new EditorPane(res, res.length, res[0].length));
-      System.out.println("import d'image");
-      App.frame.revalidate();
-    });
+        openExist.addActionListener(ap -> {
+            Color[][] res = ImageUtils.importImage("images/image.png");
+            App.frame.setContentPane(new EditorPane(res, res.length, res[0].length));
+            System.out.println("import d'image");
+            App.frame.revalidate();
+        });
 
-    add(buttonsPanel, BorderLayout.CENTER);
-  }
-
-  private JButton createButton(String text, String imageName) {
-    JButton button = new JButton();
-    button.setLayout(new BorderLayout());
-
-    try (InputStream is = WelcomePane.class.getResourceAsStream(imageName)) {
-      if (is == null) {
-        SimpleErrorDialog.showErrorDialog("InputStream returned null! :(");
-      } else {
-        BufferedImage img = ImageIO.read(is);
-        ImageIcon icon = new ImageIcon(img);
-
-        Image resized = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-
-        button.setIcon(new ImageIcon(resized));
-      }
-    } catch (IOException e) {
-      SimpleErrorDialog.showErrorDialog("Image Not Read :(");
+        add(buttonsPanel, BorderLayout.CENTER);
     }
 
-    JLabel label = new JLabel(text, JLabel.CENTER);
-    label.setVerticalAlignment(JLabel.BOTTOM);
-    label.setHorizontalAlignment(JLabel.CENTER);
-
-    button.add(label, BorderLayout.SOUTH);
-    button.setVerticalTextPosition(SwingConstants.BOTTOM);
-    button.setHorizontalTextPosition(SwingConstants.CENTER);
-    button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-    button.setPreferredSize(new Dimension(250, 250));
-
-    return button;
-  }
 }

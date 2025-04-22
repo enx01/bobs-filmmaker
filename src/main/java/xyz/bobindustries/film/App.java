@@ -17,60 +17,64 @@ import java.io.InputStream;
  * Hello world!
  */
 public class App {
-  public static JFrame frame;
+    public static JFrame frame;
 
-  public static void main(String[] args) {
-    System.out.println("[+] started filmmaker app.");
-    setCustomLAF();
-    SwingUtilities.invokeLater(App::run);
-  }
-
-  private static void setCustomLAF() {
-    try {
-      SynthLookAndFeel synthLookAndFeel = new SynthLookAndFeel();
-      InputStream is = App.class.getResourceAsStream("gruvbox-light.xml");
-      synthLookAndFeel.load(is, App.class);
-
-      UIManager.setLookAndFeel(synthLookAndFeel);
-
-    } catch (Exception e) {
-      e.printStackTrace();
+    public static void main(String[] args) {
+        System.out.println("[+] started filmmaker app.");
+        setCustomLAF();
+        SwingUtilities.invokeLater(App::run);
     }
-  }
 
-  private static void run() {
-    LoadingWindow loadingWindow = new LoadingWindow();
+    private static void setCustomLAF() {
+        try {
+            SynthLookAndFeel synthLookAndFeel = new SynthLookAndFeel();
+            InputStream is = App.class.getResourceAsStream("gruvbox-light.xml");
+            synthLookAndFeel.load(is, App.class);
 
-    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de la frame.
-      @Override
-      protected Void doInBackground() throws Exception {
-        /** Creation de la fenetre */
-        frame = new JFrame("bob's filmmaker");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            UIManager.setLookAndFeel(synthLookAndFeel);
 
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Recuperation de la taille de
-                                                                            // l'ecran de
-                                                                            // l'utilisateur.
-        frame.setSize(screenSize.width, screenSize.height);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        frame.setMinimumSize(new Dimension(800, 600));
+    private static void run() {
+        LoadingWindow loadingWindow = new LoadingWindow("", 200, 200);
 
-        WelcomePane welcomePane = new WelcomePane();
+        SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() { // Classe anonyme d'initialisation de la frame.
+            @Override
+            protected Void doInBackground() throws Exception {
+                /** Creation de la fenetre */
+                frame = new JFrame("bob's filmmaker");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        frame.setContentPane(welcomePane);
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Recuperation de la taille de
+                                                                                    // l'ecran de
+                                                                                    // l'utilisateur.
+                frame.setSize(screenSize.width, screenSize.height);
+                frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        frame.setVisible(true);
+                frame.setMinimumSize(new Dimension(800, 600));
 
-        return null;
-      }
+                WelcomePane welcomePane = new WelcomePane();
 
-      protected void done() {
-        loadingWindow.dispose();
-      }
-    };
+                frame.setContentPane(welcomePane);
 
-    worker.execute();
-  }
+                frame.setVisible(true);
+
+                return null;
+            }
+
+            protected void done() {
+                loadingWindow.dispose();
+            }
+        };
+
+        worker.execute();
+    }
+
+    public static JFrame getFrame() {
+        return frame;
+    }
 
 }
