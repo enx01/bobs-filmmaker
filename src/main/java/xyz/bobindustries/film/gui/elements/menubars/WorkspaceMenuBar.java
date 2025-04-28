@@ -10,28 +10,39 @@ public class WorkspaceMenuBar extends JMenuBar {
 
         // Project Menu :
         JMenu projectMenu = new JMenu("project");
+        projectMenu.setMnemonic('P');
 
         JMenuItem newProjectItem = new JMenuItem("new");
+        newProjectItem.setMnemonic('N');
         newProjectItem.addActionListener(ActionListenerProvider::getNewProjectDialogAction);
 
         JMenuItem openProjectItem = new JMenuItem("open");
+        openProjectItem.setMnemonic('O');
         openProjectItem.addActionListener(ActionListenerProvider::getOpenProjectDialogAction);
 
         JMenuItem saveProjectItem = new JMenuItem("save");
+        saveProjectItem.setMnemonic('S');
         saveProjectItem.addActionListener(ActionListenerProvider::saveCurrentProject);
 
         projectMenu.add(newProjectItem);
         projectMenu.add(openProjectItem);
+        projectMenu.add(new JSeparator());
         projectMenu.add(saveProjectItem);
 
         // Window Menu :
         JMenu windowMenu = new JMenu("window");
+        windowMenu.setMnemonic('W');
 
         JMenuItem welcomeItem = new JMenuItem("welcome");
+        welcomeItem.setMnemonic('W');
         JMenuItem imageEditorItem = new JMenuItem("image editor");
+        imageEditorItem.setMnemonic('I');
         JMenuItem scenarioEditorItem = new JMenuItem("scenario editor");
+        scenarioEditorItem.setMnemonic('S');
         JMenuItem filmVisualizerItem = new JMenuItem("film visualizer");
+        filmVisualizerItem.setMnemonic('V');
         JMenuItem aboutItem = new JMenuItem("about");
+        aboutItem.setMnemonic('A');
 
         welcomeItem.addActionListener(ActionListenerProvider::getShowWelcomeFrameAction);
         imageEditorItem.addActionListener(ActionListenerProvider::getShowImageEditorFrameAction);
