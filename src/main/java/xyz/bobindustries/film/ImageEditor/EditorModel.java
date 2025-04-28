@@ -178,10 +178,37 @@ public class EditorModel {
         }
     }
 
-    public void interpolatePoints(Point p1, Point p2, ArrayList<Point> brushOffsets) {
+    /*public void interpolatePoints(Point p1, Point ignored, ArrayList<Point> brushOffsets) {
+        int squareSize = getGridSquareSize();
+        int centerX = p1.x / squareSize;
+        int centerY = p1.y / squareSize;
+
+        for (Point offset : brushOffsets) {
+            int gridX = centerX + offset.x;
+            int gridY = centerY + offset.y;
+
+            if (gridX >= 0 && gridY >= 0) {
+                Point gridPoint = new Point(gridX * squareSize, gridY * squareSize);
+                if (drawSet.add(gridPoint)) {
+                    try {
+                        drawQueue.put(gridPoint);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        }
+    }*/
+
+    public void interpolatePoints(Point p1, Point p2, ArrayList<Point> brushOffsets, int radius) {
         int dx = p2.x - p1.x;
         int dy = p2.y - p1.y;
-        int steps = Math.max(Math.abs(dx), Math.abs(dy));
+
+        // On augmente la "taille du pas" proportionnellement au rayon
+        int baseSteps = Math.max(Math.abs(dx), Math.abs(dy));
+        int stepDivisor = Math.max(1, radius*10); // ex: pinceau 5x5 → stepDivisor = 2
+        int steps = Math.max(1, baseSteps / stepDivisor); // Réduit drastiquement le nombre d'étapes
+
         int squareSize = getGridSquareSize();
 
         int lastGridX = -1;

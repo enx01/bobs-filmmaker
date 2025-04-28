@@ -47,6 +47,10 @@ public class Brush implements Tools {
     }
   }
 
+  private double getBrushStepThreshold() {
+    return Math.sqrt(radius); // Exemple : plus le pinceau est grand, plus le seuil augmente
+  }
+
   @Override
   public void mousePressedAction(MouseEvent e, EditorModel model) {
     Point adjustedPoint = new Point(
@@ -68,15 +72,14 @@ public class Brush implements Tools {
     if (model.getDrawingArea().contains(adjustedPoint)) {
       Point lastPoint = model.getLastDragPoint();
 
-      if (lastPoint != null && lastPoint.distance(adjustedPoint) < 1.5) {
-        // Ne pas ajouter ce point s'il est trop proche du précédent
-        return;
-      }
+      /*if (lastPoint != null && lastPoint.distance(adjustedPoint) < getBrushStepThreshold()*100) {
+        System.out.println("skip point");
+        return; // Trop proche, on saute
+      }*/
 
       if (lastPoint != null) {
-        model.interpolatePoints(lastPoint, adjustedPoint, brushOffsets);
+        model.interpolatePoints(lastPoint, adjustedPoint, brushOffsets, radius);
       } else {
-        // Si c'est le premier point, on applique le pinceau ici aussi
         applyBrushAt(adjustedPoint, model);
       }
 

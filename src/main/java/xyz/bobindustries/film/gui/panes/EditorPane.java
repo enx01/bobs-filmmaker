@@ -137,7 +137,7 @@ public class EditorPane extends JPanel {
   public void setSelectedTool(ToolsList chosenToolsList) {
       switch (chosenToolsList) {
           case PEN -> selectedTool = new Pen();
-          case BRUSH -> selectedTool = new Brush(50);
+          case BRUSH -> selectedTool = new Brush(100);
           /*
            * case ERASE -> selectedTool = new Eraser();
            * case TEXT -> selectedTool = new TextTool();
