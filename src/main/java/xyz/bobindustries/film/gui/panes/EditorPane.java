@@ -135,22 +135,22 @@ public class EditorPane extends JPanel {
     }
 
   public void setSelectedTool(ToolsList chosenToolsList) {
-    switch (chosenToolsList) {
-      case PEN -> selectedTool = new Pen();
-      case BRUSH -> selectedTool = new Brush(50);
-      /*
-       * case ERASE -> selectedTool = new Eraser();
-       * case TEXT -> selectedTool = new TextTool();
-       * case RECTANGLE -> selectedTool = new RectangleTool();
-       * case CIRCLE -> selectedTool = new CircleTool();
-       * case MOVE -> selectedTool = new MoveTool();
-       * case SELECT -> selectedTool = new SelectTool();
-       * case MOVE_SELECTION -> selectedTool = new MoveSelectionTool();
-       * case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionAreaTool();
-       * case UNDO -> selectedTool = new UndoTool();
-       * case REDO -> selectedTool = new RedoTool();
-       */
-      default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
-    }
-
+      switch (chosenToolsList) {
+          case PEN -> selectedTool = new Pen();
+          case BRUSH -> selectedTool = new Brush(50);
+          /*
+           * case ERASE -> selectedTool = new Eraser();
+           * case TEXT -> selectedTool = new TextTool();
+           * case RECTANGLE -> selectedTool = new RectangleTool();
+           * case CIRCLE -> selectedTool = new CircleTool();
+           * case MOVE -> selectedTool = new MoveTool();
+           * case SELECT -> selectedTool = new SelectTool();
+           * case MOVE_SELECTION -> selectedTool = new MoveSelectionTool();
+           * case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionAreaTool();
+           * case UNDO -> selectedTool = new UndoTool();
+           * case REDO -> selectedTool = new RedoTool();
+           */
+          default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
+      }
+  }
 }

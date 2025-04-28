@@ -86,52 +86,28 @@ public class Brush implements Tools {
     }
   }
 
-  private void applyBrushAt(Point point, EditorModel model) {
-    int squareSize = model.getGridSquareSize();
-    int centerXGrid = point.x / squareSize;
-    int centerYGrid = point.y / squareSize;
 
-    for (Point offset : brushOffsets) {
-      int gridX = centerXGrid + offset.x;
-      int gridY = centerYGrid + offset.y;
+    private void applyBrushAt(Point point, EditorModel model) {
+      int squareSize = model.getGridSquareSize();
+      int centerX = point.x / squareSize;
+      int centerY = point.y / squareSize;
 
-      if (gridX >= 0 && gridY >= 0) {
-        Point gridPoint = new Point(gridX * squareSize, gridY * squareSize);
-        if (model.getDrawSet().add(gridPoint)) {
-          try {
-            model.getDrawQueue().put(gridPoint);
-          } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
+      for (Point offset : brushOffsets) {
+        int gridX = centerX + offset.x;
+        int gridY = centerY + offset.y;
+
+        if (gridX >= 0 && gridY >= 0) {
+          Point gridPoint = new Point(gridX * squareSize, gridY * squareSize);
+          if (model.getDrawSet().add(gridPoint)) {
+            try {
+              model.getDrawQueue().put(gridPoint);
+            } catch (InterruptedException ex) {
+              Thread.currentThread().interrupt();
+            }
           }
         }
       }
     }
-  }
-
-  /*
-   * private void applyBrushAt(Point point, EditorModel model) {
-   * int squareSize = model.getGridSquareSize();
-   * int centerX = point.x / squareSize;
-   * int centerY = point.y / squareSize;
-   * 
-   * for (Point offset : brushOffsets) {
-   * int gridX = centerX + offset.x;
-   * int gridY = centerY + offset.y;
-   * 
-   * if (gridX >= 0 && gridY >= 0) {
-   * Point gridPoint = new Point(gridX * squareSize, gridY * squareSize);
-   * if (model.getDrawSet().add(gridPoint)) { // Si le point n'est pas déjà ajouté
-   * try {
-   * model.getDrawQueue().put(gridPoint); // Utilisation de put pour une insertion
-   * bloquante
-   * } catch (InterruptedException ex) {
-   * Thread.currentThread().interrupt(); // Gérer l'interruption
-   * }
-   * }
-   * }
-   * }
-   * }
-   */
 
   @Override
   public void paintHoveredArea(Graphics2D g, EditorModel model, AffineTransform at) {
