@@ -212,7 +212,6 @@ public class ActionListenerProvider {
             } catch (PropertyVetoException e) {
                 System.err.println(e.getMessage());
             }
-
             workspace.add(frame);
         } else {
             frame.dispose();

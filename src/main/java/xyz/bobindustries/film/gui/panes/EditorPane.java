@@ -15,7 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
-
 public class EditorPane extends JPanel {
 
     private EditorModel data;
@@ -124,6 +123,7 @@ public class EditorPane extends JPanel {
         });
     }
 
+
     public void printCoords(int intPosX, int intPosY) {
         String posX = String.valueOf(intPosX);
         String posY = String.valueOf(intPosY);
@@ -134,24 +134,23 @@ public class EditorPane extends JPanel {
         coordinatToolbar.getFrameSize().setText(width + ",  " + height + " px");
     }
 
-    public void setSelectedTool(ToolsList chosenToolsList) {
-        switch (chosenToolsList) {
-            case PEN -> selectedTool = new Pen();
-            case BRUSH -> selectedTool = new Brush(10);
-      /*case ERASE -> selectedTool = new Eraser();
-      case TEXT -> selectedTool = new TextTool();
-      case RECTANGLE -> selectedTool = new RectangleTool();
-      case CIRCLE -> selectedTool = new CircleTool();
-      case MOVE -> selectedTool = new MoveTool();
-      case SELECT -> selectedTool = new SelectTool();
-      case MOVE_SELECTION -> selectedTool = new MoveSelectionTool();
-      case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionAreaTool();
-      case UNDO -> selectedTool = new UndoTool();
-      case REDO -> selectedTool = new RedoTool();*/
-            default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
-        }
-        scheduleRepaint();
+  public void setSelectedTool(ToolsList chosenToolsList) {
+    switch (chosenToolsList) {
+      case PEN -> selectedTool = new Pen();
+      case BRUSH -> selectedTool = new Brush(50);
+      /*
+       * case ERASE -> selectedTool = new Eraser();
+       * case TEXT -> selectedTool = new TextTool();
+       * case RECTANGLE -> selectedTool = new RectangleTool();
+       * case CIRCLE -> selectedTool = new CircleTool();
+       * case MOVE -> selectedTool = new MoveTool();
+       * case SELECT -> selectedTool = new SelectTool();
+       * case MOVE_SELECTION -> selectedTool = new MoveSelectionTool();
+       * case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionAreaTool();
+       * case UNDO -> selectedTool = new UndoTool();
+       * case REDO -> selectedTool = new RedoTool();
+       */
+      default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
     }
 
 }
-
