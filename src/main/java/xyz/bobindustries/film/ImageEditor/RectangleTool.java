@@ -6,83 +6,114 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 public class RectangleTool implements Tools {
-
-    Point rectangleOrigin = new Point(-1, -1);
-    ArrayList<Point> previousRectangle = new ArrayList<>();
-    Color[][] drawingSnapshot;
-
-    @Override
-    public void mouseReleasedAction(MouseEvent e, EditorModel model) {
-        Point adjustedPoint = new Point(
-                (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-                (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
-        previousRectangle.clear();
-    }
-
-    @Override
-    public void mouseMovedAction(MouseEvent e, EditorModel model) {
-        // Optional: implement hover behavior if needed
-    }
+    private Point startPoint = null;
+    private Point currentDragPoint = null;
 
     @Override
     public void mousePressedAction(MouseEvent e, EditorModel model) {
-        Point adjustedPoint = new Point(
-                (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-                (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
-        rectangleOrigin = adjustedPoint;
-        drawingSnapshot = model.getGridColorsCopy();
-        System.out.println("snapshot set");
+        Point adjustedPoint = getAdjustedPoint(e, model);
+        if (model.getDrawingArea().contains(adjustedPoint)) {
+            startPoint = adjustedPoint;
+        } else {
+            startPoint = null;
+        }
+    }
+
+    @Override
+    public void mouseReleasedAction(MouseEvent e, EditorModel model) {
+        if (startPoint == null) return;
+
+        Point endPoint = getAdjustedPoint(e, model);
+        if (!model.getDrawingArea().contains(endPoint)) return;
+
+        int x1 = Math.min(startPoint.x, endPoint.x);
+        int y1 = Math.min(startPoint.y, endPoint.y);
+        int x2 = Math.max(startPoint.x, endPoint.x);
+        int y2 = Math.max(startPoint.y, endPoint.y);
+
+        for (int y = y1; y <= y2; y++) {
+            for (int x = x1; x <= x2; x++) {
+                boolean isBorder = y == y1 || y == y2 || x == x1 || x == x2;
+                if (isBorder) {
+                    Point p = new Point(x, y);
+                    if (model.getDrawingArea().contains(p)) {
+                        model.colorGridSquare(p, null);
+                        model.updateImage(p);
+                    }
+                }
+            }
+        }
+
+        startPoint = null;
+        currentDragPoint = null;
     }
 
     @Override
     public void mouseDraggedAction(MouseEvent e, EditorModel model) {
-        Point adjustedPoint = new Point(
-                (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-                (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
-
-        ArrayList<Point> points = getRectanglePoints(rectangleOrigin, adjustedPoint);
-        for (Point p : previousRectangle) {
-            if (p.x >= 0 && p.x < drawingSnapshot[0].length && p.y >= 0 && p.y < drawingSnapshot.length) {
-                System.out.println(drawingSnapshot[p.y][p.x].toString());
-                model.colorGridSquare(p, drawingSnapshot[p.y][p.x]); // Restaurer la couleur d'origine
-                model.updateImage(p);
-            }
-        }
-        for (Point p : points) {
-            model.colorGridSquare(p, null); // Draw new
-            model.updateImage(p);
-        }
-        previousRectangle = points;
+        if (startPoint == null) return;
+        currentDragPoint = getAdjustedPoint(e, model);
     }
 
-    public ArrayList<Point> getRectanglePoints(Point p1, Point p2) {
-        ArrayList<Point> points = new ArrayList<>();
+    @Override
+    public void mouseMovedAction(MouseEvent e, EditorModel model) {
+        Point adjustedPoint = getAdjustedPoint(e, model);
 
-        int x1 = Math.min(p1.x, p2.x);
-        int y1 = Math.min(p1.y, p2.y);
-        int x2 = Math.max(p1.x, p2.x);
-        int y2 = Math.max(p1.y, p2.y);
-
-        for (int x = x1; x <= x2; x++) {
-            points.add(new Point(x, y1)); // top edge
-            points.add(new Point(x, y2)); // bottom edge
+        if (model.getDrawingArea().contains(adjustedPoint)) {
+            model.setHoveredGridX((adjustedPoint.x - model.getDrawingArea().x) / model.getGridSquareSize());
+            model.setHoveredGridY((adjustedPoint.y - model.getDrawingArea().y) / model.getGridSquareSize());
+        } else {
+            model.setHoveredGridX(-1);
+            model.setHoveredGridY(-1);
         }
-        for (int y = y1 + 1; y < y2; y++) {
-            points.add(new Point(x1, y)); // left edge
-            points.add(new Point(x2, y)); // right edge
-        }
-
-        return points;
     }
 
     @Override
     public void paintHoveredArea(Graphics2D g, EditorModel model, AffineTransform at) {
+        if (currentDragPoint != null && startPoint != null) {
+            int x1 = Math.min(startPoint.x, currentDragPoint.x);
+            int y1 = Math.min(startPoint.y, currentDragPoint.y);
+            int x2 = Math.max(startPoint.x, currentDragPoint.x);
+            int y2 = Math.max(startPoint.y, currentDragPoint.y);
+
+            g.setColor(new Color(0, 0, 255, 128)); // Bleu semi-transparent
+
+            for (int y = y1; y <= y2; y++) {
+                for (int x = x1; x <= x2; x++) {
+                    boolean isBorder = y == y1 || y == y2 || x == x1 || x == x2;
+                    if (isBorder) {
+                        Point p = new Point(x, y);
+                        if (model.getDrawingArea().contains(p)) {
+                            Point screen = gridToScreen(p, model);
+                            g.fillRect(screen.x, screen.y, model.getGridSquareSize(), model.getGridSquareSize());
+                        }
+                    }
+                }
+            }
+        }
+
         if (model.getHoveredGridX() >= 0 && model.getHoveredGridY() >= 0) {
             int hoverX = model.getDrawingArea().x + (model.getHoveredGridX() * model.getGridSquareSize());
             int hoverY = model.getDrawingArea().y + (model.getHoveredGridY() * model.getGridSquareSize());
-            g.setColor(Color.GRAY);
+            g.setColor(Color.BLUE);
             g.fillRect(hoverX, hoverY, model.getGridSquareSize(), model.getGridSquareSize());
         }
+
         g.setTransform(at);
+    }
+
+    private Point gridToScreen(Point logical, EditorModel model) {
+        int gridSize = model.getGridSquareSize();
+        int gridX = (logical.x - model.getDrawingArea().x) / gridSize;
+        int gridY = (logical.y - model.getDrawingArea().y) / gridSize;
+        int screenX = model.getDrawingArea().x + (gridX * gridSize);
+        int screenY = model.getDrawingArea().y + (gridY * gridSize);
+        return new Point(screenX, screenY);
+    }
+
+    private Point getAdjustedPoint(MouseEvent e, EditorModel model) {
+        return new Point(
+                (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
+                (int) ((e.getY() - model.getOrigin().y) / model.getScale())
+        );
     }
 }
