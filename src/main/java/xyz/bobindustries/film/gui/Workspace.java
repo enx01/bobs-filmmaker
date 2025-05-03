@@ -1,6 +1,7 @@
 package xyz.bobindustries.film.gui;
 
 import xyz.bobindustries.film.App;
+import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.elements.ToolBoxUI;
 import xyz.bobindustries.film.gui.elements.menubars.WorkspaceMenuBar;
 import xyz.bobindustries.film.gui.elements.utilitaries.Bob;
@@ -35,7 +36,7 @@ public class Workspace extends JDesktopPane {
             aboutFrame;
 
     private final JInternalFrame editorToolbox;
-    //private final JInternalFrame editorColors;
+    private final JInternalFrame editorColors;
 
     private final ScenarioEditorPane scenarioEditorPane;
 
@@ -67,6 +68,10 @@ public class Workspace extends JDesktopPane {
 
     public JInternalFrame getEditorToolbox() {
         return editorToolbox;
+    }
+
+    public JInternalFrame getEditorColors() {
+        return editorColors;
     }
 
     /**
@@ -196,6 +201,16 @@ public class Workspace extends JDesktopPane {
         editorToolbox.setContentPane(new ToolBoxUI());
         editorToolbox.pack();
 
+        editorColors = new JInternalFrame(
+                "tools",
+                false,
+                true,
+                false,
+                false
+        );
+        editorColors.setContentPane(new ColorBox(editorColors));
+        editorColors.pack();
+
         imageEditorFrame.addInternalFrameListener(new InternalFrameAdapter() {
             @Override
             public void internalFrameActivated(InternalFrameEvent e) {
@@ -203,6 +218,7 @@ public class Workspace extends JDesktopPane {
                 menubar.revalidate();
                 menubar.repaint();
                 editorToolbox.toFront();
+                editorColors.toFront();
             }
 
             @Override

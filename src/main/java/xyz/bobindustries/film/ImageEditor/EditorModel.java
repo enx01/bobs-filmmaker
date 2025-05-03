@@ -1,5 +1,7 @@
 package xyz.bobindustries.film.ImageEditor;
 
+import xyz.bobindustries.film.gui.Workspace;
+import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.panes.EditorPane;
 
 import javax.swing.*;
@@ -10,6 +12,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.VolatileImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -28,6 +31,7 @@ public class EditorModel {
     private int gridWidth;
     private int gridHeight;
     private Color[][] gridColors;
+    private HashMap<Point, Color> previousPoints = new HashMap<>();
 
     private Point lastDragPoint = null;
     private final BlockingQueue<Point> drawQueue = new LinkedBlockingQueue<>();
@@ -43,6 +47,40 @@ public class EditorModel {
         drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
 
         createVolatileImage();
+    }
+
+    public EditorPane getParent() {
+        return parent;
+    }
+
+    public HashMap<Point, Color> getPreviousPoints() {
+        return previousPoints;
+    }
+
+    public int getGridHeight() {
+        return gridHeight;
+    }
+
+    public int getGridWidth() {
+        return gridWidth;
+    }
+
+    public Color[][] getGridColorsCopy() {
+        int rows = gridColors.length;
+        int cols = gridColors[0].length;
+        Color[][] copy = new Color[rows][cols];
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                copy[i][j] = gridColors[i][j]; // Color est immutable, donc pas besoin de cloner
+            }
+        }
+
+        return copy;
+    }
+
+    public void resetDrawSet() {
+        drawSet.clear();
     }
 
     public void zoomAndScroll(MouseWheelEvent e) {
@@ -151,19 +189,50 @@ public class EditorModel {
         int gridY = (p.y - drawingArea.y) / gridSquareSize;
         int x = gridX * gridSquareSize;
         int y = gridY * gridSquareSize;
-        g2d.setColor(gridColors[gridY][gridX]);
-        g2d.fillRect(x, y, gridSquareSize, gridSquareSize);
+        if (gridY < gridHeight && gridX < gridWidth && gridX >= 0 && gridY >= 0) {
+            g2d.setColor(gridColors[gridY][gridX]);
+            g2d.fillRect(x, y, gridSquareSize, gridSquareSize);
+        }
         g2d.dispose();
     }
 
-    public void colorGridSquare(Point p) {
+    public void colorGridSquare(Point p, Color color) {
         int gridSize = gridSquareSize;
         int gridX = (p.x - drawingArea.x) / gridSize;
         int gridY = (p.y - drawingArea.y) / gridSize;
 
         if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
-            gridColors[gridY][gridX] = Color.RED;
+            if (color!=null) {
+                gridColors[gridY][gridX] = color;
+            } else {
+                Color currentColor = ((ColorBox) Workspace.getInstance().getEditorColors().getContentPane()).getSelectedColor();
+                gridColors[gridY][gridX] = currentColor;
+            }
         }
+    }
+
+    public void storeColor(Point p) {
+        int gridSize = gridSquareSize;
+        int gridX = (p.x - drawingArea.x) / gridSize;
+        int gridY = (p.y - drawingArea.y) / gridSize;
+
+        if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+            previousPoints.put(p, gridColors[gridY][gridX]);
+        }
+
+    }
+
+    public Color getColorFromPixel(Point p) {
+        int gridSize = gridSquareSize;
+        int gridX = (p.x - drawingArea.x) / gridSize;
+        int gridY = (p.y - drawingArea.y) / gridSize;
+
+        if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+            Color res = previousPoints.get(p);
+            previousPoints.remove(p);
+            return res;
+        }
+        return null;
     }
 
     public void interpolatePoints(Point p1, Point p2) {
@@ -200,14 +269,13 @@ public class EditorModel {
         }
     }*/
 
-    public void interpolatePoints(Point p1, Point p2, ArrayList<Point> brushOffsets, int radius) {
+    public void interpolatePoints(Point p1, Point p2, int radius) {
         int dx = p2.x - p1.x;
         int dy = p2.y - p1.y;
 
-        // On augmente la "taille du pas" proportionnellement au rayon
         int baseSteps = Math.max(Math.abs(dx), Math.abs(dy));
-        int stepDivisor = Math.max(1, radius*10); // ex: pinceau 5x5 → stepDivisor = 2
-        int steps = Math.max(1, baseSteps / stepDivisor); // Réduit drastiquement le nombre d'étapes
+        int stepDivisor = Math.max(1, radius * 5);
+        int steps = Math.max(1, baseSteps / stepDivisor);
 
         int squareSize = getGridSquareSize();
 
@@ -222,22 +290,30 @@ public class EditorModel {
             int centerY = y / squareSize;
 
             if (centerX == lastGridX && centerY == lastGridY)
-                continue; // Skip duplicate points
+                continue;
 
             lastGridX = centerX;
             lastGridY = centerY;
 
-            for (Point offset : brushOffsets) {
-                int gridX = centerX + offset.x;
-                int gridY = centerY + offset.y;
+            fillCircle(centerX, centerY, radius);
+        }
+    }
 
-                if (gridX >= 0 && gridY >= 0) {
-                    Point gridPoint = new Point(gridX * squareSize, gridY * squareSize);
-                    if (drawSet.add(gridPoint)) {
-                        try {
-                            drawQueue.put(gridPoint); // Insert point into queue
-                        } catch (InterruptedException ex) {
-                            Thread.currentThread().interrupt(); // Handle interruption
+    private void fillCircle(int centerX, int centerY, int radiusInGridUnits) {
+        for (int dy = -radiusInGridUnits; dy <= radiusInGridUnits; dy++) {
+            for (int dx = -radiusInGridUnits; dx <= radiusInGridUnits; dx++) {
+                if (dx * dx + dy * dy <= radiusInGridUnits * radiusInGridUnits) {
+                    int gridX = centerX + dx;
+                    int gridY = centerY + dy;
+
+                    if (gridX >= 0 && gridY >= 0) {
+                        Point gridPoint = new Point(gridX * getGridSquareSize(), gridY * getGridSquareSize());
+                        if (drawSet.add(gridPoint)) {
+                            try {
+                                drawQueue.put(gridPoint);
+                            } catch (InterruptedException ex) {
+                                Thread.currentThread().interrupt();
+                            }
                         }
                     }
                 }

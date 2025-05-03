@@ -26,6 +26,10 @@ public class Bob extends JPanel {
         repaint();
     }
 
+    public void setSkin(Color skin) {
+        this.skin = skin;
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

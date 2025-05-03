@@ -1,6 +1,8 @@
 package xyz.bobindustries.film.gui.panes;
 
 import xyz.bobindustries.film.ImageEditor.*;
+import xyz.bobindustries.film.gui.Workspace;
+import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.elements.CoordinateBar;
 
 import javax.swing.*;
@@ -18,8 +20,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class EditorPane extends JPanel {
 
     private EditorModel data;
-    private Tools selectedTool = new Pen();
-
+    private static Tools selectedTool = new Pen();
+    private ToolsList currentTools = ToolsList.PEN;
     private JSlider scaleSlider;
     private CoordinateBar coordinatToolbar;
     private final Timer repaintTimer = new Timer(16, e -> repaint());
@@ -63,6 +65,7 @@ public class EditorPane extends JPanel {
 
             @Override
             public void mouseReleased(MouseEvent e) {
+                selectedTool.mouseReleasedAction(e, data);
                 data.setLastDragPoint(null);
             }
 
@@ -70,6 +73,7 @@ public class EditorPane extends JPanel {
             public void mouseMoved(MouseEvent e) {
                 selectedTool.mouseMovedAction(e, data);
                 printCoords(data.getHoveredGridX(), data.getHoveredGridY());
+                scheduleRepaint();
             }
 
             @Override
@@ -111,7 +115,11 @@ public class EditorPane extends JPanel {
                 try {
                     Point p = data.getDrawQueue().take(); // Attend un point à dessiner
                     SwingUtilities.invokeLater(() -> {
-                        data.colorGridSquare(p);
+                        if (currentTools.name().equals("ERASE")) {
+                            data.colorGridSquare(p, Color.WHITE);
+                        } else {
+                            data.colorGridSquare(p, null);
+                        }
                         data.updateImage(p);
                         scheduleRepaint();
                     });
@@ -124,6 +132,7 @@ public class EditorPane extends JPanel {
     }
 
 
+
     public void printCoords(int intPosX, int intPosY) {
         String posX = String.valueOf(intPosX);
         String posY = String.valueOf(intPosY);
@@ -134,15 +143,19 @@ public class EditorPane extends JPanel {
         coordinatToolbar.getFrameSize().setText(width + ",  " + height + " px");
     }
 
-  public void setSelectedTool(ToolsList chosenToolsList) {
-      switch (chosenToolsList) {
+    public String getSelectedTool() {
+        return currentTools.name();
+    }
+
+    public void setSelectedTool(ToolsList chosenToolsList) {
+        currentTools = chosenToolsList;
+        switch (chosenToolsList) {
           case PEN -> selectedTool = new Pen();
           case BRUSH -> selectedTool = new Brush(100);
-          /*
-           * case ERASE -> selectedTool = new Eraser();
-           * case TEXT -> selectedTool = new TextTool();
-           * case RECTANGLE -> selectedTool = new RectangleTool();
-           * case CIRCLE -> selectedTool = new CircleTool();
+          case ERASE -> selectedTool = new Erase(100);
+          case CIRCLE -> selectedTool = new Circle();
+          case RECTANGLE -> selectedTool = new RectangleTool();
+           /* case TEXT -> selectedTool = new TextTool();
            * case MOVE -> selectedTool = new MoveTool();
            * case SELECT -> selectedTool = new SelectTool();
            * case MOVE_SELECTION -> selectedTool = new MoveSelectionTool();

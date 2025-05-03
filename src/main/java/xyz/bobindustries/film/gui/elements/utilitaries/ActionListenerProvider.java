@@ -183,11 +183,26 @@ public class ActionListenerProvider {
         }
     }
 
+    public static void openEditorColorBox(ActionEvent ignoredActionEvent) {
+        Workspace workspace = Workspace.getInstance();
+        JInternalFrame colorboxframe = workspace.getEditorColors();
+
+        showFrameIfClosed(workspace, colorboxframe);
+
+        try {
+            colorboxframe.setSelected(true);
+            colorboxframe.toFront();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static void setTool(ActionEvent e) {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
         EditorPane editor = (EditorPane) editorFrame.getContentPane();
         editor.setSelectedTool(ToolsList.valueOf(e.getActionCommand()));
+        System.out.println("tool set : "+ e.getActionCommand());
     }
 
     /*
@@ -262,14 +277,14 @@ public class ActionListenerProvider {
     public static void openImageEditor(JInternalFrame frame, Color[][] imageMatrix) {
         JPanel editor = null;
         if (imageMatrix == null) {
-            Color[][] defaultCanvas = new Color[1200][1600];
+            Color[][] defaultCanvas = new Color[800][600];
             for (Color[] currentTab : defaultCanvas) {
                 for (Color currentColor : currentTab) {
                     currentColor = Color.WHITE;
                 }
             }
             System.out.println("fini");
-            editor = new EditorPane(defaultCanvas, 1600, 1200);
+            editor = new EditorPane(defaultCanvas, 600, 800);
         } else {
             editor = new EditorPane(imageMatrix, imageMatrix[0].length, imageMatrix.length);
         }

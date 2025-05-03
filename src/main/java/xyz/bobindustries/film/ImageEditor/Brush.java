@@ -35,8 +35,8 @@ public class Brush implements Tools {
   @Override
   public void mouseMovedAction(MouseEvent e, EditorModel model) {
     Point adjustedPoint = new Point(
-        (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-        (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
+            (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
+            (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
 
     if (model.getDrawingArea().contains(adjustedPoint)) {
       model.setHoveredGridX((adjustedPoint.x - model.getDrawingArea().x) / 10);
@@ -54,8 +54,8 @@ public class Brush implements Tools {
   @Override
   public void mousePressedAction(MouseEvent e, EditorModel model) {
     Point adjustedPoint = new Point(
-        (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-        (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
+            (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
+            (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
     model.setHoveredGridX(-1);
     model.setHoveredGridY(-1);
     if (model.getDrawingArea().contains(adjustedPoint)) {
@@ -66,8 +66,8 @@ public class Brush implements Tools {
   @Override
   public void mouseDraggedAction(MouseEvent e, EditorModel model) {
     Point adjustedPoint = new Point(
-        (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-        (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
+            (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
+            (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
 
     if (model.getDrawingArea().contains(adjustedPoint)) {
       Point lastPoint = model.getLastDragPoint();
@@ -78,7 +78,7 @@ public class Brush implements Tools {
       }*/
 
       if (lastPoint != null) {
-        model.interpolatePoints(lastPoint, adjustedPoint, brushOffsets, radius);
+        model.interpolatePoints(lastPoint, adjustedPoint, radius);
       } else {
         applyBrushAt(adjustedPoint, model);
       }
@@ -90,27 +90,27 @@ public class Brush implements Tools {
   }
 
 
-    private void applyBrushAt(Point point, EditorModel model) {
-      int squareSize = model.getGridSquareSize();
-      int centerX = point.x / squareSize;
-      int centerY = point.y / squareSize;
+  private void applyBrushAt(Point point, EditorModel model) {
+    int squareSize = model.getGridSquareSize();
+    int centerX = point.x / squareSize;
+    int centerY = point.y / squareSize;
 
-      for (Point offset : brushOffsets) {
-        int gridX = centerX + offset.x;
-        int gridY = centerY + offset.y;
+    for (Point offset : brushOffsets) {
+      int gridX = centerX + offset.x;
+      int gridY = centerY + offset.y;
 
-        if (gridX >= 0 && gridY >= 0) {
-          Point gridPoint = new Point(gridX * squareSize, gridY * squareSize);
-          if (model.getDrawSet().add(gridPoint)) {
-            try {
-              model.getDrawQueue().put(gridPoint);
-            } catch (InterruptedException ex) {
-              Thread.currentThread().interrupt();
-            }
+      if (gridX >= 0 && gridY >= 0) {
+        Point gridPoint = new Point(gridX * squareSize, gridY * squareSize);
+        if (model.getDrawSet().add(gridPoint)) {
+          try {
+            model.getDrawQueue().put(gridPoint);
+          } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
           }
         }
       }
     }
+  }
 
   @Override
   public void paintHoveredArea(Graphics2D g, EditorModel model, AffineTransform at) {

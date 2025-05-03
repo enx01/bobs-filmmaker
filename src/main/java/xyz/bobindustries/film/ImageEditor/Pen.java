@@ -33,7 +33,8 @@ public class Pen implements Tools {
         model.setHoveredGridX(-1);
         model.setHoveredGridY(-1);
         if (model.getDrawingArea().contains(adjustedPoint)) {
-            model.colorGridSquare(adjustedPoint);
+            System.out.println(adjustedPoint.x + " " + adjustedPoint.y);
+            model.colorGridSquare(adjustedPoint, null);
             model.updateImage(adjustedPoint);
         }
     }
