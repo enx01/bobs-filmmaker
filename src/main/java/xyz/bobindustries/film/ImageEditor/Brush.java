@@ -29,7 +29,7 @@ public class Brush implements Tools {
 
   @Override
   public void mouseReleasedAction(MouseEvent e, EditorModel model) {
-
+      model.resetDrawSet();
   }
 
   @Override

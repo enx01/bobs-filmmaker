@@ -28,7 +28,7 @@ public class Erase implements Tools {
 
     @Override
     public void mouseReleasedAction(MouseEvent e, EditorModel model) {
-
+        model.resetDrawSet();
     }
 
     @Override
