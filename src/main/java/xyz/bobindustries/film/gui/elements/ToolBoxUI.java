@@ -32,6 +32,7 @@ public class ToolBoxUI extends JPanel {
     ToolboxButton button5 = new ToolboxButton(ToolsList.RECTANGLE);
     ToolboxButton button6 = new ToolboxButton(ToolsList.SELECT);
     ToolboxButton button7 = new ToolboxButton(ToolsList.MOVE_SELECTION_AREA);
+    ToolboxButton button8 = new ToolboxButton(ToolsList.MOVE_SELECTION);
 
     buttonPanel.add(button);
     buttonPanel.add(button2);
@@ -40,6 +41,7 @@ public class ToolBoxUI extends JPanel {
     buttonPanel.add(button5);
     buttonPanel.add(button6);
     buttonPanel.add(button7);
+    buttonPanel.add(button8);
 
     System.out.println("pill1 workspace");
     add(buttonPanel, BorderLayout.CENTER);

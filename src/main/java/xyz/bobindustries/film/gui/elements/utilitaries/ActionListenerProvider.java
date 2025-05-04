@@ -277,14 +277,14 @@ public class ActionListenerProvider {
     public static void openImageEditor(JInternalFrame frame, Color[][] imageMatrix) {
         JPanel editor = null;
         if (imageMatrix == null) {
-            Color[][] defaultCanvas = new Color[800][600];
+            Color[][] defaultCanvas = new Color[600][800];
             for (Color[] currentTab : defaultCanvas) {
                 for (Color currentColor : currentTab) {
                     currentColor = Color.WHITE;
                 }
             }
             System.out.println("fini");
-            editor = new EditorPane(defaultCanvas, 600, 800);
+            editor = new EditorPane(defaultCanvas, 800, 600);
         } else {
             editor = new EditorPane(imageMatrix, imageMatrix[0].length, imageMatrix.length);
         }

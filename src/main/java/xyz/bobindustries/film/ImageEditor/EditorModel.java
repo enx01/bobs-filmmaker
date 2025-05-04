@@ -10,10 +10,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,6 +50,40 @@ public class EditorModel {
         drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
 
         createVolatileImage();
+    }
+
+    public BufferedImage getSubimageFromVolatile(Rectangle region) {
+        BufferedImage bImage = gridImage.getSnapshot(); // Crée une copie compatible
+        return bImage.getSubimage(region.x, region.y, region.width, region.height);
+    }
+
+    public VolatileImage getGridImage() {
+        return gridImage;
+    }
+
+    public Color[][] getGridColors() {
+        return gridColors;
+    }
+
+    public Map<Point, Color> getSelectedGridColors() {
+        HashMap<Point, Color> selected = new HashMap<>();
+
+        Rectangle selection = this.getSelectionToMove();
+        int startGridX = (selection.x - drawingArea.x) / gridSquareSize;
+        int startGridY = (selection.y - drawingArea.y) / gridSquareSize;
+        int endGridX = (selection.x + selection.width - drawingArea.x) / gridSquareSize;
+        int endGridY = (selection.y + selection.height - drawingArea.y) / gridSquareSize;
+
+        for (int y = startGridY; y <= endGridY; y++) {
+            for (int x = startGridX; x <= endGridX; x++) {
+                if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+                    Color c = gridColors[y][x];
+                    selected.put(new Point(x, y), c);
+                }
+            }
+        }
+
+        return selected;
     }
 
     public Rectangle getSelectionToMove() {
@@ -220,30 +256,6 @@ public class EditorModel {
         }
     }
 
-    public void storeColor(Point p) {
-        int gridSize = gridSquareSize;
-        int gridX = (p.x - drawingArea.x) / gridSize;
-        int gridY = (p.y - drawingArea.y) / gridSize;
-
-        if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
-            previousPoints.put(p, gridColors[gridY][gridX]);
-        }
-
-    }
-
-    public Color getColorFromPixel(Point p) {
-        int gridSize = gridSquareSize;
-        int gridX = (p.x - drawingArea.x) / gridSize;
-        int gridY = (p.y - drawingArea.y) / gridSize;
-
-        if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
-            Color res = previousPoints.get(p);
-            previousPoints.remove(p);
-            return res;
-        }
-        return null;
-    }
-
     public void interpolatePoints(Point p1, Point p2) {
         int dx = p2.x - p1.x;
         int dy = p2.y - p1.y;
@@ -255,28 +267,6 @@ public class EditorModel {
             drawQueue.offer(new Point(x, y));
         }
     }
-
-    /*public void interpolatePoints(Point p1, Point ignored, ArrayList<Point> brushOffsets) {
-        int squareSize = getGridSquareSize();
-        int centerX = p1.x / squareSize;
-        int centerY = p1.y / squareSize;
-
-        for (Point offset : brushOffsets) {
-            int gridX = centerX + offset.x;
-            int gridY = centerY + offset.y;
-
-            if (gridX >= 0 && gridY >= 0) {
-                Point gridPoint = new Point(gridX * squareSize, gridY * squareSize);
-                if (drawSet.add(gridPoint)) {
-                    try {
-                        drawQueue.put(gridPoint);
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-            }
-        }
-    }*/
 
     public void interpolatePoints(Point p1, Point p2, int radius) {
         int dx = p2.x - p1.x;

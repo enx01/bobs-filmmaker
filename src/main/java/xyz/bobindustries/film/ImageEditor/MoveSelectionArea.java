@@ -4,8 +4,9 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
-public class MoveSelectionArea implements Tools{
+public class MoveSelectionArea implements Tools {
     private Point dragStartPoint = null;
+    private Rectangle originalSelectionBounds = null;
     private boolean isDragging = false;
 
     @Override
@@ -13,31 +14,39 @@ public class MoveSelectionArea implements Tools{
         Point p = getAdjustedPoint(e, model);
         if (model.getSelectionToMove() != null && model.getSelectionToMove().contains(p)) {
             dragStartPoint = p;
+            originalSelectionBounds = model.getSelectionToMove().getBounds();
             isDragging = true;
         }
     }
 
     @Override
     public void mouseDraggedAction(MouseEvent e, EditorModel model) {
-        if (!isDragging || dragStartPoint == null || model.getSelectionToMove() == null) return;
+        if (!isDragging || dragStartPoint == null || originalSelectionBounds == null) return;
 
         Point current = getAdjustedPoint(e, model);
         int dx = current.x - dragStartPoint.x;
         int dy = current.y - dragStartPoint.y;
 
-        // Aligner au grid
-        int grid = model.getGridSquareSize();
-        dx = (dx / grid) * grid;
-        dy = (dy / grid) * grid;
+        // Aligner le déplacement sur la grille
+        int gridSize = model.getGridSquareSize();
+        dx = (dx / gridSize) * gridSize;
+        dy = (dy / gridSize) * gridSize;
 
-        model.getSelectionToMove().translate(dx, dy);
-        dragStartPoint = current;
+        Rectangle newBounds = new Rectangle(originalSelectionBounds);
+        newBounds.translate(dx, dy);
+
+        model.getSelectionToMove().setFrame(newBounds);
     }
 
     @Override
     public void mouseReleasedAction(MouseEvent e, EditorModel model) {
+        System.out.println(model.getSelectionToMove().x);
+        System.out.println(model.getSelectionToMove().y);
+        System.out.println(model.getSelectionToMove().height);
+        System.out.println(model.getSelectionToMove().width);
         isDragging = false;
         dragStartPoint = null;
+        originalSelectionBounds = null;
     }
 
     @Override
@@ -63,5 +72,4 @@ public class MoveSelectionArea implements Tools{
                 (int) ((e.getY() - model.getOrigin().y) / model.getScale())
         );
     }
-
 }
