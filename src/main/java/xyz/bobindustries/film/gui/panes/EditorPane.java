@@ -155,11 +155,11 @@ public class EditorPane extends JPanel {
           case ERASE -> selectedTool = new Erase(100);
           case CIRCLE -> selectedTool = new Circle();
           case RECTANGLE -> selectedTool = new RectangleTool();
-           /* case TEXT -> selectedTool = new TextTool();
+          case SELECT -> selectedTool = new SelectionTool();
+          case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionArea();
+            /* case TEXT -> selectedTool = new TextTool();
            * case MOVE -> selectedTool = new MoveTool();
-           * case SELECT -> selectedTool = new SelectTool();
            * case MOVE_SELECTION -> selectedTool = new MoveSelectionTool();
-           * case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionAreaTool();
            * case UNDO -> selectedTool = new UndoTool();
            * case REDO -> selectedTool = new RedoTool();
            */

@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class EditorModel {
+    private Rectangle selectionToMove = new Rectangle();
     private double scale = 1.0;
     private Point origin = new Point(0, 0);
     private VolatileImage gridImage;
@@ -47,6 +48,14 @@ public class EditorModel {
         drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
 
         createVolatileImage();
+    }
+
+    public Rectangle getSelectionToMove() {
+        return selectionToMove;
+    }
+
+    public void setSelectionToMove(Rectangle selectionToMove) {
+        this.selectionToMove = selectionToMove;
     }
 
     public EditorPane getParent() {
