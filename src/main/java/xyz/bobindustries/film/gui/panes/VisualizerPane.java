@@ -5,8 +5,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
@@ -103,6 +101,7 @@ public class VisualizerPane extends JPanel {
 
         int sliderMax = (int) Math.round(totalDuration * 10);
         timeSlider = new JSlider(0, sliderMax, 0);
+        timeSlider.setFocusable(false);
         timeSlider.setPaintTicks(true);
         timeSlider.setPreferredSize(new Dimension(this.getPreferredSize().width, 30));
         timeSlider.setMajorTickSpacing(sliderMax / 5 > 0 ? sliderMax / 5 : 1);

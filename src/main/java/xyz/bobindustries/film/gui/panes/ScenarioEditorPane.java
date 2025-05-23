@@ -73,6 +73,64 @@ public class ScenarioEditorPane extends JPanel {
 
     static class TimelinePane extends JPanel {
         static class TimelineElement extends JPanel {
+
+            // Private HandleDragListener class
+            private class HandleDragListener extends MouseAdapter {
+                TimelinePane pane;
+
+                public HandleDragListener(TimelinePane pane) {
+                    this.pane = pane;
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (getHandleBounds().contains(e.getPoint())) {
+                        isDragging = true;
+                        dragStartX = e.getXOnScreen();
+                        timeAtDragStart = time;
+                        setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+                    }
+                }
+
+                @Override
+                public void mouseDragged(MouseEvent e) {
+                    if (isDragging) {
+                        int currentX = e.getXOnScreen();
+                        int deltaX = currentX - dragStartX;
+
+                        double deltaTime = (double) deltaX / PIXELS_PER_SECOND / DRAG_PRECISION_FACTOR;
+
+                        double newTime = timeAtDragStart + deltaTime;
+                        setTime(newTime);
+                        pane.updateLayout();
+                    }
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    if (isDragging) {
+                        isDragging = false;
+                        setCursor(Cursor.getDefaultCursor());
+                    }
+                }
+
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    if (getHandleBounds().contains(e.getPoint())) {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+                    } else {
+                        setCursor(Cursor.getDefaultCursor());
+                    }
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    if (!isDragging) {
+                        setCursor(Cursor.getDefaultCursor());
+                    }
+                }
+            }
+
             private static final double DEFAULT_TIME = 0.2;
             private static final double MIN_TIME = 0.10;
             private static final double MAX_TIME = 1.0;
@@ -119,14 +177,8 @@ public class ScenarioEditorPane extends JPanel {
                             }
                         })
                         .addSeparator()
-                        .addItem("move to right", e -> {
-                            timelinePane.moveElementToRight(this);
-                            timelinePane.updateLayoutOrder();
-                        })
-                        .addItem("move to left", e -> {
-                            timelinePane.moveElementToLeft(this);
-                            timelinePane.updateLayoutOrder();
-                        })
+                        .addItem("move to right", e -> timelinePane.moveElementToRight(this))
+                        .addItem("move to left", e -> timelinePane.moveElementToLeft(this))
                         .build();
 
                 contxtMenu.attachTo(this);
@@ -234,65 +286,10 @@ public class ScenarioEditorPane extends JPanel {
                 return new Rectangle(clickableHandleX, 0, clickableHandleWidth, height);
             }
 
-            // Private HandleDragListener class
-            private class HandleDragListener extends MouseAdapter {
-                TimelinePane pane;
-
-                public HandleDragListener(TimelinePane pane) {
-                    this.pane = pane;
-                }
-
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    if (getHandleBounds().contains(e.getPoint())) {
-                        isDragging = true;
-                        dragStartX = e.getXOnScreen();
-                        timeAtDragStart = time;
-                        setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
-                    }
-                }
-
-                @Override
-                public void mouseDragged(MouseEvent e) {
-                    if (isDragging) {
-                        int currentX = e.getXOnScreen();
-                        int deltaX = currentX - dragStartX;
-
-                        double deltaTime = (double) deltaX / PIXELS_PER_SECOND / DRAG_PRECISION_FACTOR;
-
-                        double newTime = timeAtDragStart + deltaTime;
-                        setTime(newTime);
-                        pane.updateLayout();
-                    }
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                    if (isDragging) {
-                        isDragging = false;
-                        setCursor(Cursor.getDefaultCursor());
-                    }
-                }
-
-                @Override
-                public void mouseMoved(MouseEvent e) {
-                    if (getHandleBounds().contains(e.getPoint())) {
-                        setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
-                    } else {
-                        setCursor(Cursor.getDefaultCursor());
-                    }
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    if (!isDragging) {
-                        setCursor(Cursor.getDefaultCursor());
-                    }
-                }
-            }
         }
 
         private final List<TimelineElement> elements;
+        private TimelineElement currentSelectedItem = null;
         private final JPanel contentPane;
 
         TimelinePane(String scenarioContent) throws InvalidScenarioContentException {
@@ -305,6 +302,7 @@ public class ScenarioEditorPane extends JPanel {
 
             Project current = ProjectManager.getCurrent();
 
+            // TODO : Factorise in a private loadScenarioContent
             if (current != null) {
                 List<ImageFile> images = current.getImages();
 
@@ -411,7 +409,10 @@ public class ScenarioEditorPane extends JPanel {
                 elem.setMinimumSize(new Dimension(totalWidth, 50));
                 elem.setMaximumSize(new Dimension(totalWidth, 50));
 
-                elem.setBorder(BorderFactory.createEmptyBorder(0, currentX, 0, 0));
+                if (elem == currentSelectedItem)
+                    elem.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3, true));
+                else
+                    elem.setBorder(BorderFactory.createEmptyBorder(0, currentX, 0, 0));
                 currentX += totalWidth + gap;
                 elem.revalidate();
                 elem.repaint();
@@ -449,21 +450,55 @@ public class ScenarioEditorPane extends JPanel {
         }
 
         void moveElementToRight(TimelineElement elem) {
+            if (elem == null)
+                return;
             int index = elements.indexOf(elem);
             if (index < elements.size() - 1) {
                 TimelineElement save = elements.get(index + 1);
                 elements.set(index + 1, elem);
                 elements.set(index, save);
             }
+            updateLayoutOrder();
         }
 
         void moveElementToLeft(TimelineElement elem) {
+            if (elem == null)
+                return;
             int index = elements.indexOf(elem);
-            if (index > 1) {
+            if (index > 0) {
                 TimelineElement save = elements.get(index - 1);
                 elements.set(index - 1, elem);
                 elements.set(index, save);
             }
+            updateLayoutOrder();
+        }
+
+        TimelineElement getCurrentSelectedItem() {
+            return currentSelectedItem;
+        }
+
+        void moveSelectedIndexToRight() {
+            if (currentSelectedItem == null && !elements.isEmpty()) {
+                currentSelectedItem = elements.get(elements.size() - 1);
+                return;
+            } else {
+                int index = elements.indexOf(currentSelectedItem);
+                currentSelectedItem = elements.get((index + 1) % elements.size());
+            }
+
+            updateLayout();
+        }
+
+        void moveSelectedIndexToLeft() {
+            if (currentSelectedItem == null && !elements.isEmpty()) {
+                currentSelectedItem = elements.get(0);
+                return;
+            } else {
+                int index = elements.indexOf(currentSelectedItem);
+                currentSelectedItem = elements.get(((index - 1) % elements.size() + elements.size()) % elements.size());
+            }
+
+            updateLayout();
         }
 
         String getScenarioFileContent() {
@@ -502,21 +537,50 @@ public class ScenarioEditorPane extends JPanel {
             visualizerPane;
     private TimelinePane timelinePane;
     private JScrollPane imageListScrollPane;
-    private JLabel currentImageView;
+    // private JLabel currentImageView;
+
+    /*
+     * Keyboard Adapter to allow for keyboard TimelinePane manipulation
+     */
+    private class KeyboardTimelineListener extends KeyAdapter {
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_RIGHT:
+                    if (e.isControlDown())
+                        timelinePane.moveElementToRight(timelinePane.getCurrentSelectedItem());
+                    else
+                        timelinePane.moveSelectedIndexToRight();
+                    break;
+                case KeyEvent.VK_LEFT:
+                    if (e.isControlDown())
+                        timelinePane.moveElementToLeft(timelinePane.getCurrentSelectedItem());
+                    else
+                        timelinePane.moveSelectedIndexToLeft();
+                    break;
+            }
+        }
+
+    }
 
     private void initializeComponents() throws InvalidScenarioContentException {
         imagesListPane = new JPanel();
-        visualizerPane = new JPanel();
+        // visualizerPane = new JPanel();
+        // visualizerPane.setFocusable(false);
+
         timelinePane = new TimelinePane(ProjectManager.getCurrent().getScenarioContent());
         imagesPanelList = new JPanel();
 
+        addKeyListener(new KeyboardTimelineListener());
+
         imagesListPane.setBackground(Color.LIGHT_GRAY);
-        visualizerPane.setBackground(Color.WHITE);
+        // visualizerPane.setBackground(Color.WHITE);
         timelinePane.setBackground(Color.GRAY);
 
         Border common = BorderFactory.createEtchedBorder(new Color(0x3C3836), new Color(0x7c6f64));
         imagesListPane.setBorder(common);
-        visualizerPane.setBorder(common);
+        // visualizerPane.setBorder(common);
         timelinePane.setBorder(common);
 
         imagesPanelList.setLayout(new BoxLayout(imagesPanelList, BoxLayout.Y_AXIS));
@@ -524,13 +588,13 @@ public class ScenarioEditorPane extends JPanel {
         imageListScrollPane.setPreferredSize(new Dimension(150, 0));
         imageListScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        currentImageView = new JLabel();
-        currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
+        // currentImageView = new JLabel();
+        // currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void layoutComponents() {
         add(timelinePane, BorderLayout.SOUTH);
-        add(visualizerPane, BorderLayout.CENTER);
+        // add(visualizerPane, BorderLayout.CENTER);
         add(imagesListPane, BorderLayout.WEST);
 
         imagesListPane.setLayout(new GridBagLayout());
@@ -541,9 +605,6 @@ public class ScenarioEditorPane extends JPanel {
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.BOTH;
         imagesListPane.add(imageListScrollPane, gbc);
-
-        visualizerPane.setLayout(new BorderLayout());
-        visualizerPane.add(currentImageView, BorderLayout.CENTER);
 
         timelinePane.setPreferredSize(new Dimension(0, (int) (this.getPreferredSize().height * 0.8)));
 
@@ -581,10 +642,11 @@ public class ScenarioEditorPane extends JPanel {
 
         enableDragAndDrop();
 
-        visualizerPane.removeAll();
-        remove(visualizerPane);
-        visualizerPane = new VisualizerPane(this);
-        add(visualizerPane);
+        // visualizerPane.removeAll();
+        // remove(visualizerPane);
+        // visualizerPane = new VisualizerPane(this);
+        // visualizerPane.setFocusable(false);
+        // add(visualizerPane);
     }
 
     private void enableDragAndDrop() {
