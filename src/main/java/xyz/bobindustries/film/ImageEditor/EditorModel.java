@@ -35,6 +35,7 @@ public class EditorModel {
     private int gridHeight;
     private Color[][] gridColors;
     private HashMap<Point, Color> previousPoints = new HashMap<>();
+    private BufferedImage draggedImage;
 
     private Point lastDragPoint = null;
     private final BlockingQueue<Point> drawQueue = new LinkedBlockingQueue<>();
@@ -55,6 +56,40 @@ public class EditorModel {
     public BufferedImage getSubimageFromVolatile(Rectangle region) {
         BufferedImage bImage = gridImage.getSnapshot(); // Crée une copie compatible
         return bImage.getSubimage(region.x, region.y, region.width, region.height);
+    }
+
+    public BufferedImage getDraggedImage() {
+        return draggedImage;
+    }
+
+
+    public void clearSpaceDraggedImage() {
+        Rectangle selection = this.getSelectionToMove();
+        int startGridX = (selection.x - drawingArea.x) / gridSquareSize;
+        int startGridY = (selection.y - drawingArea.y) / gridSquareSize;
+        int endGridX = (selection.x + selection.width - drawingArea.x) / gridSquareSize;
+        int endGridY = (selection.y + selection.height - drawingArea.y) / gridSquareSize;
+
+        for (int y = startGridY; y <= endGridY; y++) {
+            for (int x = startGridX; x <= endGridX; x++) {
+                if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+                    gridColors[y][x] = Color.WHITE;
+                    // Redessine la case dans l'image
+                    int px = x * gridSquareSize;
+                    int py = y * gridSquareSize;
+                    Graphics2D g2d = gridImage.createGraphics();
+                    g2d.setColor(Color.WHITE);
+                    g2d.fillRect(px, py, gridSquareSize, gridSquareSize);
+                    g2d.dispose();
+                }
+            }
+        }
+        parent.repaint();
+    }
+
+    public void setDraggedImage() {
+        draggedImage = getSubimageFromVolatile(selectionToMove);
+        clearSpaceDraggedImage();
     }
 
     public VolatileImage getGridImage() {

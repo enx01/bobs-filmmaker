@@ -28,24 +28,12 @@ public class Circle implements Tools{
         Point endPoint = getAdjustedPoint(e, model);
         if (!model.getDrawingArea().contains(endPoint)) return;
 
-        // Calcule du rayon en pixels
-        double dx = endPoint.x - startPoint.x;
-        double dy = endPoint.y - startPoint.y;
-        int radius = (int) Math.round(Math.sqrt(dx * dx + dy * dy));
+        ArrayList<Point> points = getCirclePoints(startPoint, endPoint);
 
-        int gridSize = model.getGridSquareSize();
-
-        // On dessine dans un carré englobant le cercle
-        for (int y = -radius; y <= radius; y++) {
-            for (int x = -radius; x <= radius; x++) {
-                int distSq = x * x + y * y;
-                if (distSq <= radius * radius && distSq >= (radius - 1) * (radius - 1)) {
-                    Point p = new Point(startPoint.x + x, startPoint.y + y);
-                    if (model.getDrawingArea().contains(p)) {
-                        model.colorGridSquare(p, null);
-                        model.updateImage(p);
-                    }
-                }
+        for (Point point : points) {
+            if (model.getDrawingArea().contains(point)) {
+                model.colorGridSquare(point, null);
+                model.updateImage(point);
             }
         }
 
@@ -76,22 +64,15 @@ public class Circle implements Tools{
     @Override
     public void paintHoveredArea(Graphics2D g, EditorModel model, AffineTransform at) {
         if (currentDragPoint != null && startPoint != null) {
-            double dx = currentDragPoint.x - startPoint.x;
-            double dy = currentDragPoint.y - startPoint.y;
-            int radius = (int) Math.round(Math.sqrt(dx * dx + dy * dy));
+
+            ArrayList<Point> points = getCirclePoints(startPoint, currentDragPoint);
 
             g.setColor(new Color(0, 0, 255, 128)); // Bleu semi-transparent
 
-            for (int y = -radius; y <= radius; y++) {
-                for (int x = -radius; x <= radius; x++) {
-                    int distSq = x * x + y * y;
-                    if (distSq <= radius * radius && distSq >= (radius - 1) * (radius - 1)) {
-                        Point p = new Point(startPoint.x + x, startPoint.y + y);
-                        if (model.getDrawingArea().contains(p)) {
-                            Point screen = gridToScreen(p, model);
-                            g.fillRect(screen.x, screen.y, model.getGridSquareSize(), model.getGridSquareSize());
-                        }
-                    }
+            for (Point point : points) {
+                if (model.getDrawingArea().contains(point)) {
+                    Point screen = gridToScreen(point, model);
+                    g.fillRect(screen.x, screen.y, model.getGridSquareSize(), model.getGridSquareSize());
                 }
             }
         }
@@ -130,6 +111,23 @@ public class Circle implements Tools{
         int topLeftY = center.y - radius;
 
         g.fillOval(topLeftX, topLeftY, diameter, diameter); // Remplir un cercle
+    }
+
+    private static ArrayList<Point> getCirclePoints(Point startPoint, Point endPoint) {
+        ArrayList<Point> points = new ArrayList<>();
+        double dx = endPoint.x - startPoint.x;
+        double dy = endPoint.y - startPoint.y;
+        int radius = (int) Math.round(Math.sqrt(dx * dx + dy * dy));
+        for (int y = -radius; y <= radius; y++) {
+            for (int x = -radius; x <= radius; x++) {
+                int distance = x * x + y * y;
+                if (distance <= radius * radius && distance >= (radius - 1) * (radius - 1)) {
+                    Point p = new Point(startPoint.x + x, startPoint.y + y);
+                    points.add(p);
+                }
+            }
+        }
+        return points;
     }
 
 }

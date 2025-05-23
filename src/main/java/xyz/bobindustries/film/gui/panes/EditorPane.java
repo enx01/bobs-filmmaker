@@ -11,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -26,6 +27,7 @@ public class EditorPane extends JPanel {
     private CoordinateBar coordinatToolbar;
     private final Timer repaintTimer = new Timer(16, e -> repaint());
     private volatile boolean needsRepaint = false;
+    private BufferedImage draggedImage;
 
     public EditorPane(Color[][] gridColors, int gridWidth, int gridHeight) {
 
@@ -59,6 +61,11 @@ public class EditorPane extends JPanel {
 
         startDrawingThread();
     }
+
+    public BufferedImage getDraggedImage() {
+        return draggedImage;
+    }
+
 
     private MouseAdapter setMouseAdapter() {
         MouseAdapter mouseHandler = new MouseAdapter() {
@@ -157,7 +164,11 @@ public class EditorPane extends JPanel {
           case RECTANGLE -> selectedTool = new RectangleTool();
           case SELECT -> selectedTool = new SelectionTool();
           case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionArea();
-          case MOVE_SELECTION -> selectedTool = new MoveSelection();
+          case MOVE_SELECTION -> {
+              selectedTool = new MoveSelection();
+
+              data.setDraggedImage();
+          }
             /* case TEXT -> selectedTool = new TextTool();
            * case MOVE -> selectedTool = new MoveTool();
            * case UNDO -> selectedTool = new UndoTool();

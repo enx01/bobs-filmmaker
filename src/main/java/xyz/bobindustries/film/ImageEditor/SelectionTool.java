@@ -46,7 +46,6 @@ public class SelectionTool implements Tools {
         if (!model.getDrawingArea().contains(endPoint)) return;
 
         model.setSelectionToMove(createGridAlignedRect(startPoint, currentDragPoint, model)); // ALIGN TO GRID
-
         startPoint = null;
         currentDragPoint = null;
     }
