@@ -260,4 +260,7 @@ public class Workspace extends JDesktopPane {
         g2.dispose();
     }
 
+    public Color getSelectedColor() {
+        return ((ColorBox) instance.getEditorColors().getContentPane()).getSelectedColor();
+    }
 }

@@ -47,7 +47,7 @@ public class EditorModel {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
 
-        drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
+            drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
 
         createVolatileImage();
     }
@@ -84,6 +84,35 @@ public class EditorModel {
         }
 
         return selected;
+    }
+
+    public void addRectangleToGrid(Rectangle rect, Color color) {
+        if (color == null) {
+            // Par défaut, prendre la couleur sélectionnée dans le ColorBox
+            color = ((ColorBox) Workspace.getInstance().getEditorColors().getContentPane()).getSelectedColor();
+        }
+
+        int startGridX = (rect.x - drawingArea.x) / gridSquareSize;
+        int startGridY = (rect.y - drawingArea.y) / gridSquareSize;
+        int endGridX = (rect.x + rect.width - drawingArea.x) / gridSquareSize;
+        int endGridY = (rect.y + rect.height - drawingArea.y) / gridSquareSize;
+
+        for (int y = startGridY; y <= endGridY; y++) {
+            for (int x = startGridX; x <= endGridX; x++) {
+                if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+                    gridColors[y][x] = color;
+                    // Redessine la case dans l'image
+                    int px = x * gridSquareSize;
+                    int py = y * gridSquareSize;
+                    Graphics2D g2d = gridImage.createGraphics();
+                    g2d.setColor(color);
+                    g2d.fillRect(px, py, gridSquareSize, gridSquareSize);
+                    g2d.dispose();
+                }
+            }
+        }
+
+        parent.repaint();
     }
 
     public Rectangle getSelectionToMove() {
@@ -383,4 +412,6 @@ public class EditorModel {
     public HashSet<Point> getDrawSet() {
         return drawSet;
     }
+
+
 }
