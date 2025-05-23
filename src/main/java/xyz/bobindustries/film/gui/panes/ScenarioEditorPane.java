@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
@@ -118,6 +117,15 @@ public class ScenarioEditorPane extends JPanel {
                                 time = newTime;
                                 timelinePane.updateLayout();
                             }
+                        })
+                        .addSeparator()
+                        .addItem("move to right", e -> {
+                            timelinePane.moveElementToRight(this);
+                            timelinePane.updateLayoutOrder();
+                        })
+                        .addItem("move to left", e -> {
+                            timelinePane.moveElementToLeft(this);
+                            timelinePane.updateLayoutOrder();
                         })
                         .build();
 
@@ -414,6 +422,21 @@ public class ScenarioEditorPane extends JPanel {
             contentPane.repaint();
         }
 
+        /*
+         * This method is called whenever a TimelineElement is moved so we need to clear
+         * all the components to add them back.
+         */
+        void updateLayoutOrder() {
+            contentPane.removeAll();
+
+            for (TimelineElement elem : elements) {
+                contentPane.add(elem);
+            }
+
+            contentPane.revalidate();
+            contentPane.repaint();
+        }
+
         void removeTimelineElement(TimelineElement elem) {
             contentPane.remove(elem);
             elements.remove(elem);
@@ -423,6 +446,24 @@ public class ScenarioEditorPane extends JPanel {
         void addTimelineElement(ImageFile droppedImageFile) {
             elements.add(new TimelineElement(this, droppedImageFile));
             updateLayout();
+        }
+
+        void moveElementToRight(TimelineElement elem) {
+            int index = elements.indexOf(elem);
+            if (index < elements.size() - 1) {
+                TimelineElement save = elements.get(index + 1);
+                elements.set(index + 1, elem);
+                elements.set(index, save);
+            }
+        }
+
+        void moveElementToLeft(TimelineElement elem) {
+            int index = elements.indexOf(elem);
+            if (index > 1) {
+                TimelineElement save = elements.get(index - 1);
+                elements.set(index - 1, elem);
+                elements.set(index, save);
+            }
         }
 
         String getScenarioFileContent() {
