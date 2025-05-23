@@ -1,6 +1,8 @@
 package xyz.bobindustries.film.gui.elements.utilitaries;
 
 import java.awt.BorderLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -37,6 +39,14 @@ public class SimpleHappyDialog {
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.add(panel);
+
+        dialog.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ESCAPE || evt.getKeyCode() == KeyEvent.VK_ENTER)
+                    dialog.dispose();
+            }
+        });
 
         dialog.pack();
         dialog.setLocationRelativeTo(null);

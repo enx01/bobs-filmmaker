@@ -15,7 +15,7 @@ public class ContextualMenu {
     private final List<JComponent> menuItems;
 
     private ContextualMenu(List<JComponent> menuItems) {
-        this.menuItems = Collections.unmodifiableList(new ArrayList<>(menuItems));
+        this.menuItems = List.copyOf(menuItems);
     }
 
     /**
