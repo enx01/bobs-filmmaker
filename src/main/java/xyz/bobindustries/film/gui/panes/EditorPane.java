@@ -155,7 +155,13 @@ public class EditorPane extends JPanel {
     }
 
     public void setSelectedTool(ToolsList chosenToolsList) {
+        if (getSelectedTool().equals("MOVE_SELECTION")) {
+            System.out.println("image merging start");
+            data.mergeDraggedImageToGrid();
+            System.out.println("image merged");
+        }
         currentTools = chosenToolsList;
+        System.out.println("selecting tool: "+chosenToolsList.name());
         switch (chosenToolsList) {
           case PEN -> selectedTool = new Pen();
           case BRUSH -> selectedTool = new Brush(100);

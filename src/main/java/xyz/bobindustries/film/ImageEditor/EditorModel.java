@@ -447,6 +447,91 @@ public class EditorModel {
     public HashSet<Point> getDrawSet() {
         return drawSet;
     }
+    
+    /*public void mergeDraggedImageToGrid() {
+        if (draggedImage == null) return;
 
+        // dropPoint : position où l'utilisateur veut déposer l'image (en pixels affichés)
+        int realX = (int) ((selectionToMove.x - origin.x) / scale);
+        int realY = (int) ((selectionToMove.y - origin.y) / scale);
 
+        int gridStartX = (realX - drawingArea.x) / gridSquareSize;
+        int gridStartY = (realY - drawingArea.y) / gridSquareSize;
+
+        int gridCountX = selectionToMove.width / gridSquareSize;
+        int gridCountY = selectionToMove.height / gridSquareSize;
+
+        // Sécurité si la sélection n'est pas alignée sur la grille
+        if (selectionToMove.width % gridSquareSize != 0) gridCountX++;
+        if (selectionToMove.height % gridSquareSize != 0) gridCountY++;
+
+        for (int gridY = 0; gridY < gridCountY; gridY++) {
+            for (int gridX = 0; gridX < gridCountX; gridX++) {
+                int destGridX = gridStartX + gridX;
+                int destGridY = gridStartY + gridY;
+                Point gridPoint = new Point(gridX * gridSquareSize, gridY * gridSquareSize);
+                try {
+                    drawQueue.put(gridPoint);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                if (destGridX >= 0 && destGridX < gridWidth && destGridY >= 0 && destGridY < gridHeight) {
+                    // Prendre le pixel central de la zone correspondante dans draggedImage
+                    int px = gridX * gridSquareSize + gridSquareSize / 2;
+                    int py = gridY * gridSquareSize + gridSquareSize / 2;
+                    // Clamp pour éviter les débordements
+                    px = Math.min(px, draggedImage.getWidth() - 1);
+                    py = Math.min(py, draggedImage.getHeight() - 1);
+                    int rgb = draggedImage.getRGB(px, py);
+                    Color color = new Color(rgb, true);
+                    gridColors[destGridY][destGridX] = color;
+                }
+            }
+        }
+        drawGridImage();
+        parent.repaint();
+    }*/
+
+    public void mergeDraggedImageToGrid() {
+        if (draggedImage == null) return;
+
+        System.out.println("height:"+selectionToMove.getHeight()+"width:"+selectionToMove.getWidth());
+
+        System.out.println("origin:"+origin.x+","+origin.y);
+
+        // real coordinates of the selection to move
+
+        int gridStartX = (selectionToMove.x - drawingArea.x) / gridSquareSize;
+        int gridStartY = (selectionToMove.y - drawingArea.y) / gridSquareSize;
+
+        System.out.println("gridStartXY");
+        System.out.println(gridStartX + " " + gridStartY);
+
+        // width and height of the selection to move
+
+        int gridCountX = selectionToMove.width / gridSquareSize;
+        int gridCountY = selectionToMove.height / gridSquareSize;
+
+        System.out.println("gridCountXY");
+        System.out.println(gridCountX + " " + gridCountY);
+
+        for (int i = gridStartX; i < gridStartX + gridCountX; i++) {
+            for (int j = gridStartY; j < gridStartY + gridCountY; j++) {
+                int relX = (i - gridStartX)*10;
+                int relY = (j - gridStartY)*10;
+                int rgb = draggedImage.getRGB(relX, relY);
+                int red = (rgb >> 16) & 0xFF;
+                int green = (rgb >> 8) & 0xFF;
+                int blue = rgb & 0xFF;
+                Color currentColor = new Color(red, green, blue);
+                //System.out.println("colors: " + red + " " + green + " " + blue);
+                if (i >= 0 && i < gridWidth && j >= 0 && j < gridHeight) {
+                    gridColors[i][j] = currentColor;
+                }
+                Point gridPoint = new Point(i * gridSquareSize, j * gridSquareSize);
+                colorGridSquare(gridPoint, currentColor);
+                updateImage(gridPoint);
+            }
+        }
+    }
 }
