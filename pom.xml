@@ -15,6 +15,13 @@
     <exec.mainClass>xyz.bobindustries.film.App</exec.mainClass>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>sav-reader-writer-repo</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -23,6 +30,12 @@
         <version>5.11.0</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jcodec</groupId>
+        <artifactId>jcodec</artifactId>
+        <version>0.2.5</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -38,6 +51,18 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
       <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jcodec</groupId>
+      <artifactId>jcodec</artifactId>
+      <version>0.2.5</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jcodec</groupId>
+      <artifactId>jcodec-javase</artifactId>
+      <version>0.2.5</version>
     </dependency>
   </dependencies>
 

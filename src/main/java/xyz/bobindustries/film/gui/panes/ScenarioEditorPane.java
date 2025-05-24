@@ -18,6 +18,7 @@ import xyz.bobindustries.film.gui.elements.popups.SimpleValueChangerPopUp;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.ProjectManager;
+import xyz.bobindustries.film.projects.elements.FrameData;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
@@ -67,11 +68,11 @@ public class ScenarioEditorPane extends JPanel {
         }
     }
 
-    static class TimelinePane extends JPanel {
+    class TimelinePane extends JPanel {
 
         private static final int PIXELS_PER_SECOND = 300; // How many pixels represent 1 second
 
-        static class TimelineElement extends JPanel {
+        class TimelineElement extends JPanel {
 
 
             // Private HandleDragListener class
@@ -96,6 +97,12 @@ public class ScenarioEditorPane extends JPanel {
                             pane.setCurrentSelectedItem(TimelineElement.this);
                         }
                     }
+
+                    ScenarioEditorPane.this.setCurrentImageView(
+                            currentSelectedItem != null ?
+                                    currentSelectedItem.getData()
+                                    : null
+                    );
                 }
 
                 @Override
@@ -304,6 +311,7 @@ public class ScenarioEditorPane extends JPanel {
 
         private final List<TimelineElement> elements;
         private TimelineElement currentSelectedItem = null;
+        private final JScrollPane scrollPane;
         private final JPanel contentPane;
         private final JPanel dummy;
 
@@ -356,7 +364,7 @@ public class ScenarioEditorPane extends JPanel {
 
             loadScenarioContent(scenarioContent);
 
-            JScrollPane scrollPane = new JScrollPane(contentPane);
+             scrollPane = new JScrollPane(contentPane);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
             scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
@@ -587,6 +595,17 @@ public class ScenarioEditorPane extends JPanel {
             return sb.toString();
         }
 
+        FrameData[] getFrameData() {
+            FrameData[] frameData = new FrameData[elements.size()];
+
+            for (int i = 0; i < elements.size(); i++) {
+                TimelineElement elem = elements.get(i);
+                frameData[i] = new FrameData(elem.getData(), elem.getTime());
+            }
+
+            return frameData;
+        }
+
         List<Pair<ImageFile, Double>> getCurrentState() {
             List<Pair<ImageFile, Double>> state = new ArrayList<>();
 
@@ -596,6 +615,10 @@ public class ScenarioEditorPane extends JPanel {
 
             return state;
         }
+
+        JScrollPane getScrollPane() {
+            return scrollPane;
+        }
     }
 
     private JPanel imagesListPane,
@@ -603,7 +626,7 @@ public class ScenarioEditorPane extends JPanel {
             visualizerPane;
     private TimelinePane timelinePane;
     private JScrollPane imageListScrollPane;
-    // private JLabel currentImageView;
+    private JLabel currentImageView;
 
     /*
      * Keyboard Adapter to allow for keyboard TimelinePane manipulation
@@ -650,13 +673,24 @@ public class ScenarioEditorPane extends JPanel {
                         timelinePane.moveSelectedIndexToLeft();
                     break;
             }
+
+            if (timelinePane.getCurrentSelectedItem() != null) {
+                setCurrentImageView(timelinePane.getCurrentSelectedItem().getData());
+
+                // Ensure the selected item is visible in the scroll view
+                Rectangle bounds = timelinePane.getCurrentSelectedItem().getBounds();
+                bounds.x += timelinePane.getCurrentSelectedItem().getParent().getLocation().x;
+                timelinePane.getScrollPane().getViewport().scrollRectToVisible(bounds);
+            }
+
+
         }
 
     }
 
     private void initializeComponents() throws InvalidScenarioContentException {
         imagesListPane = new JPanel();
-        // visualizerPane = new JPanel();
+         visualizerPane = new JPanel();
         // visualizerPane.setFocusable(false);
 
         timelinePane = new TimelinePane(ProjectManager.getCurrent().getScenarioContent());
@@ -670,7 +704,7 @@ public class ScenarioEditorPane extends JPanel {
 
         Border common = BorderFactory.createEtchedBorder(new Color(0x3C3836), new Color(0x7c6f64));
         imagesListPane.setBorder(common);
-        // visualizerPane.setBorder(common);
+        visualizerPane.setBorder(common);
         timelinePane.setBorder(common);
 
         imagesPanelList.setLayout(new BoxLayout(imagesPanelList, BoxLayout.Y_AXIS));
@@ -678,13 +712,13 @@ public class ScenarioEditorPane extends JPanel {
         imageListScrollPane.setPreferredSize(new Dimension(150, 0));
         imageListScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        // currentImageView = new JLabel();
-        // currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
+         currentImageView = new JLabel();
+         currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void layoutComponents() {
         add(timelinePane, BorderLayout.SOUTH);
-        // add(visualizerPane, BorderLayout.CENTER);
+        add(visualizerPane, BorderLayout.CENTER);
         add(imagesListPane, BorderLayout.WEST);
 
         imagesListPane.setLayout(new GridBagLayout());
@@ -699,6 +733,8 @@ public class ScenarioEditorPane extends JPanel {
         timelinePane.setPreferredSize(new Dimension(0, (int) (this.getPreferredSize().height * 0.8)));
 
         imagesListPane.setPreferredSize(new Dimension((int) (this.getPreferredSize().width * 0.6), 0));
+
+        visualizerPane.add(currentImageView);
     }
 
     public ScenarioEditorPane() throws InvalidScenarioContentException {
@@ -843,6 +879,20 @@ public class ScenarioEditorPane extends JPanel {
         imagesPanelList.repaint();
     }
 
+    private void setCurrentImageView(ImageFile imageFile) {
+        if (imageFile != null && imageFile.getImage() != null) {
+            ImageIcon scaledIcon = new ImageIcon(scaleImage(
+                    imageFile.getImage(),
+                    currentImageView.getWidth(),
+                    currentImageView.getHeight()
+            ));
+            currentImageView.setIcon(scaledIcon);
+        } else {
+            currentImageView.setIcon(null);
+        }
+
+    }
+
     // Helper method to scale images
     private Image scaleImage(Image image, int maxWidth, int maxHeight) {
         if (image == null)
@@ -871,6 +921,10 @@ public class ScenarioEditorPane extends JPanel {
 
     public String extractScenarioContent() {
         return timelinePane.getScenarioFileContent();
+    }
+
+    public FrameData[] extractFrameData() {
+        return timelinePane.getFrameData();
     }
 
     public List<Pair<ImageFile, Double>> getCurrentState() {

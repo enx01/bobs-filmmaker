@@ -49,18 +49,27 @@ public class ProjectManager {
 
         boolean hasImagesDir = false;
         boolean hasTxtFile = false;
+        boolean hasOutputDir = false;
 
         // Iterate through the contents of the directory
         for (File content : contents) {
-            if (content.isDirectory() && content.getName().equals("images")) {
-                hasImagesDir = true;
+            if (content.isDirectory()) {
+                if (content.getName().equals("images"))
+                    hasImagesDir = true;
+                else if (content.getName().equals("output"))
+                    hasOutputDir = true;
             } else if (content.isFile() && content.getName().equals("scenario.txt")) {
                 hasTxtFile = true;
             }
         }
 
-        // Check if there is exactly one directory "images" and one .txt file
-        return hasImagesDir && hasTxtFile && contents.length == 2;
+        if (contents.length == 2) {
+            return hasImagesDir && hasTxtFile;
+        } else if (contents.length == 3) {
+            return hasImagesDir && hasTxtFile && hasOutputDir;
+        }
+
+        return false;
     }
 
     public static Project getCurrent() {
@@ -70,6 +79,7 @@ public class ProjectManager {
         return current;
     }
 
+    @SuppressWarnings("unused")
     public static void saveCurrent() throws IOException {
         if (current == null) {
             return;
