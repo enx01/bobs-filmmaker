@@ -8,7 +8,6 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -40,10 +39,6 @@ public class ScenarioEditorPane extends JPanel {
             // setBackground(new Color(0x3C3836));
             // nameLabel.setForeground(new Color(0xEBDBB2));
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // indicate draggable
-        }
-
-        ImageFile getImageFile() {
-            return imageFile;
         }
 
         // Implementation of Transferable interface
@@ -255,7 +250,6 @@ public class ScenarioEditorPane extends JPanel {
                 String timeString = String.format("%.2fs", time);
                 FontMetrics fm = g2d.getFontMetrics();
                 int textWidth = fm.stringWidth(timeString);
-                int textHeight = fm.getAscent();
                 int textX = 0;
                 int textY = height - fm.getDescent();
 
@@ -271,7 +265,7 @@ public class ScenarioEditorPane extends JPanel {
 
                 String filename = data.getFileName();
                 textWidth = fm.stringWidth(filename);
-                textHeight = fm.getAscent();
+                int textHeight = fm.getAscent();
                 textX = (width - textWidth) / 2;
                 textY = (height + textHeight) / 2 - fm.getDescent();
 
@@ -311,11 +305,15 @@ public class ScenarioEditorPane extends JPanel {
         private final List<TimelineElement> elements;
         private TimelineElement currentSelectedItem = null;
         private final JPanel contentPane;
+        private final JPanel dummy;
 
         TimelinePane(String scenarioContent) throws InvalidScenarioContentException {
             setLayout(new BorderLayout());
             elements = new ArrayList<>();
 
+            // dummy item to act as padding for contentPane
+            dummy = new JPanel();
+            dummy.setPreferredSize(new Dimension(500, 50));
 
             Color primaryMarkerColor = new Color(0xeb, 0xdb, 0xb2);
             Color secondaryMarkerColor = new Color(112, 97, 87);
@@ -448,7 +446,7 @@ public class ScenarioEditorPane extends JPanel {
             int currentX = 10; // initial margin
             int gap = 10; // gap between elements
 
-            int contentWidth = 0;
+            contentPane.remove(dummy);
 
             for (TimelineElement elem : elements) {
                 boolean contains = false;
@@ -465,7 +463,6 @@ public class ScenarioEditorPane extends JPanel {
 
 
                 int totalWidth = (int) (elem.getTime() * PIXELS_PER_SECOND);
-                contentWidth += totalWidth + gap;
                 elem.setPreferredSize(new Dimension(totalWidth, 50));
                 elem.setMinimumSize(new Dimension(totalWidth, 50));
                 elem.setMaximumSize(new Dimension(totalWidth, 50));
@@ -479,7 +476,7 @@ public class ScenarioEditorPane extends JPanel {
                 elem.repaint();
             }
 
-            contentPane.setPreferredSize(new Dimension(contentWidth + 500, contentPane.getHeight()));
+            contentPane.add(dummy);
 
             // Refresh layout
             contentPane.revalidate();
@@ -496,6 +493,8 @@ public class ScenarioEditorPane extends JPanel {
             for (TimelineElement elem : elements) {
                 contentPane.add(elem);
             }
+            // Add the dummy item at the end of contentPane
+            contentPane.add(dummy);
 
             contentPane.revalidate();
             contentPane.repaint();
@@ -592,7 +591,7 @@ public class ScenarioEditorPane extends JPanel {
             List<Pair<ImageFile, Double>> state = new ArrayList<>();
 
             for (TimelineElement elem : elements) {
-                state.add(new Pair<ImageFile, Double>(elem.data, elem.time));
+                state.add(new Pair<>(elem.data, elem.time));
             }
 
             return state;
@@ -720,14 +719,17 @@ public class ScenarioEditorPane extends JPanel {
 
             @Override
             public void componentMoved(ComponentEvent e) {
+                resizeComponents();
             }
 
             @Override
             public void componentShown(ComponentEvent e) {
+                resizeComponents();
             }
 
             @Override
             public void componentHidden(ComponentEvent e) {
+                resizeComponents();
             }
         });
 
@@ -808,6 +810,8 @@ public class ScenarioEditorPane extends JPanel {
         Dimension currentSize = getSize();
 
         imagesListPane.setPreferredSize(new Dimension((int) (currentSize.width * 0.3), currentSize.height));
+
+        timelinePane.updateLayout();
         timelinePane.setPreferredSize(new Dimension(0, (int) (currentSize.height * 0.4)));
 
         revalidate();
@@ -869,12 +873,7 @@ public class ScenarioEditorPane extends JPanel {
         return timelinePane.getScenarioFileContent();
     }
 
-    public List<Pair<ImageFile, Double>> getCurrentState(long timeout, TimeUnit unit) {
-        // throws InterruptedException, TimeoutException {
-        // if (initializationLatch.await(timeout, unit)) {
+    public List<Pair<ImageFile, Double>> getCurrentState() {
         return timelinePane.getCurrentState();
-        // } else {
-        // throw new TimeoutException("Timed out waiting for initialization");
-        // }
     }
 }

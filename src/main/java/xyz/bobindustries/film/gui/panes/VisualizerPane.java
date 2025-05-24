@@ -12,7 +12,6 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.*;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -63,10 +62,8 @@ public class VisualizerPane extends JPanel {
     private Thread visualizerThread;
     private final VisualizerRunnable visualizerRunnable;
 
-    // private static final int TIMER_DELAY = 100;
-    // private static final double TIMER_DELAY_SEC = TIMER_DELAY / 1000.0;
 
-    private ScenarioEditorPane editorPane;
+    private final ScenarioEditorPane editorPane;
 
     public VisualizerPane(ScenarioEditorPane editorPane) {
         this.editorPane = editorPane;
@@ -198,7 +195,7 @@ public class VisualizerPane extends JPanel {
     }
 
     public void updateState() {
-        currentState = editorPane.getCurrentState(3, TimeUnit.SECONDS);
+        currentState = editorPane.getCurrentState();
         totalDuration = computeTotalDuration();
         if (timeSlider != null && !isSeeking) {
 
