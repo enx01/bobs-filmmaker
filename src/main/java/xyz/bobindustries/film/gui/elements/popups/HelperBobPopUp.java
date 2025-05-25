@@ -1,64 +1,100 @@
 package xyz.bobindustries.film.gui.elements.popups;
 
+import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.utilitaries.Bob;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Objects;
 
 public class HelperBobPopUp extends JDialog {
+    JPanel tutorialHolder;
 
-    public HelperBobPopUp(Component caller, Frame owner) {
-        super(owner, "Helper Bob", true);
+    public HelperBobPopUp(Frame owner) {
+        super(owner, "", true);
         setSize(800, 600);
         setResizable(false);
 
-        if (caller != null)
-            setLocationRelativeTo(caller);
-
         setLayout(new BorderLayout());
-
 
         Bob bob = new Bob(true, .75);
         JPanel paddedPanel = new JPanel(new BorderLayout());
         paddedPanel.setOpaque(false);
         paddedPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 20, 20));
+
         paddedPanel.add(bob, BorderLayout.CENTER);
 
         add(paddedPanel, BorderLayout.PAGE_END);
+        
+        JPanel quotePanel = new JPanel(new BorderLayout());
+        quotePanel.setPreferredSize(new Dimension(625 - bob.getWidth(), 30));
+        quotePanel.setMaximumSize(new Dimension(625 - bob.getWidth(), 30));
 
-        JPanel tutorialHolder = new JPanel() {
-            @Override
-            public void paintComponents(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
+        JLabel quote = new JLabel(getRandomBobQuote());
+        quotePanel.add(quote, BorderLayout.CENTER);
 
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Set color to #fbf1c7
-                g2d.setColor(Color.decode("#fbf1c7"));
+        paddedPanel.add(quotePanel, BorderLayout.EAST);
 
-                // Calculate dimensions for the centered oval
-                int width = 600; // Width of the oval
-                int height = 400; // Height of the oval
-                @SuppressWarnings("unused")
-                int x = (800 - width) / 2; // Center x-coordinate
-                @SuppressWarnings("unused")
-                int y = (600 - height) / 2; // Center y-coordinate
-
-                // Draw the filled oval
-                g2d.fillOval(0, 0, width, height);
-            }
-        };
+        tutorialHolder = new JPanel();
 
         tutorialHolder.setPreferredSize(new Dimension(600, 400));
-        tutorialHolder.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
-        add(tutorialHolder, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(tutorialHolder);
+        scrollPane.setBorder(null);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setBorder(BorderFactory.createLineBorder(new Color(251, 241, 199), 2, true));
+
+        add(scrollPane, BorderLayout.CENTER);
     }
 
+    private static final String[] BOB_QUOTES = {
+            "hello, i am bob! i love making stop motion animations!",
+            "the journey of animation can be a long one, keep practicing!",
+            "this software was made by two university students, both loving bob!",
+            "gruvbox is my favourite colorscheme!",
+            "if you ever feel sad, remember you were able to make bob smile!"
+    };
 
+    private String getRandomBobQuote() {
+        int randomIndex = (int) (Math.random() * BOB_QUOTES.length);
+        return BOB_QUOTES[randomIndex];
+    }
 
-    public static void show(Frame owner, Component caller) {
-        HelperBobPopUp hbpu = new HelperBobPopUp(caller, owner);
+    public static void loadBobTutorial() {
+        HelperBobPopUp hbpu = new HelperBobPopUp(App.getFrame());
+
+        JLabel tutorialContent = new JLabel();
+
+        String content = null;
+        StringBuilder contentBuilder = new StringBuilder();
+
+        try {
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            Objects.requireNonNull(
+                                    HelperBobPopUp.class.getResourceAsStream("bob_tutorial.html"))
+                    )
+            );
+            String line;
+            while ((line = reader.readLine()) != null) {
+                contentBuilder.append(line).append("\n");
+            }
+            content = contentBuilder.toString();
+        } catch (IOException ignored) {
+        }
+
+        if (content == null) {
+            content = "<html><body><h1>bob tutorial not found</h1><p>bob apologizes.. this tutorial couldn't be found :(</p></body></html>";
+        }
+
+        tutorialContent.setText(content);
+
+        hbpu.tutorialHolder.add(tutorialContent);
+
         hbpu.setVisible(true);
     }
 }

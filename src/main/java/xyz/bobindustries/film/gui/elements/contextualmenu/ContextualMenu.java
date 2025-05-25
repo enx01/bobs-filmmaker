@@ -9,6 +9,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
 import java.awt.event.*;
+import java.util.Objects;
 
 public class ContextualMenu {
     private final List<JComponent> menuItems;
@@ -100,11 +101,7 @@ public class ContextualMenu {
             List<JComponent> finalItems = new ArrayList<>();
 
             for (JMenuItem item : items) {
-                if (item == null) {
-                    finalItems.add(new JSeparator());
-                } else {
-                    finalItems.add(item);
-                }
+                finalItems.add(Objects.requireNonNullElseGet(item, JSeparator::new));
             }
 
             return new ContextualMenu(finalItems);

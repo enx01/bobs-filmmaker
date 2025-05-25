@@ -5,6 +5,7 @@ import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
 import xyz.bobindustries.film.gui.elements.dialogs.OpenProjectDialog;
 import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
+import xyz.bobindustries.film.gui.elements.popups.HelperBobPopUp;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
 import xyz.bobindustries.film.gui.panes.WelcomePane;
 import xyz.bobindustries.film.projects.ProjectManager;
@@ -148,7 +149,6 @@ public class ActionListenerProvider {
     }
 
     public static void closeCurrentProject(ActionEvent ignoredActionEvent) {
-        System.out.println("splash");
         int result = YesNoDialog.show(App.getFrame(), "Would you like to save the project before closing it ?");
 
         LoadingWindow loadingWindow = new LoadingWindow("closing project...", 200, 100);
@@ -176,6 +176,8 @@ public class ActionListenerProvider {
                     App.getFrame().getContentPane().removeAll();
                     App.getFrame().add(new WelcomePane());
                     App.getFrame().setJMenuBar(null);
+
+                    ProjectManager.setCurrent(null);
 
                     App.getFrame().revalidate();
 
@@ -242,6 +244,14 @@ public class ActionListenerProvider {
         JInternalFrame aboutFrame = workspace.getAboutFrame();
 
         showFrameIfClosed(workspace, aboutFrame);
+    }
+
+    /*
+     * Methods to launch tutorial popups
+     */
+
+    public static void getShowBobTutorialPopup(ActionEvent ignoredActionEvent) {
+        HelperBobPopUp.loadBobTutorial();
     }
 
     /*

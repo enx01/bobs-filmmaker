@@ -131,7 +131,7 @@ public class App {
 
         worker.execute();
 
-        HelperBobPopUp.show(App.getFrame(), null);
+        HelperBobPopUp.loadBobTutorial();
     }
 
     public static JFrame getFrame() {

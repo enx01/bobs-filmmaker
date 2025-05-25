@@ -179,7 +179,6 @@ public class Project {
             if (file.exists()) {
                 URL imageURL = file.toURI().toURL();
 
-                System.out.println(imageURL);
                 return "<html><img src='" + imageURL + "' width='120' height='80'></html>";
             }
             else {

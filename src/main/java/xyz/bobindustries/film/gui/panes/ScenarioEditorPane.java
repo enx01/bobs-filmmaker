@@ -327,8 +327,8 @@ public class ScenarioEditorPane extends JPanel {
             dummy.setPreferredSize(new Dimension(500, 50));
 
             Color primaryMarkerColor = new Color(0xeb, 0xdb, 0xb2);
-            Color secondaryMarkerColor = new Color(112, 97, 87);
-            Color terciaryMarkerColor = new Color(53, 47, 47);
+            Color terciaryMarkerColor = new Color(112, 97, 87);
+            Color secondaryMarkerColor = new Color(53, 47, 47);
 
             contentPane = new JPanel() {
                 @Override
@@ -686,7 +686,7 @@ public class ScenarioEditorPane extends JPanel {
 
     private void initializeComponents() throws InvalidScenarioContentException {
         imagesListPane = new JPanel();
-         visualizerPane = new JPanel();
+        visualizerPane = new JPanel();
         // visualizerPane.setFocusable(false);
 
         timelinePane = new TimelinePane(ProjectManager.getCurrent().getScenarioContent());
@@ -708,8 +708,8 @@ public class ScenarioEditorPane extends JPanel {
         imageListScrollPane.setPreferredSize(new Dimension(150, 0));
         imageListScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-         currentImageView = new JLabel();
-         currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
+        currentImageView = new JLabel();
+        currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void layoutComponents() {

@@ -46,20 +46,24 @@ public class WorkspaceMenuBar extends JMenuBar {
 
         JMenuItem welcomeItem = new JMenuItem("welcome");
         welcomeItem.setMnemonic('W');
+        welcomeItem.addActionListener(ActionListenerProvider::getShowWelcomeFrameAction);
+
         JMenuItem imageEditorItem = new JMenuItem("image editor");
         imageEditorItem.setMnemonic('I');
+        imageEditorItem.addActionListener(ActionListenerProvider::getShowImageEditorFrameAction);
+
         JMenuItem scenarioEditorItem = new JMenuItem("scenario editor");
         scenarioEditorItem.setMnemonic('S');
+        scenarioEditorItem.addActionListener(ActionListenerProvider::getShowScenarioEditorFrameAction);
+
         JMenuItem filmVisualizerItem = new JMenuItem("film visualizer");
         filmVisualizerItem.setMnemonic('V');
+        filmVisualizerItem.addActionListener(ActionListenerProvider::getShowFilmVisualizerFrameAction);
+
         JMenuItem aboutItem = new JMenuItem("about");
         aboutItem.setMnemonic('A');
-
-        welcomeItem.addActionListener(ActionListenerProvider::getShowWelcomeFrameAction);
-        imageEditorItem.addActionListener(ActionListenerProvider::getShowImageEditorFrameAction);
-        scenarioEditorItem.addActionListener(ActionListenerProvider::getShowScenarioEditorFrameAction);
-        filmVisualizerItem.addActionListener(ActionListenerProvider::getShowFilmVisualizerFrameAction);
         aboutItem.addActionListener(ActionListenerProvider::getShowAboutFrameAction);
+
 
         windowMenu.add(welcomeItem);
         windowMenu.add(imageEditorItem);
@@ -67,8 +71,30 @@ public class WorkspaceMenuBar extends JMenuBar {
         windowMenu.add(filmVisualizerItem);
         windowMenu.add(aboutItem);
 
+        JMenu helpMenu = new JMenu("help");
+        helpMenu.setMnemonic('H');
+
+        JMenuItem bobFilmmakerTutorial = new JMenuItem("Bob Filmmaker Tutorial");
+        bobFilmmakerTutorial.setMnemonic('B');
+        bobFilmmakerTutorial.addActionListener(ActionListenerProvider::getShowBobTutorialPopup);
+
+        JMenuItem imageEditorTutorial = new JMenuItem("image editor tutorial");
+        imageEditorTutorial.setMnemonic('I');
+
+        JMenuItem scenarioEditorTutorial = new JMenuItem("scenario editor tutorial");
+        scenarioEditorTutorial.setMnemonic('S');
+
+        JMenuItem filmVisualizerTutorial = new JMenuItem("film visualizer tutorial");
+        filmVisualizerTutorial.setMnemonic('V');
+
+        helpMenu.add(bobFilmmakerTutorial);
+        helpMenu.add(imageEditorTutorial);
+        helpMenu.add(scenarioEditorTutorial);
+        helpMenu.add(filmVisualizerTutorial);
+
         this.add(projectMenu);
         this.add(windowMenu);
+        this.add(helpMenu);
     }
 
 }
