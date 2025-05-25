@@ -13,7 +13,6 @@ import java.util.List;
 
 import org.jcodec.api.awt.AWTSequenceEncoder;
 
-
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.elements.exceptions.CouldntDeleteImageException;
@@ -127,7 +126,7 @@ public class Project {
             Files.write(imagePath, img.getContent());
         }
     }
-    
+
     public void exportAsVideo(List<Pair<ImageFile, Double>> data) throws IOException {
         if (data.isEmpty()) {
             throw new IOException("Data is empty!");
@@ -138,12 +137,14 @@ public class Project {
             Files.createDirectories(outputDir);
         }
 
-        System.out.println("[?] rendering video (20fps) at " + projectDir + "/output/" + projectName + ".mp4 \n data size: " + data.size());
+        System.out.println("[?] rendering video (20fps) at " + projectDir + "/output/" + projectName
+                + ".mp4 \n data size: " + data.size());
 
         AWTSequenceEncoder encoder;
 
         try {
-            encoder = AWTSequenceEncoder.createSequenceEncoder(new File(projectDir + "/output/" + projectName + ".mp4"), 20);
+            encoder = AWTSequenceEncoder.createSequenceEncoder(new File(projectDir + "/output/" + projectName + ".mp4"),
+                    20);
 
             for (int i = 0; i < data.size(); i++) {
                 Pair<ImageFile, Double> frame = data.get(i);
@@ -180,8 +181,7 @@ public class Project {
                 URL imageURL = file.toURI().toURL();
 
                 return "<html><img src='" + imageURL + "' width='120' height='80'></html>";
-            }
-            else {
+            } else {
                 return "Image not found!";
             }
         } catch (MalformedURLException e) {
@@ -200,7 +200,6 @@ public class Project {
         if (!Files.exists(imagePath)) {
             throw new CouldntDeleteImageException("image file not found.");
         }
-
 
         try {
             Path garbageDir = projectDir.resolve("images/.garbage");

@@ -64,7 +64,6 @@ public class WorkspaceMenuBar extends JMenuBar {
         aboutItem.setMnemonic('A');
         aboutItem.addActionListener(ActionListenerProvider::getShowAboutFrameAction);
 
-
         windowMenu.add(welcomeItem);
         windowMenu.add(imageEditorItem);
         windowMenu.add(scenarioEditorItem);
@@ -74,7 +73,7 @@ public class WorkspaceMenuBar extends JMenuBar {
         JMenu helpMenu = new JMenu("help");
         helpMenu.setMnemonic('H');
 
-        JMenuItem bobFilmmakerTutorial = new JMenuItem("Bob Filmmaker Tutorial");
+        JMenuItem bobFilmmakerTutorial = new JMenuItem("bob filmmaker tutorial");
         bobFilmmakerTutorial.setMnemonic('B');
         bobFilmmakerTutorial.addActionListener(ActionListenerProvider::getShowBobTutorialPopup);
 

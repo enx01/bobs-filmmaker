@@ -55,7 +55,7 @@ public class App {
 
         SwingWorker<Void, Void> worker = new SwingWorker<>() { // Classe anonyme d'initialisation de la frame.
             @Override
-            protected Void doInBackground() throws Exception{
+            protected Void doInBackground() throws Exception {
                 /* Creation de la fenetre */
                 frame = new JFrame("bob's filmmaker");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -74,8 +74,7 @@ public class App {
                             int userResponse = YesNoDialog.show(frame,
                                     "would you like to save project \"" +
                                             curProject.getProjectName() +
-                                            "\" before exiting ?"
-                            );
+                                            "\" before exiting ?");
                             if (userResponse == YesNoDialog.YES) {
                                 try {
                                     curProject.save();
@@ -110,13 +109,11 @@ public class App {
 
                 frame.setSize(screenSize.width, screenSize.height);
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-
                 frame.setMinimumSize(ConstantsProvider.WINDOW_MIN_SIZE);
 
                 WelcomePane welcomePane = new WelcomePane();
 
                 frame.add(welcomePane);
-
                 frame.setVisible(true);
 
                 frame.requestFocus();
@@ -130,8 +127,6 @@ public class App {
         };
 
         worker.execute();
-
-        HelperBobPopUp.loadBobTutorial();
     }
 
     public static JFrame getFrame() {
