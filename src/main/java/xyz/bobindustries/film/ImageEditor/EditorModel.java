@@ -538,10 +538,10 @@ public class EditorModel {
                 int blue = rgb & 0xFF;
                 Color currentColor = new Color(red, green, blue);
                 //System.out.println("colors: " + red + " " + green + " " + blue);
-                if (i >= 0 && i < gridWidth && j >= 0 && j < gridHeight) {
+                /*if (i >= 0 && i < gridWidth && j >= 0 && j < gridHeight) {
                     gridColors[i][j] = currentColor;
-                }
-                Point gridPoint = new Point(drawingArea.x + j * gridSquareSize, drawingArea.y + i * gridSquareSize);
+                }*/
+                Point gridPoint = new Point(drawingArea.y + i * gridSquareSize, drawingArea.x + j * gridSquareSize);
                 colorGridSquare(gridPoint, currentColor);
                 updateImage(gridPoint);
             }
