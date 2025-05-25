@@ -175,10 +175,10 @@ public class EditorPane extends JPanel {
 
               data.setDraggedImage();
           }
+          case UNDO -> data.undo();
+          case REDO -> data.redo();
             /* case TEXT -> selectedTool = new TextTool();
            * case MOVE -> selectedTool = new MoveTool();
-           * case UNDO -> selectedTool = new UndoTool();
-           * case REDO -> selectedTool = new RedoTool();
            */
           default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
       }

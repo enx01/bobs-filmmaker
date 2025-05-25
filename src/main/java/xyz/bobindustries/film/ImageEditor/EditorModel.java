@@ -20,6 +20,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.Stack;
 
 public class EditorModel {
     private Rectangle selectionToMove = new Rectangle();
@@ -41,6 +42,8 @@ public class EditorModel {
     private final BlockingQueue<Point> drawQueue = new LinkedBlockingQueue<>();
     private final HashSet<Point> drawSet = new HashSet<>();
     private final ExecutorService drawExecutor = Executors.newSingleThreadExecutor();
+    private final Stack<Color[][]> undoStack = new Stack<>();
+    private final Stack<Color[][]> redoStack = new Stack<>();
 
     public EditorModel(EditorPane parent, Color[][] gridColors, int gridWidth, int gridHeight) {
         this.parent = parent;
@@ -122,6 +125,7 @@ public class EditorModel {
     }
 
     public void addRectangleToGrid(Rectangle rect, Color color) {
+        saveStateForUndo();
         if (color == null) {
             // Par défaut, prendre la couleur sélectionnée dans le ColorBox
             color = ((ColorBox) Workspace.getInstance().getEditorColors().getContentPane()).getSelectedColor();
@@ -177,11 +181,19 @@ public class EditorModel {
     public Color[][] getGridColorsCopy() {
         int rows = gridColors.length;
         int cols = gridColors[0].length;
+        System.out.println(gridColors.length);
+        System.out.println(gridColors[0].length);
         Color[][] copy = new Color[rows][cols];
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                copy[i][j] = gridColors[i][j]; // Color est immutable, donc pas besoin de cloner
+                if (gridColors[i][j] != null) {
+                    copy[i][j] = gridColors[i][j]; // Color est immutable, donc pas besoin de cloner
+                } else {
+                    copy[i][j] = Color.WHITE;
+                }
+                //System.out.println(copy[i][j].toString());
+                //System.out.println("done");
             }
         }
 
@@ -493,6 +505,7 @@ public class EditorModel {
     }*/
 
     public void mergeDraggedImageToGrid() {
+        saveStateForUndo();
         if (draggedImage == null) return;
 
         System.out.println("height:"+selectionToMove.getHeight()+"width:"+selectionToMove.getWidth());
@@ -532,6 +545,44 @@ public class EditorModel {
                 colorGridSquare(gridPoint, currentColor);
                 updateImage(gridPoint);
             }
+        }
+    }
+
+    public void reDrawGrid(Color[][] newGridColors) {
+        for (int i = 0; i < gridColors.length; i++) {
+            for (int j = 0; j < gridColors[i].length; j++) {
+                gridColors[i][j] = newGridColors[i][j];
+                Point gridPoint = new Point(j * gridSquareSize, i * gridSquareSize);
+                colorGridSquare(gridPoint, gridColors[i][j]);
+                updateImage(gridPoint);
+            }
+        }
+    }
+
+    public void saveStateForUndo() {
+        // On fait une copie profonde de gridColors
+        Color[][] copy = getGridColorsCopy();
+        undoStack.push(copy);
+        // Quand on fait une nouvelle action, on vide la pile redo
+        redoStack.clear();
+        System.out.println("undo saved");
+    }
+
+    public void undo() {
+        if (!undoStack.isEmpty()) {
+            Color[][] previous = undoStack.pop();
+            redoStack.push(getGridColorsCopy());
+            reDrawGrid(previous);
+            parent.repaint();
+        }
+    }
+
+    public void redo() {
+        if (!redoStack.isEmpty()) {
+            Color[][] next = redoStack.pop();
+            undoStack.push(getGridColorsCopy());
+            reDrawGrid(next);
+            parent.repaint();
         }
     }
 }

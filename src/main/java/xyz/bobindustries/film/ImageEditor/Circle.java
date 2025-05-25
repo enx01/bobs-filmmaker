@@ -23,6 +23,7 @@ public class Circle implements Tools{
 
     @Override
     public void mouseReleasedAction(MouseEvent e, EditorModel model) {
+        model.saveStateForUndo();
         if (startPoint == null) return;
 
         Point endPoint = getAdjustedPoint(e, model);

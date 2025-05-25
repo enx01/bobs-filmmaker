@@ -27,6 +27,7 @@ public class Pen implements Tools {
 
     @Override
     public void mousePressedAction(MouseEvent e, EditorModel model) {
+        model.saveStateForUndo();
         Point adjustedPoint = new Point(
                 (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
                 (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
