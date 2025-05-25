@@ -1,5 +1,6 @@
 package xyz.bobindustries.film.projects;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -68,6 +69,10 @@ public class ProjectManager {
             return new Project();
         }
         return current;
+    }
+
+    public static Color[][] getLastImage() {
+        return getCurrent().getImages().getLast().getColorMatrix();
     }
 
     public static void saveCurrent() throws IOException {

@@ -73,6 +73,7 @@ public class WorkspaceMenuBar extends JMenuBar {
 
         showToolsItem.addActionListener(ActionListenerProvider::openEditorToolbox);
         showColorsItem.addActionListener(ActionListenerProvider::openEditorColorBox);
+        saveItem.addActionListener(ActionListenerProvider::saveImageAction);
         add(windowMenu);
     }
 

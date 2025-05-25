@@ -138,7 +138,9 @@ public class EditorPane extends JPanel {
         });
     }
 
-
+    public EditorModel getData() {
+        return data;
+    }
 
     public void printCoords(int intPosX, int intPosY) {
         String posX = String.valueOf(intPosX);
@@ -164,8 +166,8 @@ public class EditorPane extends JPanel {
         System.out.println("selecting tool: "+chosenToolsList.name());
         switch (chosenToolsList) {
           case PEN -> selectedTool = new Pen();
-          case BRUSH -> selectedTool = new Brush(100);
-          case ERASE -> selectedTool = new Erase(100);
+          case BRUSH -> selectedTool = new Brush(10);
+          case ERASE -> selectedTool = new Erase(10);
           case CIRCLE -> selectedTool = new Circle();
           case RECTANGLE -> selectedTool = new RectangleTool();
           case SELECT -> selectedTool = new SelectionTool();

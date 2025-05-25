@@ -23,7 +23,7 @@ public class ImageUtils {
     }
 
     try {
-      ImageIO.write(exportedImage, "jpg", new File(outputPath));
+      ImageIO.write(exportedImage, "png", new File(outputPath));
       System.out.println("Image exportée avec succès à : " + outputPath);
       return true;
     } catch (IOException e) {

@@ -11,6 +11,7 @@ import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 import xyz.bobindustries.film.gui.panes.*;
+import xyz.bobindustries.film.utils.ImageUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -165,7 +166,7 @@ public class ActionListenerProvider {
         int result = OpenImageDialog.show(App.getFrame());
 
         if (result==1) {
-            openImageEditor(editorFrame, ProjectManager.getCurrent().getImages().get(0).getColorMatrix());
+            openImageEditor(editorFrame, ProjectManager.getLastImage());
         }
     }
 
@@ -203,6 +204,13 @@ public class ActionListenerProvider {
         EditorPane editor = (EditorPane) editorFrame.getContentPane();
         editor.setSelectedTool(ToolsList.valueOf(e.getActionCommand()));
         System.out.println("tool set : "+ e.getActionCommand());
+    }
+
+    public static void saveImageAction(ActionEvent ignorActionEvent) {
+        Workspace workspace = Workspace.getInstance();
+        JInternalFrame editorFrame = workspace.getImageEditorFrame();
+        EditorPane editor = (EditorPane) editorFrame.getContentPane();
+        ImageUtils.exportImage(editor.getData().getGridColors(), "tmp.jpg");
     }
 
     /*
@@ -278,9 +286,9 @@ public class ActionListenerProvider {
         JPanel editor = null;
         if (imageMatrix == null) {
             Color[][] defaultCanvas = new Color[600][800];
-            for (Color[] currentTab : defaultCanvas) {
-                for (Color currentColor : currentTab) {
-                    currentColor = Color.WHITE;
+            for (int i = 0; i < defaultCanvas.length; i+=1) {
+                for (int j = 0; j < defaultCanvas[0].length; j+=1) {
+                    defaultCanvas[i][j] = new Color(255, 255, 255);
                 }
             }
             System.out.println("fini");
@@ -290,4 +298,6 @@ public class ActionListenerProvider {
         }
         frame.setContentPane(editor);
     }
+
+
 }
