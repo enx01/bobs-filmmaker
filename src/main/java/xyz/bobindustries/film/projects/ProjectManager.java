@@ -4,6 +4,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
+import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
 
@@ -86,6 +87,19 @@ public class ProjectManager {
 
     public static Color[][] getNImage(int n) {
         return getCurrent().getImages().get(n).getColorMatrix();
+    }
+
+    public static String getNImageName(int n) {
+        return getCurrent().getImages().get(n).getFileName();
+    }
+
+    public static Color[][] getImageMatrix(String name) {
+        for (ImageFile file : getCurrent().getImages()) {
+            if (file.getFileName().equals(name)) {
+                return file.getColorMatrix();
+            }
+        }
+        return null;
     }
 
     public static void saveCurrent() throws IOException {

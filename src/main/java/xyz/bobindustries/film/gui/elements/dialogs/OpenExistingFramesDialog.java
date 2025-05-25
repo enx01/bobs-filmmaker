@@ -18,14 +18,15 @@ public class OpenExistingFramesDialog extends JDialog {
     private JList<String> liste;
     private DefaultListModel<String> modeleListe;
     private JButton boutonEnregistrer;
+    private ArrayList<String> selectedFrames;
 
     public static final int SUCCESS = 1;
     public static final int FAILURE = 0;
 
     private boolean isSuccess = false;
 
-    public OpenExistingFramesDialog(Frame parent, ArrayList<ImageFile> images, ArrayList<Integer> selectedFrames) {
-        super(parent, "Sélection multiple d'éléments", true); // true = modal
+    public OpenExistingFramesDialog(Frame parent, ArrayList<ImageFile> images) {
+        super(parent, "Sélection des frames", true); // true = modal
         setSize(400, 300);
         setLocationRelativeTo(parent);
 
@@ -46,8 +47,9 @@ public class OpenExistingFramesDialog extends JDialog {
         boutonEnregistrer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ArrayList<String> selections = (ArrayList<String>) liste.getSelectedValuesList();
-                enregistrerSelections(selections, selectedFrames);
+                setSelectedFrames((ArrayList<String>) liste.getSelectedValuesList());
+                isSuccess = true;
+                dispose();
             }
         });
 
@@ -57,24 +59,27 @@ public class OpenExistingFramesDialog extends JDialog {
         add(boutonEnregistrer, BorderLayout.SOUTH);
     }
 
-    private void enregistrerSelections(ArrayList<String> selections, ArrayList<Integer> selectedFrames) {
+    public void setSelectedFrames(ArrayList<String> selectedFrames) {
+        this.selectedFrames = selectedFrames;
+    }
+
+    private void enregistrerSelections(ArrayList<String> selections, ArrayList<String> selectedFrames) {
         int[] selectedIndices = liste.getSelectedIndices();
         if (selectedIndices.length == 0) {
             System.out.println("Aucun élément sélectionné.");
         } else {
             System.out.println("Index des éléments sélectionnés :");
-            for (int index : selectedIndices) {
-                System.out.println("- " + index);
-                selectedFrames.add(index);
+            for (String s : selections) {
+                System.out.println("- " + s);
             }
         }
         isSuccess = true;
         dispose();
     }
 
-    public static int show(Frame parent, ArrayList<ImageFile> images, ArrayList<Integer> selectedFrames) {
-        OpenExistingFramesDialog dialog = new OpenExistingFramesDialog(parent, images, selectedFrames);
+    public static ArrayList<String> show(Frame parent, ArrayList<ImageFile> images) {
+        OpenExistingFramesDialog dialog = new OpenExistingFramesDialog(parent, images);
         dialog.setVisible(true); // Show the dialog modally
-        return dialog.isSuccess ? SUCCESS : FAILURE; // Return the result
+        return dialog.selectedFrames;
     }
 }

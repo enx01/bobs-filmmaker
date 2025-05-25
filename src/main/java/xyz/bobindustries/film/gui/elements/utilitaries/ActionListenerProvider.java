@@ -5,6 +5,7 @@ import xyz.bobindustries.film.ImageEditor.ToolsList;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
 import xyz.bobindustries.film.gui.elements.dialogs.*;
+import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
 import xyz.bobindustries.film.gui.panes.WelcomePane;
 import xyz.bobindustries.film.projects.ProjectManager;
@@ -21,6 +22,7 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class ActionListenerProvider {
@@ -236,7 +238,8 @@ public class ActionListenerProvider {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
 
-        openImageEditor(editorFrame, null);
+        EditorPane editor = openImageEditor(editorFrame, null, "");
+        editorFrame.setContentPane(editor);
     }
 
     /**
@@ -248,13 +251,11 @@ public class ActionListenerProvider {
 
         System.out.println("image");
 
-        int result = OpenImageDialog.show(App.getFrame());
+        Pair<Color[][], String> result = OpenImageDialog.show(App.getFrame());
 
-        if (result==1) {
-            openImageEditor(editorFrame, ProjectManager.getLastImage());
-            openImageEditor(editorFrame, ProjectManager.getNImage(3));
-            openImageEditor(editorFrame, ProjectManager.getNImage(2));
-        }
+        EditorPane editor = openImageEditor(editorFrame, result.getKey(), result.getValue());
+        editorFrame.setContentPane(editor);
+
     }
 
     public static void openEditorToolbox(ActionEvent ignorActionEvent) {
@@ -297,21 +298,29 @@ public class ActionListenerProvider {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
         EditorPane editor = (EditorPane) editorFrame.getContentPane();
-        ImageUtils.exportImage(editor.getData().getGridColors(), "tmp.jpg");
+        String projectPath = ProjectManager.getCurrent().getProjectDir().toString();
+        String fileName = editor.getCurrentFileName();
+        System.out.println("pp:"+projectPath);
+        if (fileName.isEmpty() || fileName.contains("/")) {
+            fileName = NameImageDialog.show(App.getFrame(), fileName);
+        }
+        ImageUtils.exportImage(editor.getData().getGridColors(), projectPath+"/images/"+fileName+".png");
     }
 
     public static void openExistingFrames(ActionEvent ignoredActionEvent) {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
         Project current = ProjectManager.getCurrent();
-        ArrayList<Integer> selectedFrames = new ArrayList<>();
+        ArrayList <String> selectedFrames = new ArrayList<>();
         EditorPane editor = null;
-        int result = OpenExistingFramesDialog.show(App.getFrame(), (ArrayList<ImageFile>) current.getImages(), selectedFrames);
-        for (int i : selectedFrames) {
+        selectedFrames = OpenExistingFramesDialog.show(App.getFrame(), (ArrayList<ImageFile>) current.getImages());
+        System.out.println(selectedFrames.size());
+        for (String currentFrame : selectedFrames) {
             if (editor == null) {
-                editor = openImageEditor(editorFrame, ProjectManager.getNImage(i));
+                System.out.println("editor is null");
+                editor = openImageEditor(editorFrame, ProjectManager.getImageMatrix(currentFrame), currentFrame);
             } else {
-                editor.addNewImage(ProjectManager.getNImage(i));
+                editor.addNewImage(ProjectManager.getImageMatrix(currentFrame), currentFrame);
             }
         }
         editorFrame.setContentPane(editor);
@@ -388,7 +397,7 @@ public class ActionListenerProvider {
         }
     }
 
-    public static EditorPane openImageEditor(JInternalFrame frame, Color[][] imageMatrix) {
+    public static EditorPane openImageEditor(JInternalFrame frame, Color[][] imageMatrix, String fileName) {
         EditorPane editor = null;
         if (imageMatrix == null) {
             Color[][] defaultCanvas = new Color[600][800];
@@ -398,10 +407,10 @@ public class ActionListenerProvider {
                 }
             }
             System.out.println("fini");
-            editor = new EditorPane(defaultCanvas, 800, 600);
+            editor = new EditorPane(defaultCanvas, 800, 600, "");
             System.out.println("index:"+editor.getCurrentImageIndex());
         } else {
-            editor = new EditorPane(imageMatrix, imageMatrix[0].length, imageMatrix.length);
+            editor = new EditorPane(imageMatrix, imageMatrix[0].length, imageMatrix.length, fileName);
             System.out.println("index:"+editor.getCurrentImageIndex());
         }
         return editor;

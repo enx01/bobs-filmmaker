@@ -14,6 +14,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +23,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class EditorPane extends JPanel {
 
-    private ArrayList<EditorModel> openedImages;
+    //private ArrayList<EditorModel> openedImages;
+    private HashMap<Integer, String> openedFiles;
+    private HashMap<Integer, EditorModel> openedFilesModels;
     private int currentImageIndex;
     private EditorModel data;
     private static Tools selectedTool = new Pen();
@@ -31,17 +35,16 @@ public class EditorPane extends JPanel {
     private final Timer repaintTimer = new Timer(16, e -> repaint());
     private volatile boolean needsRepaint = false;
 
-    public EditorPane(Color[][] gridColors, int gridWidth, int gridHeight) {
+    public EditorPane(Color[][] gridColors, int gridWidth, int gridHeight, String currentFile) {
 
-        if (openedImages==null) {
-            openedImages = new ArrayList<>();
-        }
+        openedFiles = new HashMap<>();
+        openedFilesModels = new HashMap<>();
 
         currentImageIndex=0;
+        openedFiles.put(currentImageIndex, currentFile);
 
         data = new EditorModel(this, gridColors, gridWidth, gridHeight);
-
-        openedImages.add(data);
+        openedFilesModels.put(currentImageIndex, data);
 
         coordinatToolbar = new CoordinateBar();
 
@@ -70,6 +73,10 @@ public class EditorPane extends JPanel {
         addMouseWheelListener(mouseHandler);
 
         startDrawingThread();
+    }
+
+    public String getCurrentFileName(){
+        return openedFiles.get(currentImageIndex);
     }
 
 
@@ -210,14 +217,15 @@ public class EditorPane extends JPanel {
         return currentImageIndex;
     }
 
-    public void addNewImage(Color[][] gridColors) {
+    public void addNewImage(Color[][] gridColors, String name) {
         EditorModel newData = new EditorModel(this, gridColors, gridColors[0].length, gridColors.length);
-        openedImages.add(newData);
+        openedFiles.put(Collections.max(openedFilesModels.keySet())+1, name);
+        openedFilesModels.put(Collections.max(openedFilesModels.keySet())+1, newData);
     }
 
     public void changeCurrentImage(int idImage) {
         currentImageIndex = idImage;
-        data = openedImages.get(currentImageIndex);
+        data = openedFilesModels.get(currentImageIndex);
     }
 
 }

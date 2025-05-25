@@ -37,6 +37,7 @@ public class EditorModel {
     private Color[][] gridColors;
     private HashMap<Point, Color> previousPoints = new HashMap<>();
     private BufferedImage draggedImage;
+    private int imageIndex;
 
     private Point lastDragPoint = null;
     private final BlockingQueue<Point> drawQueue = new LinkedBlockingQueue<>();
@@ -52,7 +53,7 @@ public class EditorModel {
         this.gridHeight = gridHeight;
 
             drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
-
+        this.imageIndex = imageIndex;
         createVolatileImage();
     }
 
@@ -537,10 +538,6 @@ public class EditorModel {
                 int green = (rgb >> 8) & 0xFF;
                 int blue = rgb & 0xFF;
                 Color currentColor = new Color(red, green, blue);
-                //System.out.println("colors: " + red + " " + green + " " + blue);
-                /*if (i >= 0 && i < gridWidth && j >= 0 && j < gridHeight) {
-                    gridColors[i][j] = currentColor;
-                }*/
                 Point gridPoint = new Point(drawingArea.y + i * gridSquareSize, drawingArea.x + j * gridSquareSize);
                 colorGridSquare(gridPoint, currentColor);
                 updateImage(gridPoint);

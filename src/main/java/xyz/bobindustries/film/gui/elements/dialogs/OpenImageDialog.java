@@ -5,6 +5,7 @@ import javax.swing.*;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
+import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 
@@ -19,6 +20,9 @@ public class OpenImageDialog extends JDialog {
     public static final int FAILURE = 0;
 
     private boolean isSuccess = false;
+
+    private static Color[][] gridResult;
+    private static String imageLoc;
 
 //    private static final ImageLayers layers = new ImageLayers();
 
@@ -67,8 +71,8 @@ public class OpenImageDialog extends JDialog {
                 try {
                     ImageFile image = new ImageFile(imageLocation);
 
-                    ProjectManager.getCurrent().addImage(image);
-
+                    gridResult = image.getColorMatrix();
+                    imageLoc = imageLocation;
                     isSuccess = true;
                     dispose();
 
@@ -107,10 +111,18 @@ public class OpenImageDialog extends JDialog {
         add(createButton, gbc);
     }
 
-    public static int show(Frame parent) {
+    public Color[][] getGridResult() {
+        return gridResult;
+    }
+
+    public String getImageLoc() {
+        return imageLoc;
+    }
+
+    public static Pair<Color[][], String> show(Frame parent) {
         OpenImageDialog dialog = new OpenImageDialog(parent);
         dialog.setVisible(true); // Show the dialog modally
-        return dialog.isSuccess ? SUCCESS : FAILURE; // Return the result
+        return new Pair<>(dialog.getGridResult(), dialog.getImageLoc());
     }
 
 }
