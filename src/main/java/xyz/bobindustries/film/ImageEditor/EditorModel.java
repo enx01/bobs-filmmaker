@@ -382,7 +382,7 @@ public class EditorModel {
                     int gridY = centerY + dy;
 
                     if (gridX >= 0 && gridY >= 0) {
-                        Point gridPoint = new Point(gridX * getGridSquareSize(), gridY * getGridSquareSize());
+                        Point gridPoint = new Point(drawingArea.x + gridX * gridSquareSize, drawingArea.y + gridY * gridSquareSize);
                         if (drawSet.add(gridPoint)) {
                             try {
                                 drawQueue.put(gridPoint);
@@ -541,7 +541,7 @@ public class EditorModel {
                 if (i >= 0 && i < gridWidth && j >= 0 && j < gridHeight) {
                     gridColors[i][j] = currentColor;
                 }
-                Point gridPoint = new Point(i * gridSquareSize, j * gridSquareSize);
+                Point gridPoint = new Point(drawingArea.x + j * gridSquareSize, drawingArea.y + i * gridSquareSize);
                 colorGridSquare(gridPoint, currentColor);
                 updateImage(gridPoint);
             }
@@ -552,7 +552,7 @@ public class EditorModel {
         for (int i = 0; i < gridColors.length; i++) {
             for (int j = 0; j < gridColors[i].length; j++) {
                 gridColors[i][j] = newGridColors[i][j];
-                Point gridPoint = new Point(j * gridSquareSize, i * gridSquareSize);
+                Point gridPoint = new Point(drawingArea.x + j * gridSquareSize, drawingArea.y + i * gridSquareSize);
                 colorGridSquare(gridPoint, gridColors[i][j]);
                 updateImage(gridPoint);
             }

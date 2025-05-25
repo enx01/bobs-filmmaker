@@ -12,5 +12,7 @@ public enum ToolsList {
     MOVE_SELECTION,
     MOVE_SELECTION_AREA,
     UNDO,
-    REDO
+    REDO,
+    PREVIOUS_FRAME,
+    NEXT_FRAME
 }

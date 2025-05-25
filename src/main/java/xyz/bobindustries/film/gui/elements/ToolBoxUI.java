@@ -25,30 +25,17 @@ public class ToolBoxUI extends JPanel {
       buttonPanel.add(button);
     }*/
 
-    ToolboxButton button = new ToolboxButton(ToolsList.PEN);
-    ToolboxButton button2 = new ToolboxButton(ToolsList.BRUSH);
-    ToolboxButton button3 = new ToolboxButton(ToolsList.ERASE);
-    ToolboxButton button4 = new ToolboxButton(ToolsList.CIRCLE);
-    ToolboxButton button5 = new ToolboxButton(ToolsList.RECTANGLE);
-    ToolboxButton button6 = new ToolboxButton(ToolsList.SELECT);
-    ToolboxButton button7 = new ToolboxButton(ToolsList.MOVE_SELECTION_AREA);
-    ToolboxButton button8 = new ToolboxButton(ToolsList.MOVE_SELECTION);
-    ToolboxButton button9 = new ToolboxButton(ToolsList.UNDO);
-    ToolboxButton button10 = new ToolboxButton(ToolsList.REDO);
-
-    buttonPanel.add(button);
-    buttonPanel.add(button2);
-    buttonPanel.add(button3);
-    buttonPanel.add(button4);
-    buttonPanel.add(button5);
-    buttonPanel.add(button6);
-    buttonPanel.add(button7);
-    buttonPanel.add(button8);
-    buttonPanel.add(button9);
-    buttonPanel.add(button10);
+    initializeButtons(buttonPanel);
 
     System.out.println("pill1 workspace");
     add(buttonPanel, BorderLayout.CENTER);
+  }
+
+  public void initializeButtons(JPanel buttonPanel) {
+    for (ToolsList tl : ToolsList.values()) {
+      ToolboxButton button = new ToolboxButton(tl);
+      buttonPanel.add(button);
+    }
   }
 }
 

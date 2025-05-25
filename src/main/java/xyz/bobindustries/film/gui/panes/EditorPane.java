@@ -171,29 +171,35 @@ public class EditorPane extends JPanel {
         currentTools = chosenToolsList;
         System.out.println("selecting tool: "+chosenToolsList.name());
         switch (chosenToolsList) {
-          case PEN -> selectedTool = new Pen();
-          case BRUSH -> selectedTool = new Brush(10);
-          case ERASE -> selectedTool = new Erase(10);
-          case CIRCLE -> selectedTool = new Circle();
-          case RECTANGLE -> selectedTool = new RectangleTool();
-          case SELECT -> selectedTool = new SelectionTool();
-          case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionArea();
-          case MOVE_SELECTION -> {
-              selectedTool = new MoveSelection();
-              data.setDraggedImage();
-          }
-          case UNDO -> {
-              changeCurrentImage(currentImageIndex-1);
-              System.out.println("index:"+currentImageIndex);
-              data.reDrawGrid(data.getGridColors());
-          }
-          case REDO -> {
-              changeCurrentImage(currentImageIndex+1);
-              System.out.println("index:"+currentImageIndex);
-              data.reDrawGrid(data.getGridColors());
-          }
-          default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
-      }
+            case PEN -> selectedTool = new Pen();
+            case BRUSH -> selectedTool = new Brush(10);
+            case ERASE -> selectedTool = new Erase(10);
+            case CIRCLE -> selectedTool = new Circle();
+            case RECTANGLE -> selectedTool = new RectangleTool();
+            case SELECT -> selectedTool = new SelectionTool();
+            case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionArea();
+            case MOVE_SELECTION -> {
+            selectedTool = new MoveSelection();
+            data.setDraggedImage();
+            }
+            case UNDO -> {
+                data.undo();
+            }
+            case REDO -> {
+                data.redo();
+            }
+            case PREVIOUS_FRAME -> {
+                changeCurrentImage(currentImageIndex-1);
+                System.out.println("index:"+currentImageIndex);
+                data.reDrawGrid(data.getGridColors());
+            }
+            case NEXT_FRAME -> {
+                changeCurrentImage(currentImageIndex+1);
+                System.out.println("index:"+currentImageIndex);
+                data.reDrawGrid(data.getGridColors());
+            }
+            default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
+            }
     }
 
     public void setCurrentImageIndex(int currentImageIndex) {
