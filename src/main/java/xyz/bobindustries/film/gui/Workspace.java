@@ -13,10 +13,7 @@ import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioConten
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.beans.PropertyVetoException;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Classe Workspace permettant l'affichage des multiples outils d'editions du
@@ -105,10 +102,6 @@ public class Workspace extends JDesktopPane {
         return scenarioEditorPane;
     }
 
-    public BoundedDesktopManager getDesktopManager() {
-        return desktopManager;
-    }
-
     public Workspace() throws InvalidScenarioContentException {
 
         desktopManager = new BoundedDesktopManager();
@@ -128,7 +121,7 @@ public class Workspace extends JDesktopPane {
                 false,
                 true,
                 true,
-                true);
+                false);
         welcomeFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         welcomeFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         welcomeFrame.setContentPane(new ProjectWelcomePane());
@@ -137,14 +130,24 @@ public class Workspace extends JDesktopPane {
         } catch (PropertyVetoException e) {
             SimpleErrorDialog.show("Error maximizing welcome frame :(");
         }
+
         welcomeFrame.setVisible(true);
+        welcomeFrame.toFront();
+        try {
+            welcomeFrame.setSelected(true);
+        } catch (PropertyVetoException e) {
+            System.err.println(e.getMessage());
+        }
+
+        add(welcomeFrame);
+        setActiveFrame(welcomeFrame);
 
         imageEditorFrame = new JInternalFrame(
                 "image editor",
                 true,
                 true,
                 true,
-                true);
+                false);
         imageEditorFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         imageEditorFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         imageEditorFrame.setContentPane(new JPanel());
@@ -154,7 +157,7 @@ public class Workspace extends JDesktopPane {
                 true,
                 true,
                 true,
-                true);
+                false);
         scenarioEditorFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         scenarioEditorFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
 
@@ -167,7 +170,7 @@ public class Workspace extends JDesktopPane {
                 true,
                 true,
                 true,
-                true);
+                false);
         filmVisualizerFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         filmVisualizerFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         VisualizerPane visualizerPane = new VisualizerPane(scenarioEditorPane);
@@ -198,9 +201,6 @@ public class Workspace extends JDesktopPane {
         return instance;
     }
 
-    public void initializeVisualizer() {
-
-    }
 
     @Override
     protected void paintComponent(Graphics g) {
