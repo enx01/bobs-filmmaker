@@ -1,6 +1,8 @@
 package xyz.bobindustries.film.gui.elements.utilitaries;
 
 import java.awt.BorderLayout;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -27,7 +29,7 @@ public class SimpleErrorDialog {
         panel.add(messageLabel, BorderLayout.CENTER);
 
         // Create an OK button to close the dialog
-        JButton okButton = new JButton("OK");
+        JButton okButton = new JButton("ok");
         okButton.addActionListener(e -> dialog.dispose()); // Close the dialog when clicked
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(okButton);
@@ -35,6 +37,14 @@ public class SimpleErrorDialog {
 
         // Add the panel to the dialog
         dialog.add(panel);
+
+        dialog.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent evt) {
+                if (evt.getKeyCode() == KeyEvent.VK_ESCAPE || evt.getKeyCode() == KeyEvent.VK_ENTER)
+                    dialog.dispose();
+            }
+        });
 
         dialog.pack();
         dialog.setLocationRelativeTo(null); // Center the dialog on the screen

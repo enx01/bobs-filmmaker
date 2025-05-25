@@ -11,6 +11,7 @@ import xyz.bobindustries.film.gui.panes.AboutPane;
 import xyz.bobindustries.film.gui.panes.EditorPane;
 import xyz.bobindustries.film.gui.panes.ProjectWelcomePane;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
+import xyz.bobindustries.film.gui.panes.VisualizerPane;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 import xyz.bobindustries.film.gui.panes.*;
 
@@ -25,54 +26,6 @@ import java.beans.PropertyVetoException;
  * film comme l'utilisateur le souhaite.
  */
 public class Workspace extends JDesktopPane {
-    private static Workspace instance;
-
-    private WorkspaceMenuBar menubar;
-
-    private final JInternalFrame welcomeFrame,
-            imageEditorFrame,
-            scenarioEditorFrame,
-            filmVisualizerFrame,
-            aboutFrame;
-
-    private final JInternalFrame editorToolbox;
-    private final JInternalFrame editorColors;
-
-    private final ScenarioEditorPane scenarioEditorPane;
-
-    private final Bob bob;
-
-    public JInternalFrame getWelcomeFrame() {
-        return welcomeFrame;
-    }
-
-    public JInternalFrame getImageEditorFrame() {
-        return imageEditorFrame;
-    }
-
-    public JInternalFrame getScenarioEditorFrame() {
-        return scenarioEditorFrame;
-    }
-
-    public JInternalFrame getFilmVisualizerFrame() {
-        return filmVisualizerFrame;
-    }
-
-    public JInternalFrame getAboutFrame() {
-        return aboutFrame;
-    }
-
-    public ScenarioEditorPane getScenarioEditorPane() {
-        return scenarioEditorPane;
-    }
-
-    public JInternalFrame getEditorToolbox() {
-        return editorToolbox;
-    }
-
-    public JInternalFrame getEditorColors() {
-        return editorColors;
-    }
 
     /**
      * Internal class BoundedDesktopManager allowing us to prevent the user from
@@ -117,8 +70,60 @@ public class Workspace extends JDesktopPane {
         }
     }
 
+    private static Workspace instance;
+
+
+    private WorkspaceMenuBar menubar;
+    private final BoundedDesktopManager desktopManager;
+    private final JInternalFrame editorToolbox;
+    private final JInternalFrame editorColors;
+
+    private final JInternalFrame welcomeFrame,
+            imageEditorFrame,
+            scenarioEditorFrame,
+            filmVisualizerFrame,
+            aboutFrame;
+
+    private final ScenarioEditorPane scenarioEditorPane;
+
+    private final Bob bob;
+
+    public JInternalFrame getWelcomeFrame() {
+        return welcomeFrame;
+    }
+
+    public JInternalFrame getImageEditorFrame() {
+        return imageEditorFrame;
+    }
+
+    public JInternalFrame getScenarioEditorFrame() {
+        return scenarioEditorFrame;
+    }
+
+    public JInternalFrame getFilmVisualizerFrame() {
+        return filmVisualizerFrame;
+    }
+
+    public JInternalFrame getAboutFrame() {
+        return aboutFrame;
+    }
+
+    public ScenarioEditorPane getScenarioEditorPane() {
+        return scenarioEditorPane;
+    }
+
+    public JInternalFrame getEditorToolbox() {
+        return editorToolbox;
+    }
+
+    public JInternalFrame getEditorColors() {
+        return editorColors;
+    }
+
     public Workspace() throws InvalidScenarioContentException {
-        setDesktopManager(new BoundedDesktopManager());
+
+        desktopManager = new BoundedDesktopManager();
+        setDesktopManager(desktopManager);
 
         menubar = new WorkspaceMenuBar();
 
@@ -136,7 +141,7 @@ public class Workspace extends JDesktopPane {
                 false,
                 true,
                 true,
-                true);
+                false);
         welcomeFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         welcomeFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         welcomeFrame.setContentPane(new ProjectWelcomePane());
@@ -145,14 +150,24 @@ public class Workspace extends JDesktopPane {
         } catch (PropertyVetoException e) {
             SimpleErrorDialog.show("Error maximizing welcome frame :(");
         }
+
         welcomeFrame.setVisible(true);
+        welcomeFrame.toFront();
+        try {
+            welcomeFrame.setSelected(true);
+        } catch (PropertyVetoException e) {
+            System.err.println(e.getMessage());
+        }
+
+        add(welcomeFrame);
+        setActiveFrame(welcomeFrame);
 
         imageEditorFrame = new JInternalFrame(
                 "image editor",
                 true,
                 true,
                 true,
-                true);
+                false);
         imageEditorFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         imageEditorFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         imageEditorFrame.setContentPane(new OpenEditor(imageEditorFrame));
@@ -162,7 +177,7 @@ public class Workspace extends JDesktopPane {
                 true,
                 true,
                 true,
-                true);
+                false);
         scenarioEditorFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         scenarioEditorFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
 
@@ -175,10 +190,11 @@ public class Workspace extends JDesktopPane {
                 true,
                 true,
                 true,
-                true);
+                false);
         filmVisualizerFrame.setSize(ConstantsProvider.IFRAME_MIN_SIZE);
         filmVisualizerFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
-        filmVisualizerFrame.setContentPane(new JPanel());
+        VisualizerPane visualizerPane = new VisualizerPane(scenarioEditorPane);
+        filmVisualizerFrame.setContentPane(visualizerPane);
 
         aboutFrame = new JInternalFrame(
                 "about",
@@ -232,6 +248,7 @@ public class Workspace extends JDesktopPane {
 
     public static Workspace getInstance() {
         assert (instance != null);
+
         return instance;
     }
 
@@ -242,6 +259,7 @@ public class Workspace extends JDesktopPane {
         System.out.println("fin creation workspace");
         return instance;
     }
+
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -263,4 +281,9 @@ public class Workspace extends JDesktopPane {
     public Color getSelectedColor() {
         return ((ColorBox) instance.getEditorColors().getContentPane()).getSelectedColor();
     }
+
+    public void setActiveFrame(JInternalFrame frame) {
+        desktopManager.activateFrame(frame);
+    }
+
 }

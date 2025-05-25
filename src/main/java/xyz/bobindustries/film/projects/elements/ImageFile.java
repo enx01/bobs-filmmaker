@@ -77,4 +77,24 @@ public class ImageFile {
     }
   }
 
+    public Image getImage() {
+        return Toolkit.getDefaultToolkit().createImage(content);
+    }
+
+    /**
+     * Helper method to get a BufferedImage from the byte data.
+     * Returns null if data is invalid or null.
+     */
+    public BufferedImage getBufferedImage() {
+        if (content == null || content.length == 0) {
+            return null;
+        }
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(content)) {
+            return ImageIO.read(bis);
+        } catch (IOException e) {
+            System.err.println("Error reading image data for " + fileName + ": " + e.getMessage());
+            return null;
+        }
+    }
+
 }

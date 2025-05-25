@@ -4,10 +4,6 @@
   This file defines a set of component styles for a Java Swing Synth look-and-feel
   designed with a Gruvbox-inspired color scheme.
 
-  Note: The scrollbar was previously invisible because its states were not rendering
-  a visible thumb and track. The following changes ensure that the ScrollBar.thumb and
-  ScrollBar.track regions have visible background colors in all states.
-
   For more details on Synth file format and look-and-feel, see:
     https://docs.oracle.com/javase/8/docs/api/javax/swing/plaf/synth/doc-files/synthFileFormat.html
     https://docs.oracle.com/javase/tutorial/uiswing/lookandfeel/synth.html
@@ -89,9 +85,14 @@
   <!-- JInternalFrame Styles -->
   <style id="internalFrameStyle">
     <opaque value="TRUE"/>
-    <state>
-      <color value="#3C3836" type="BACKGROUND"/>
-      <color value="#EBDBB2" type="FOREGROUND"/>
+    <insets top="6" left="6" right="6" bottom="6"/>
+
+    <state value="ENABLED">
+      <color value="#504945" type="BACKGROUND"/> <color value="#EBDBB2" type="TEXT_FOREGROUND"/>
+    </state>
+
+    <state value="SELECTED">
+      <color value="#a89984" type="BACKGROUND"/> <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
   </style>
   <bind style="internalFrameStyle" type="region" key="InternalFrame"/>
@@ -260,5 +261,28 @@
     </state>
   </style>
   <bind style="radioButtonUnselectedIconStyle" type="region" key="RadioButton.icon.unselected"/>
+  <style id="sliderStyle">
+    <opaque value="FALSE"/>
+    <property key="Slider.paintValue" type="boolean" value="false"/>
+    <state>
+      <color value="#3C3836" type="BACKGROUND"/> <color value="#EBDBB2" type="FOREGROUND"/> </state>
+  </style>
+  <bind style="sliderStyle" type="region" key="Slider"/>
+
+  <style id="sliderTrackStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#504945" type="BACKGROUND"/>
+    </state>
+  </style>
+  <bind style="sliderTrackStyle" type="region" key="SliderTrack"/>
+
+  <style id="sliderThumbStyle">
+    <opaque value="TRUE"/>
+    <state>
+      <color value="#a89984" type="BACKGROUND"/>
+      <color value="#a89984" type="FOREGROUND"/> </state>
+    </style>
+  <bind style="sliderThumbStyle" type="region" key="SliderThumb"/>
 
 </synth>

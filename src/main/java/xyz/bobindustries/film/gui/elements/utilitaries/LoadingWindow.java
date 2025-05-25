@@ -1,8 +1,6 @@
 package xyz.bobindustries.film.gui.elements.utilitaries;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JWindow;
+import javax.swing.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -18,13 +16,23 @@ public class LoadingWindow extends JWindow {
         panel.setLayout(new BorderLayout());
         panel.setBackground(Color.WHITE);
 
-        JLabel loadingLabel = new JLabel(text, JLabel.CENTER);
-        loadingLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        if (text.isEmpty()) {
+            Bob bob = new Bob();
+            bob.setScale(1.5);
 
-        panel.add(loadingLabel, BorderLayout.CENTER);
+            JPanel paddedPanel = new JPanel(new BorderLayout());
+            paddedPanel.setOpaque(false);
+            paddedPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 20, 20));
+            paddedPanel.add(bob, BorderLayout.CENTER);
 
+            panel.add(paddedPanel, BorderLayout.CENTER);
+        } else {
+            JLabel loadingLabel = new JLabel(text, JLabel.CENTER);
+            loadingLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+            panel.add(loadingLabel, BorderLayout.CENTER);
+        }
         add(panel);
-
     }
 
 }

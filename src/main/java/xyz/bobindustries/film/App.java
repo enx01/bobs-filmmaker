@@ -31,21 +31,33 @@ public class App {
             UIManager.setLookAndFeel(synthLookAndFeel);
 
         } catch (Exception e) {
-            System.out.println("[+] failed to load synth look and feel : " + e.getMessage());
+            System.out.println("[-] failed to load synth look and feel : " + e.getMessage());
         }
     }
 
     private static void run() {
-        LoadingWindow loadingWindow = new LoadingWindow("bob's filmmaker", 200, 200);
+        LoadingWindow loadingWindow = new LoadingWindow("", 200, 200);
         loadingWindow.setVisible(true);
         loadingWindow.requestFocus();
 
         SwingWorker<Void, Void> worker = new SwingWorker<>() { // Classe anonyme d'initialisation de la frame.
             @Override
-            protected Void doInBackground() {
+            protected Void doInBackground() throws Exception{
                 /* Creation de la fenetre */
                 frame = new JFrame("bob's filmmaker");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+                frame.setIconImage(Toolkit.getDefaultToolkit().getImage(App.class.getResource("bob_filmmaker.png")));
+
+                Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); // Recuperation de la taille de
+                                                                                    // l'ecran de
+                                                                                    // l'utilisateur.
+
+                Thread.sleep(3000);
+
+                frame.setSize(screenSize.width, screenSize.height);
+                frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
                 WelcomePane welcomePane = new WelcomePane();
 
                 frame.setContentPane(welcomePane);
@@ -53,6 +65,8 @@ public class App {
                 frame.setMinimumSize(ConstantsProvider.WINDOW_MIN_SIZE);
 
                 frame.setVisible(true);
+
+                frame.requestFocus();
 
                 return null;
             }

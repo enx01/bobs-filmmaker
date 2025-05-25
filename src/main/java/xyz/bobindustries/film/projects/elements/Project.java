@@ -9,6 +9,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jcodec.api.awt.AWTSequenceEncoder;
+
+
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
 
@@ -55,7 +58,6 @@ public class Project {
         }
 
         Path scenarioPath = projectDir.resolve("scenario.txt");
-
         if (Files.exists(scenarioPath)) {
             scenarioContent = new String(Files.readAllBytes(scenarioPath));
         } else {
@@ -97,6 +99,10 @@ public class Project {
     }
 
     /*public void addOrUpdateImage(String fileName, byte[] content) {
+=======
+    @SuppressWarnings("unused")
+    public void addOrUpdateImage(String fileName, byte[] content) {
+>>>>>>> eac57ec07a5f1f6336eaf54755edf452859c05ba
         boolean found = false;
         for (ImageFile img : images) {
             if (img.getFileName().equals(fileName)) {
@@ -130,6 +136,45 @@ public class Project {
         for (ImageFile img : images) {
             Path imagePath = imagesDir.resolve(img.getFileName());
             Files.write(imagePath, img.getContent());
+        }
+    }
+    
+    public void exportAsVideo(List<FrameData> data) throws IOException {
+        if (data.isEmpty()) {
+            throw new IOException("Data is empty!");
+        }
+
+        Path outputDir = Paths.get(projectDir + "/output/");
+        if (!Files.exists(outputDir)) {
+            Files.createDirectories(outputDir);
+        }
+
+        AWTSequenceEncoder encoder;
+
+        try {
+            encoder = AWTSequenceEncoder.createSequenceEncoder(new File(projectDir + "/output/" + projectName + ".mp4"), 20);
+
+            for (FrameData frame : data) {
+                if (frame.getImageFile() == null) {
+                    System.err.println("Warning: Frame " + data.indexOf(frame) + " has a null image. Skipping.");
+                    continue;
+                }
+                if (frame.getDuration() <= 0) {
+                    System.err.println("Warning: Frame " + data.indexOf(frame) + " has a non-positive duration. Skipping.");
+                    continue;
+                }
+
+                int numberOfVideoFrames = (int) Math.max(1, Math.round(frame.getDuration() * 20));
+
+                for (int i = 0; i < numberOfVideoFrames; i++) {
+                    encoder.encodeImage(frame.getImageFile().getBufferedImage());
+                }
+            }
+
+            encoder.finish();
+        } catch (IOException e) {
+            System.err.println("IOException during video encoding: " + e.getMessage());
+            throw e;
         }
     }
 

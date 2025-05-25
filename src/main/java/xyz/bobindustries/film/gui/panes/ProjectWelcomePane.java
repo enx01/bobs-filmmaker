@@ -1,5 +1,6 @@
 package xyz.bobindustries.film.gui.panes;
 
+import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
 import xyz.bobindustries.film.projects.ProjectManager;
 
@@ -18,6 +19,10 @@ public class ProjectWelcomePane extends JPanel {
         JButton editImagesButton = ButtonFactory.createButton("edit images", "base_image.png", 150, 150);
         JButton editScenarioButton = ButtonFactory.createButton("edit scenario", "base_image.png", 150, 150);
         JButton visualizerButton = ButtonFactory.createButton("view film", "base_image.png", 150, 150);
+
+        editImagesButton.addActionListener(ActionListenerProvider::getShowImageEditorFrameAction);
+        editScenarioButton.addActionListener(ActionListenerProvider::getShowScenarioEditorFrameAction);
+        visualizerButton.addActionListener(ActionListenerProvider::getShowFilmVisualizerFrameAction);
 
         JLabel projectTitleLabel = new JLabel(ProjectManager.getCurrent().getProjectName());
         projectTitleLabel.setFont(new Font("Arial", Font.BOLD, 32)); // Set font style and size
