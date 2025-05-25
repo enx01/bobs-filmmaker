@@ -46,6 +46,10 @@
       <color value="#928374" type="BACKGROUND"/>
       <color value="#FBF1C1" type="TEXT_FOREGROUND"/>
     </state>
+    <state value="SELECTED">
+      <color type="BACKGROUND" value="#b8bb26"/>
+      <color type="TEXT_FOREGROUND" value="#282828"/>
+    </state>
   </style>
   <bind style="buttonStyle" type="region" key="Button"/>
 
@@ -284,5 +288,16 @@
       <color value="#a89984" type="FOREGROUND"/> </state>
     </style>
   <bind style="sliderThumbStyle" type="region" key="SliderThumb"/>
+
+  <style id="listStyle">
+    <font name="SansSerif" size="12"/>
+    <opaque value="true"/>
+    <state>
+      <color type="BACKGROUND" value="#282828"/>
+      <color type="TEXT_FOREGROUND" value="#fbf1c7"/>
+      <color type="TEXT_BACKGROUND" value="#282828"/>
+    </state>
+  </style>
+  <bind style="listStyle" type="region" key="List"/>
 
 </synth>

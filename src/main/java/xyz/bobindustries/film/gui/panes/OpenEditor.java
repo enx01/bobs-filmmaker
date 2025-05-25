@@ -15,10 +15,13 @@ public class OpenEditor extends JPanel {
     GridBagConstraints gbc = new GridBagConstraints();
     JButton createImage = ButtonFactory.createButton("create image", "base_image.png", 150, 150);
     JButton openImage = ButtonFactory.createButton("open image", "base_image.png", 150, 150);
+    JButton openExistingFrames = ButtonFactory.createButton("open existing Frames", "base_image.png", 150, 150);
 
     createImage.addActionListener(ActionListenerProvider::createImageAction);
 
     openImage.addActionListener(ActionListenerProvider::openImageAction);
+
+    openExistingFrames.addActionListener(ActionListenerProvider::openExistingFrames);
 
     // Set constraints for button1
     gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
@@ -39,6 +42,16 @@ public class OpenEditor extends JPanel {
     gbc.gridwidth = 1;
     gbc.insets = new Insets(25, 25, 25, 25); // Add spacing (top, left, bottom, right)
     buttonsPanel.add(openImage, gbc);
+
+    // Set constraints for button3
+    gbc.fill = GridBagConstraints.BOTH; // Fill both horizontally and vertically
+    gbc.weightx = 0; // Allow button1 to grow horizontally
+    gbc.weighty = 0; // Allow button1 to grow vertically
+    gbc.gridx = 2; // Column 1
+    gbc.gridy = 0; // Row 0
+    gbc.gridwidth = 1;
+    gbc.insets = new Insets(25, 25, 25, 25); // Add spacing (top, left, bottom, right)
+    buttonsPanel.add(openExistingFrames, gbc);
 
     add(buttonsPanel, BorderLayout.CENTER);
   }

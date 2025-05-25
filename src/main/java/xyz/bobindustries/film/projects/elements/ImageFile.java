@@ -3,6 +3,7 @@ package xyz.bobindustries.film.projects.elements;
 import java.awt.*;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -78,7 +79,20 @@ public class ImageFile {
   }
 
     public Image getImage() {
-        return Toolkit.getDefaultToolkit().createImage(content);
+    if (content == null) {
+      try {
+        BufferedImage currentImage = ImageIO.read(new File(path));
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        ImageIO.write(currentImage, "png", baos);
+
+        content = baos.toByteArray();
+
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return Toolkit.getDefaultToolkit().createImage(content);
     }
 
     /**

@@ -1,0 +1,80 @@
+package xyz.bobindustries.film.gui.elements.dialogs;
+
+import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
+import xyz.bobindustries.film.projects.ProjectManager;
+import xyz.bobindustries.film.projects.elements.ImageFile;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
+public class OpenExistingFramesDialog extends JDialog {
+    private JList<String> liste;
+    private DefaultListModel<String> modeleListe;
+    private JButton boutonEnregistrer;
+
+    public static final int SUCCESS = 1;
+    public static final int FAILURE = 0;
+
+    private boolean isSuccess = false;
+
+    public OpenExistingFramesDialog(Frame parent, ArrayList<ImageFile> images, ArrayList<Integer> selectedFrames) {
+        super(parent, "Sélection multiple d'éléments", true); // true = modal
+        setSize(400, 300);
+        setLocationRelativeTo(parent);
+
+        // Modèle de liste avec quelques éléments
+        modeleListe = new DefaultListModel<>();
+
+        for (ImageFile image : images) {
+            modeleListe.addElement(image.getFileName());
+        }
+
+        // JList avec sélection multiple
+        liste = new JList<>(modeleListe);
+        liste.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        JScrollPane scrollPane = new JScrollPane(liste);
+
+        // Bouton pour enregistrer la sélection
+        boutonEnregistrer = new JButton("Enregistrer la sélection");
+        boutonEnregistrer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<String> selections = (ArrayList<String>) liste.getSelectedValuesList();
+                enregistrerSelections(selections, selectedFrames);
+            }
+        });
+
+        // Layout
+        setLayout(new BorderLayout());
+        add(scrollPane, BorderLayout.CENTER);
+        add(boutonEnregistrer, BorderLayout.SOUTH);
+    }
+
+    private void enregistrerSelections(ArrayList<String> selections, ArrayList<Integer> selectedFrames) {
+        int[] selectedIndices = liste.getSelectedIndices();
+        if (selectedIndices.length == 0) {
+            System.out.println("Aucun élément sélectionné.");
+        } else {
+            System.out.println("Index des éléments sélectionnés :");
+            for (int index : selectedIndices) {
+                System.out.println("- " + index);
+                selectedFrames.add(index);
+            }
+        }
+        isSuccess = true;
+        dispose();
+    }
+
+    public static int show(Frame parent, ArrayList<ImageFile> images, ArrayList<Integer> selectedFrames) {
+        OpenExistingFramesDialog dialog = new OpenExistingFramesDialog(parent, images, selectedFrames);
+        dialog.setVisible(true); // Show the dialog modally
+        return dialog.isSuccess ? SUCCESS : FAILURE; // Return the result
+    }
+}

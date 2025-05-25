@@ -3,13 +3,12 @@ package xyz.bobindustries.film.gui.elements.utilitaries;
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.ImageEditor.ToolsList;
 import xyz.bobindustries.film.gui.Workspace;
-import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
-import xyz.bobindustries.film.gui.elements.dialogs.OpenImageDialog;
-import xyz.bobindustries.film.gui.elements.dialogs.OpenProjectDialog;
-import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
+import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
+import xyz.bobindustries.film.gui.elements.dialogs.*;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
 import xyz.bobindustries.film.gui.panes.WelcomePane;
 import xyz.bobindustries.film.projects.ProjectManager;
+import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 import xyz.bobindustries.film.gui.panes.*;
@@ -20,7 +19,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ActionListenerProvider {
 
@@ -251,6 +252,8 @@ public class ActionListenerProvider {
 
         if (result==1) {
             openImageEditor(editorFrame, ProjectManager.getLastImage());
+            openImageEditor(editorFrame, ProjectManager.getNImage(3));
+            openImageEditor(editorFrame, ProjectManager.getNImage(2));
         }
     }
 
@@ -295,6 +298,23 @@ public class ActionListenerProvider {
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
         EditorPane editor = (EditorPane) editorFrame.getContentPane();
         ImageUtils.exportImage(editor.getData().getGridColors(), "tmp.jpg");
+    }
+
+    public static void openExistingFrames(ActionEvent ignoredActionEvent) {
+        Workspace workspace = Workspace.getInstance();
+        JInternalFrame editorFrame = workspace.getImageEditorFrame();
+        Project current = ProjectManager.getCurrent();
+        ArrayList<Integer> selectedFrames = new ArrayList<>();
+        EditorPane editor = null;
+        int result = OpenExistingFramesDialog.show(App.getFrame(), (ArrayList<ImageFile>) current.getImages(), selectedFrames);
+        for (int i : selectedFrames) {
+            if (editor == null) {
+                editor = openImageEditor(editorFrame, ProjectManager.getNImage(i));
+            } else {
+                editor.addNewImage(ProjectManager.getNImage(i));
+            }
+        }
+        editorFrame.setContentPane(editor);
     }
 
     /*
@@ -368,8 +388,8 @@ public class ActionListenerProvider {
         }
     }
 
-    public static void openImageEditor(JInternalFrame frame, Color[][] imageMatrix) {
-        JPanel editor = null;
+    public static EditorPane openImageEditor(JInternalFrame frame, Color[][] imageMatrix) {
+        EditorPane editor = null;
         if (imageMatrix == null) {
             Color[][] defaultCanvas = new Color[600][800];
             for (int i = 0; i < defaultCanvas.length; i+=1) {
@@ -379,10 +399,12 @@ public class ActionListenerProvider {
             }
             System.out.println("fini");
             editor = new EditorPane(defaultCanvas, 800, 600);
+            System.out.println("index:"+editor.getCurrentImageIndex());
         } else {
             editor = new EditorPane(imageMatrix, imageMatrix[0].length, imageMatrix.length);
+            System.out.println("index:"+editor.getCurrentImageIndex());
         }
-        frame.setContentPane(editor);
+        return editor;
     }
 
 

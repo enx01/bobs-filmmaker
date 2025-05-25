@@ -13,6 +13,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
+import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +21,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class EditorPane extends JPanel {
 
+    private ArrayList<EditorModel> openedImages;
+    private int currentImageIndex;
     private EditorModel data;
     private static Tools selectedTool = new Pen();
     private ToolsList currentTools = ToolsList.PEN;
@@ -27,11 +30,18 @@ public class EditorPane extends JPanel {
     private CoordinateBar coordinatToolbar;
     private final Timer repaintTimer = new Timer(16, e -> repaint());
     private volatile boolean needsRepaint = false;
-    private BufferedImage draggedImage;
 
     public EditorPane(Color[][] gridColors, int gridWidth, int gridHeight) {
 
+        if (openedImages==null) {
+            openedImages = new ArrayList<>();
+        }
+
+        currentImageIndex=0;
+
         data = new EditorModel(this, gridColors, gridWidth, gridHeight);
+
+        openedImages.add(data);
 
         coordinatToolbar = new CoordinateBar();
 
@@ -60,10 +70,6 @@ public class EditorPane extends JPanel {
         addMouseWheelListener(mouseHandler);
 
         startDrawingThread();
-    }
-
-    public BufferedImage getDraggedImage() {
-        return draggedImage;
     }
 
 
@@ -174,15 +180,38 @@ public class EditorPane extends JPanel {
           case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionArea();
           case MOVE_SELECTION -> {
               selectedTool = new MoveSelection();
-
               data.setDraggedImage();
           }
-          case UNDO -> data.undo();
-          case REDO -> data.redo();
-            /* case TEXT -> selectedTool = new TextTool();
-           * case MOVE -> selectedTool = new MoveTool();
-           */
+          case UNDO -> {
+              changeCurrentImage(currentImageIndex-1);
+              System.out.println("index:"+currentImageIndex);
+              data.reDrawGrid(data.getGridColors());
+          }
+          case REDO -> {
+              changeCurrentImage(currentImageIndex+1);
+              System.out.println("index:"+currentImageIndex);
+              data.reDrawGrid(data.getGridColors());
+          }
           default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
       }
-  }
+    }
+
+    public void setCurrentImageIndex(int currentImageIndex) {
+        this.currentImageIndex = currentImageIndex;
+    }
+
+    public int getCurrentImageIndex() {
+        return currentImageIndex;
+    }
+
+    public void addNewImage(Color[][] gridColors) {
+        EditorModel newData = new EditorModel(this, gridColors, gridColors[0].length, gridColors.length);
+        openedImages.add(newData);
+    }
+
+    public void changeCurrentImage(int idImage) {
+        currentImageIndex = idImage;
+        data = openedImages.get(currentImageIndex);
+    }
+
 }

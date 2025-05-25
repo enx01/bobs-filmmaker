@@ -84,6 +84,10 @@ public class ProjectManager {
         return getCurrent().getImages().getLast().getColorMatrix();
     }
 
+    public static Color[][] getNImage(int n) {
+        return getCurrent().getImages().get(n).getColorMatrix();
+    }
+
     public static void saveCurrent() throws IOException {
         if (current == null) {
             return;
