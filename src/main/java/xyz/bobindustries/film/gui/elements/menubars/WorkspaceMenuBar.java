@@ -20,14 +20,25 @@ public class WorkspaceMenuBar extends JMenuBar {
         openProjectItem.setMnemonic('O');
         openProjectItem.addActionListener(ActionListenerProvider::getOpenProjectDialogAction);
 
+        JMenuItem exportProjectItem = new JMenuItem("export");
+        exportProjectItem.setMnemonic('E');
+        exportProjectItem.addActionListener(ActionListenerProvider::exportProjectAsVideo);
+
         JMenuItem saveProjectItem = new JMenuItem("save");
         saveProjectItem.setMnemonic('S');
         saveProjectItem.addActionListener(ActionListenerProvider::saveCurrentProject);
 
+        JMenuItem closeProjectItem = new JMenuItem("close");
+        closeProjectItem.setMnemonic('C');
+        closeProjectItem.addActionListener(ActionListenerProvider::closeCurrentProject);
+
         projectMenu.add(newProjectItem);
         projectMenu.add(openProjectItem);
         projectMenu.add(new JSeparator());
+        projectMenu.add(exportProjectItem);
         projectMenu.add(saveProjectItem);
+        projectMenu.add(new JSeparator());
+        projectMenu.add(closeProjectItem);
 
         // Window Menu :
         JMenu windowMenu = new JMenu("window");

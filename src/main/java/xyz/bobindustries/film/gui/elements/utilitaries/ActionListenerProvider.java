@@ -4,7 +4,9 @@ import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
 import xyz.bobindustries.film.gui.elements.dialogs.OpenProjectDialog;
+import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
+import xyz.bobindustries.film.gui.panes.WelcomePane;
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
@@ -13,6 +15,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ActionListenerProvider {
 
@@ -23,7 +26,7 @@ public class ActionListenerProvider {
     /**
      * Launch a NewProjectDialog and load the project accordingly.
      */
-    public static void getNewProjectDialogAction(ActionEvent ignorActionEvent) {
+    public static void getNewProjectDialogAction(ActionEvent ignoredActionEvent) {
         int result = NewProjectDialog.show(App.getFrame());
 
         showWorkspace(result);
@@ -44,14 +47,14 @@ public class ActionListenerProvider {
      * as well as saving the edited images.
      */
     public static void saveCurrentProject(ActionEvent ignoredActionEvent) {
-        LoadingWindow loadingWindow = new LoadingWindow("loading project...", 200, 100);
+        LoadingWindow loadingWindow = new LoadingWindow("saving project...", 200, 100);
 
         loadingWindow.setVisible(true);
         loadingWindow.requestFocus();
 
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
-            protected Void doInBackground() throws Exception {
+            protected Void doInBackground() {
                 Workspace workspace = Workspace.getInstance();
                 Project project = ProjectManager.getCurrent();
                 ScenarioEditorPane sep = workspace.getScenarioEditorPane();
@@ -73,6 +76,87 @@ public class ActionListenerProvider {
             }
         };
         worker.execute();
+
+    }
+
+    public static void exportProjectAsVideo(ActionEvent ignoredActionEvent) {
+        LoadingWindow loadingWindow = new LoadingWindow("exporting video...", 200, 100);
+
+        loadingWindow.setVisible(true);
+        loadingWindow.requestFocus();
+
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                Workspace workspace = Workspace.getInstance();
+                Project project = ProjectManager.getCurrent();
+                ScenarioEditorPane sep = workspace.getScenarioEditorPane();
+
+                project.setScenarioContent(sep.extractScenarioContent());
+
+                try {
+                    project.save();
+                } catch (IOException ioe) {
+                    SimpleErrorDialog.show("Failed to export movie :(" + "\n" + ioe.getMessage());
+                }
+
+                try {
+                    project.exportAsVideo(Arrays.stream(sep.extractFrameData()).toList());
+                } catch (IOException ioe) {
+                    SimpleErrorDialog.show("Failed to export movie :(" + "\n" + ioe.getMessage());
+                }
+
+                return null;
+            }
+
+            protected void done() {
+                SimpleHappyDialog.show("Movie exported succesfully !");
+                loadingWindow.dispose();
+            }
+        };
+        worker.execute();
+    }
+
+    public static void closeCurrentProject(ActionEvent ignoredActionEvent) {
+        System.out.println("splash");
+        int result = YesNoDialog.show(App.getFrame(), "Would you like to save the project before closing it ?");
+
+        LoadingWindow loadingWindow = new LoadingWindow("closing project...", 200, 100);
+
+        loadingWindow.setVisible(true);
+        loadingWindow.requestFocus();
+
+            SwingWorker<Void, Void> worker = new SwingWorker<>() {
+                @Override
+                protected Void doInBackground() {
+                    if (result == YesNoDialog.YES) {
+                        Workspace workspace = Workspace.getInstance();
+                        Project project = ProjectManager.getCurrent();
+                        ScenarioEditorPane sep = workspace.getScenarioEditorPane();
+
+                        project.setScenarioContent(sep.extractScenarioContent());
+
+                        try {
+                            project.save();
+                        } catch (IOException ioe) {
+                            SimpleErrorDialog.show("Failed to save project :(" + "\n" + ioe.getMessage());
+                        }
+                    }
+
+                    App.getFrame().getContentPane().removeAll();
+                    App.getFrame().add(new WelcomePane());
+                    App.getFrame().setJMenuBar(null);
+
+                    App.getFrame().revalidate();
+
+                    return null;
+                }
+
+                protected void done() {
+                    loadingWindow.dispose();
+                }
+            };
+            worker.execute();
 
     }
 
@@ -170,7 +254,7 @@ public class ActionListenerProvider {
 
             SwingWorker<Void, Void> worker = new SwingWorker<>() {
                 @Override
-                protected Void doInBackground() throws Exception {
+                protected Void doInBackground() {
                     /*
                      * Since getting workspace instance throws InvalidScenarioContentException, try
                      * to fetch it here
@@ -179,7 +263,6 @@ public class ActionListenerProvider {
                     try {
                         instance = Workspace.newInstance();
                     } catch (InvalidScenarioContentException isce) {
-
                         SimpleErrorDialog.show(isce.getMessage());
                     }
 
@@ -188,9 +271,9 @@ public class ActionListenerProvider {
                         App.getFrame().getContentPane().removeAll();
                         App.getFrame().add(instance);
 
-                        Thread.sleep(2000);
                         App.getFrame().revalidate();
                     } else {
+                        SimpleErrorDialog.show("Failed to load project :(");
                     }
                     return null;
                 }

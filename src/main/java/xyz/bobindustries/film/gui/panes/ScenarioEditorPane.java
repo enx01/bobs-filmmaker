@@ -8,17 +8,17 @@ import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
 import xyz.bobindustries.film.gui.elements.popups.SimpleValueChangerPopUp;
+import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.ProjectManager;
+import xyz.bobindustries.film.projects.elements.FrameData;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
@@ -40,10 +40,6 @@ public class ScenarioEditorPane extends JPanel {
             // setBackground(new Color(0x3C3836));
             // nameLabel.setForeground(new Color(0xEBDBB2));
             setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // indicate draggable
-        }
-
-        ImageFile getImageFile() {
-            return imageFile;
         }
 
         // Implementation of Transferable interface
@@ -72,159 +68,12 @@ public class ScenarioEditorPane extends JPanel {
         }
     }
 
-    static class TimelinePane extends JPanel {
-        static class TimelineElement extends JPanel {
-            private static final double DEFAULT_TIME = 0.2;
-            private static final double MIN_TIME = 0.10;
-            private static final double MAX_TIME = 1.0;
-            private static final int PIXELS_PER_SECOND = 300; // How many pixels represent 1 second
-            private static final int DEFAULT_HEIGHT = 50;
-            private static final int ARC_WIDTH = 15;
-            private static final int ARC_HEIGHT = 15;
-            private static final int HANDLE_WIDTH = 3;
-            private static final int HANDLE_PADDING = 3; // Padding from the right edge
-            private static final double DRAG_PRECISION_FACTOR = 1.0; // Higher value = less sensitive drag
+    class TimelinePane extends JPanel {
 
-            private double time; // Duration of this element in seconds
-            private final Color backgroundColor = new Color(0x25, 0x65, 0x68); // Default background color
-            private final Color handleColor = new Color(0x68, 0x9d, 0x6a); // Handle color
-            private final Color textColor = new Color(0xeb, 0xdb, 0xb2); // Text color
+        private static final int PIXELS_PER_SECOND = 300; // How many pixels represent 1 second
 
-            private boolean isDragging = false;
-            private int dragStartX;
-            private double timeAtDragStart;
+        class TimelineElement extends JPanel {
 
-            private final ImageFile data;
-
-            TimelineElement(TimelinePane timelinePane, ImageFile imageFile) {
-                this.time = DEFAULT_TIME;
-                this.data = imageFile;
-                updatePreferredSize();
-
-                // Add mouse listeners for dragging the handle
-                HandleDragListener listener = new HandleDragListener(timelinePane);
-
-                addMouseListener(listener);
-                addMouseMotionListener(listener);
-
-                ContextualMenu contxtMenu = new ContextualMenu.Builder()
-                        .addItem(imageFile.getFileName(), null)
-                        .addSeparator()
-                        .addItem("remove element", e -> timelinePane.removeTimelineElement(this))
-                        .addItem("change time", e -> {
-                            double newTime = SimpleValueChangerPopUp.show(time, App.getFrame());
-
-                            if (newTime >= MIN_TIME && newTime <= MAX_TIME) {
-                                time = newTime;
-                                timelinePane.updateLayout();
-                            }
-                        })
-                        .build();
-
-                contxtMenu.attachTo(this);
-
-                // Set opaque to false if you want the parent's background to show through
-                setOpaque(false);
-            }
-
-            TimelineElement(TimelinePane timelinePane, ImageFile imageFile, double time) {
-                this(timelinePane, imageFile);
-                this.time = time;
-            }
-
-            public double getTime() {
-                return time;
-            }
-
-            public ImageFile getData() {
-                return data;
-            }
-
-            public void setTime(double time) {
-                this.time = Math.max(MIN_TIME, Math.min(MAX_TIME, time));
-                updatePreferredSize();
-                revalidate(); // Notify layout manager of size change
-                repaint(); // Redraw the component
-            }
-
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g.create();
-
-                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-                int width = getWidth();
-                int height = getHeight();
-
-                /*
-                 * Drawing background rectangle
-                 */
-                g2d.setColor(backgroundColor);
-                RoundRectangle2D roundedRect = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, ARC_WIDTH,
-                        ARC_HEIGHT);
-                g2d.fill(roundedRect);
-
-                /*
-                 * Drawing handle bar
-                 */
-                int handleHeight = (int) (height * 0.75);
-                int handleY = (height - handleHeight) / 2;
-                int handleX = width - HANDLE_WIDTH - HANDLE_PADDING;
-                g2d.setColor(handleColor);
-                g2d.fillRect(handleX, handleY, HANDLE_WIDTH, handleHeight);
-
-                /*
-                 * Drawing text
-                 */
-                g2d.setColor(textColor);
-                String timeString = String.format("%.2fs", time);
-                FontMetrics fm = g2d.getFontMetrics();
-                int textWidth = fm.stringWidth(timeString);
-                int textHeight = fm.getAscent();
-                int textX = 0;
-                int textY = height - fm.getDescent();
-
-                if (textX + textWidth > handleX - HANDLE_PADDING) {
-                    textX = handleX - HANDLE_PADDING - textWidth;
-                }
-                textX = Math.max(5, textX);
-
-                g2d.drawString(timeString, textX, textY);
-
-                String filename = data.getFileName();
-                textWidth = fm.stringWidth(filename);
-                textHeight = fm.getAscent();
-                textX = (width - textWidth) / 2;
-                textY = (height + textHeight) / 2 - fm.getDescent();
-
-                if (textX + textWidth > handleX - HANDLE_PADDING) {
-                    textX = handleX - HANDLE_PADDING - textWidth;
-                }
-                textX = Math.max(5, textX);
-
-                g2d.drawString(filename, textX, textY);
-
-                g2d.dispose();
-            }
-
-            // Sizing stuff
-
-            private int calculatePreferredWidth() {
-                return (int) (time * PIXELS_PER_SECOND);
-            }
-
-            private void updatePreferredSize() {
-                setPreferredSize(new Dimension(calculatePreferredWidth(), DEFAULT_HEIGHT));
-            }
-
-            private Rectangle getHandleBounds() {
-                int width = getWidth();
-                int height = getHeight();
-                int clickableHandleWidth = HANDLE_WIDTH + 2 * HANDLE_PADDING;
-                int clickableHandleX = width - clickableHandleWidth;
-                return new Rectangle(clickableHandleX, 0, clickableHandleWidth, height);
-            }
 
             // Private HandleDragListener class
             private class HandleDragListener extends MouseAdapter {
@@ -241,7 +90,19 @@ public class ScenarioEditorPane extends JPanel {
                         dragStartX = e.getXOnScreen();
                         timeAtDragStart = time;
                         setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+                    } else {
+                        if (pane.getCurrentSelectedItem() == TimelineElement.this) {
+                            pane.setCurrentSelectedItem(null);
+                        } else {
+                            pane.setCurrentSelectedItem(TimelineElement.this);
+                        }
                     }
+
+                    ScenarioEditorPane.this.setCurrentImageView(
+                            currentSelectedItem != null ?
+                                    currentSelectedItem.getData()
+                                    : null
+                    );
                 }
 
                 @Override
@@ -250,7 +111,7 @@ public class ScenarioEditorPane extends JPanel {
                         int currentX = e.getXOnScreen();
                         int deltaX = currentX - dragStartX;
 
-                        double deltaTime = (double) deltaX / PIXELS_PER_SECOND / DRAG_PRECISION_FACTOR;
+                        double deltaTime = (double) deltaX / PIXELS_PER_SECOND;
 
                         double newTime = timeAtDragStart + deltaTime;
                         setTime(newTime);
@@ -282,67 +143,228 @@ public class ScenarioEditorPane extends JPanel {
                     }
                 }
             }
+
+            private static final double DEFAULT_TIME = 0.25;
+            private static final double MIN_TIME = 0.10;
+            private static final double MAX_TIME = 1.0;
+            private static final int DEFAULT_HEIGHT = 50;
+            private static final int ARC_WIDTH = 15;
+            private static final int ARC_HEIGHT = 15;
+            private static final int HANDLE_WIDTH = 3;
+            private static final int HANDLE_PADDING = 3; // Padding from the right edge
+
+            private double time; // Duration of this element in seconds
+            private final Color backgroundColor = new Color(0x25, 0x65, 0x68); // Default background color
+            private final Color handleColor = new Color(0x68, 0x9d, 0x6a); // Handle color
+            private final Color textColor = new Color(0xeb, 0xdb, 0xb2); // Text color
+
+            private boolean isDragging = false;
+            private int dragStartX;
+            private double timeAtDragStart;
+
+            private final ImageFile data;
+
+            TimelineElement(TimelinePane timelinePane, ImageFile imageFile) {
+                setTime(DEFAULT_TIME);
+                this.data = imageFile;
+                updatePreferredSize();
+
+                // Add mouse listeners for dragging the handle
+                HandleDragListener listener = new HandleDragListener(timelinePane);
+
+                addMouseListener(listener);
+                addMouseMotionListener(listener);
+
+                ContextualMenu contxtMenu = new ContextualMenu.Builder()
+                        .addItem(imageFile.getFileName(), null)
+                        .addSeparator()
+                        .addItem("remove element", e -> timelinePane.removeTimelineElement(this))
+                        .addItem("change time", e -> {
+                            double newTime = SimpleValueChangerPopUp.show(time, App.getFrame());
+
+                            if (newTime >= MIN_TIME && newTime <= MAX_TIME) {
+                                time = newTime;
+                                timelinePane.updateLayout();
+                            }
+                        })
+                        .addSeparator()
+                        .addItem("move to right", e -> timelinePane.moveElementToRight(this))
+                        .addItem("move to left", e -> timelinePane.moveElementToLeft(this))
+                        .build();
+
+                contxtMenu.attachTo(this);
+
+                // Set opaque to false if you want the parent's background to show through
+                setOpaque(false);
+            }
+
+            TimelineElement(TimelinePane timelinePane, ImageFile imageFile, double time) {
+                this(timelinePane, imageFile);
+                setTime(time);
+            }
+
+            public double getTime() {
+                return time;
+            }
+
+            public ImageFile getData() {
+                return data;
+            }
+
+            public void setTime(double time) {
+                this.time = Math.max(MIN_TIME, Math.min(MAX_TIME, time));
+                String timeString = String.format("%.2fs", getTime());
+                this.setToolTipText(timeString);
+                updatePreferredSize();
+                revalidate(); // Notify layout manager of size change
+                repaint(); // Redraw the component
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g.create();
+
+                g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+//                int width = getWidth();
+                int width = calculatePreferredWidth();
+                int height = getHeight();
+
+                setSize(new Dimension(width, height));
+
+                /*
+                 * Drawing background rectangle
+                 */
+                g2d.setColor(backgroundColor);
+                RoundRectangle2D roundedRect = new RoundRectangle2D.Float(0, 0, width - 1, height - 1, ARC_WIDTH,
+                        ARC_HEIGHT);
+                g2d.fill(roundedRect);
+
+                /*
+                 * Drawing handle bar
+                 */
+                int handleHeight = (int) (height * 0.75);
+                int handleY = (height - handleHeight) / 2;
+                int handleX = width - HANDLE_WIDTH - HANDLE_PADDING;
+                g2d.setColor(handleColor);
+                g2d.fillRect(handleX, handleY, HANDLE_WIDTH, handleHeight);
+
+                /*
+                 * Drawing text
+                 */
+                g2d.setColor(textColor);
+                String timeString = String.format("%.2fs", time);
+                FontMetrics fm = g2d.getFontMetrics();
+                int textWidth = fm.stringWidth(timeString);
+                int textX = 0;
+                int textY = height - fm.getDescent();
+
+                if (textX + textWidth > handleX - HANDLE_PADDING) {
+                    textX = handleX - HANDLE_PADDING - textWidth;
+                }
+                textX = Math.max(5, textX);
+
+                if (textX + textWidth < width - HANDLE_PADDING) {
+                    g2d.drawString(timeString, textX, textY);
+                }
+
+
+                String filename = data.getFileName();
+                textWidth = fm.stringWidth(filename);
+                int textHeight = fm.getAscent();
+                textX = (width - textWidth) / 2;
+                textY = (height + textHeight) / 2 - fm.getDescent();
+
+                if (textX + textWidth > handleX - HANDLE_PADDING) {
+                    textX = handleX - HANDLE_PADDING - textWidth;
+                }
+                textX = Math.max(5, textX);
+
+                if (textX + textWidth < width - HANDLE_PADDING) {
+                    g2d.drawString(filename, textX, textY);
+                }
+
+
+                g2d.dispose();
+            }
+
+            // Sizing stuff
+
+            private int calculatePreferredWidth() {
+                return (int) (time * PIXELS_PER_SECOND);
+            }
+
+            private void updatePreferredSize() {
+                setSize(new Dimension(calculatePreferredWidth(), DEFAULT_HEIGHT));
+            }
+
+            private Rectangle getHandleBounds() {
+                int width = calculatePreferredWidth();
+                int height = getHeight();
+                int clickableHandleWidth = HANDLE_WIDTH + 2 * HANDLE_PADDING;
+                int clickableHandleX = width - clickableHandleWidth;
+                return new Rectangle(clickableHandleX, 0, clickableHandleWidth, height);
+            }
+
         }
 
         private final List<TimelineElement> elements;
+        private TimelineElement currentSelectedItem = null;
+        private final JScrollPane scrollPane;
         private final JPanel contentPane;
+        private final JPanel dummy;
 
         TimelinePane(String scenarioContent) throws InvalidScenarioContentException {
             setLayout(new BorderLayout());
             elements = new ArrayList<>();
 
-            contentPane = new JPanel();
+            // dummy item to act as padding for contentPane
+            dummy = new JPanel();
+            dummy.setPreferredSize(new Dimension(500, 50));
+
+            Color primaryMarkerColor = new Color(0xeb, 0xdb, 0xb2);
+            Color secondaryMarkerColor = new Color(112, 97, 87);
+            Color terciaryMarkerColor = new Color(53, 47, 47);
+
+            contentPane = new JPanel() {
+                @Override
+                public void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    Graphics2D g2d = (Graphics2D) g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                    int width = getWidth();
+
+                    int nbTercieraryMarkers = width / (PIXELS_PER_SECOND / 4);
+                    for (int i = 0; i < nbTercieraryMarkers + 1; i++) {
+                        int computed = i * (PIXELS_PER_SECOND / 4);
+                        g2d.setColor(terciaryMarkerColor);
+                        g2d.fillRect(computed, 0, 1, getHeight());
+                    }
+
+                    int nbSecondaryMarkers = width / (PIXELS_PER_SECOND / 2);
+                    for (int i = 0; i < nbSecondaryMarkers + 1; i++) {
+                        int computed = i * (PIXELS_PER_SECOND / 2);
+                        g2d.setColor(secondaryMarkerColor);
+                        g2d.fillRect(computed, 0, 1, getHeight());
+                    }
+
+                    int nbPrimaryMarkers = width / PIXELS_PER_SECOND;
+                    for (int i = 0; i < nbPrimaryMarkers + 1; i++) {
+                        int computed = i * PIXELS_PER_SECOND;
+                        g2d.setColor(primaryMarkerColor);
+                        g2d.fillRect(computed, 0, 1, getHeight());
+                    }
+
+                }
+            };
             contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
             contentPane.setBackground(Color.DARK_GRAY);
 
-            Project current = ProjectManager.getCurrent();
+            loadScenarioContent(scenarioContent);
 
-            if (current != null) {
-                List<ImageFile> images = current.getImages();
-
-                String[] lines = scenarioContent.split("\\r?\n");
-
-                if (lines.length >= 1 && !lines[0].equals("")) {
-                    int i = 0;
-                    for (String line : lines) {
-                        String[] lineData = line.split(",");
-
-                        if (lineData.length != 2) {
-                            throw new InvalidScenarioContentException("Error line " + i + ". : Wrong file format.");
-                        } else {
-                            String fileName = lineData[0].trim();
-                            Double time = Double.parseDouble(lineData[1].trim());
-
-                            if (fileName.equals(""))
-                                throw new InvalidScenarioContentException("Error line " + i + ". : Empty file name.");
-
-                            if (time > TimelineElement.MAX_TIME || time < TimelineElement.MIN_TIME)
-                                throw new InvalidScenarioContentException(
-                                        "Error line " + i + ". : Invalid time. Must be < 1 && > .2");
-
-                            boolean foundFile = false;
-                            for (ImageFile imf : images) {
-                                if (imf.getFileName().equals(lineData[0].trim())) {
-                                    elements.add(
-                                            new TimelineElement(
-                                                    this,
-                                                    imf,
-                                                    Double.parseDouble(lineData[1].trim())));
-                                    foundFile = true;
-                                    break;
-                                }
-                            }
-                            if (!foundFile) {
-                                throw new InvalidScenarioContentException(
-                                        "Error line " + i + ". : File : " + lineData[0].trim() + " not found.");
-                            }
-                        }
-                        i++;
-                    }
-                }
-            }
-
-            JScrollPane scrollPane = new JScrollPane(contentPane);
+             scrollPane = new JScrollPane(contentPane);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
             scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
@@ -373,6 +395,55 @@ public class ScenarioEditorPane extends JPanel {
             updateLayout();
         }
 
+        private void loadScenarioContent(String scenarioContent) throws InvalidScenarioContentException {
+            Project current = ProjectManager.getCurrent();
+
+            if (current != null) {
+                List<ImageFile> images = current.getImages();
+
+                String[] lines = scenarioContent.split("\\r?\n");
+
+                if (lines.length >= 1 && !lines[0].isEmpty()) {
+                    int i = 0;
+                    for (String line : lines) {
+                        String[] lineData = line.split(",");
+
+                        if (lineData.length != 2) {
+                            throw new InvalidScenarioContentException("Error line " + i + ". : Wrong file format.");
+                        } else {
+                            String fileName = lineData[0].trim();
+                            double time = Double.parseDouble(lineData[1].trim());
+
+                            if (fileName.isEmpty())
+                                throw new InvalidScenarioContentException("Error line " + i + ". : Empty file name.");
+
+                            if (time > TimelineElement.MAX_TIME || time < TimelineElement.MIN_TIME)
+                                throw new InvalidScenarioContentException(
+                                        "Error line " + i + ". : Invalid time. Must be < 1 && > .2");
+
+                            boolean foundFile = false;
+                            for (ImageFile imf : images) {
+                                if (imf.getFileName().equals(lineData[0].trim())) {
+                                    elements.add(
+                                            new TimelineElement(
+                                                    this,
+                                                    imf,
+                                                    Double.parseDouble(lineData[1].trim())));
+                                    foundFile = true;
+                                    break;
+                                }
+                            }
+                            if (!foundFile) {
+                                throw new InvalidScenarioContentException(
+                                        "Error line " + i + ". : File : " + lineData[0].trim() + " not found.");
+                            }
+                        }
+                        i++;
+                    }
+                }
+            }
+        }
+
         /**
          * Updates the layout of the timeline elements.
          * Ensures that no elements overlap, and if one element is
@@ -382,6 +453,8 @@ public class ScenarioEditorPane extends JPanel {
         void updateLayout() {
             int currentX = 10; // initial margin
             int gap = 10; // gap between elements
+
+            contentPane.remove(dummy);
 
             for (TimelineElement elem : elements) {
                 boolean contains = false;
@@ -396,20 +469,41 @@ public class ScenarioEditorPane extends JPanel {
                     contentPane.add(elem);
                 }
 
-                int baseWidth = 100;
-                int additionalWidth = (int) (elem.getTime() * 200); // scale factor for demo
-                int totalWidth = baseWidth + additionalWidth;
+
+                int totalWidth = (int) (elem.getTime() * PIXELS_PER_SECOND);
                 elem.setPreferredSize(new Dimension(totalWidth, 50));
                 elem.setMinimumSize(new Dimension(totalWidth, 50));
                 elem.setMaximumSize(new Dimension(totalWidth, 50));
 
-                elem.setBorder(BorderFactory.createEmptyBorder(0, currentX, 0, 0));
+                if (elem == currentSelectedItem)
+                    elem.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1, true));
+                else
+                    elem.setBorder(BorderFactory.createEmptyBorder(0, currentX, 0, 0));
                 currentX += totalWidth + gap;
                 elem.revalidate();
                 elem.repaint();
             }
 
+            contentPane.add(dummy);
+
             // Refresh layout
+            contentPane.revalidate();
+            contentPane.repaint();
+        }
+
+        /*
+         * This method is called whenever a TimelineElement is moved so we need to clear
+         * all the components to add them back.
+         */
+        void updateLayoutOrder() {
+            contentPane.removeAll();
+
+            for (TimelineElement elem : elements) {
+                contentPane.add(elem);
+            }
+            // Add the dummy item at the end of contentPane
+            contentPane.add(dummy);
+
             contentPane.revalidate();
             contentPane.repaint();
         }
@@ -422,6 +516,63 @@ public class ScenarioEditorPane extends JPanel {
 
         void addTimelineElement(ImageFile droppedImageFile) {
             elements.add(new TimelineElement(this, droppedImageFile));
+            updateLayout();
+        }
+
+        void moveElementToRight(TimelineElement elem) {
+            if (elem == null)
+                return;
+            int index = elements.indexOf(elem);
+            if (index < elements.size() - 1) {
+                TimelineElement save = elements.get(index + 1);
+                elements.set(index + 1, elem);
+                elements.set(index, save);
+            }
+            updateLayoutOrder();
+        }
+
+        void moveElementToLeft(TimelineElement elem) {
+            if (elem == null)
+                return;
+            int index = elements.indexOf(elem);
+            if (index > 0) {
+                TimelineElement save = elements.get(index - 1);
+                elements.set(index - 1, elem);
+                elements.set(index, save);
+            }
+            updateLayoutOrder();
+        }
+
+        TimelineElement getCurrentSelectedItem() {
+            return currentSelectedItem;
+        }
+
+        void setCurrentSelectedItem(TimelineElement elem) {
+            currentSelectedItem = elem;
+            updateLayout();
+        }
+
+        void moveSelectedIndexToRight() {
+            if (currentSelectedItem == null && !elements.isEmpty()) {
+                currentSelectedItem = elements.get(elements.size() - 1);
+                return;
+            } else {
+                int index = elements.indexOf(currentSelectedItem);
+                currentSelectedItem = elements.get((index + 1) % elements.size());
+            }
+
+            updateLayout();
+        }
+
+        void moveSelectedIndexToLeft() {
+            if (currentSelectedItem == null && !elements.isEmpty()) {
+                currentSelectedItem = elements.get(0);
+                return;
+            } else {
+                int index = elements.indexOf(currentSelectedItem);
+                currentSelectedItem = elements.get(((index - 1) % elements.size() + elements.size()) % elements.size());
+            }
+
             updateLayout();
         }
 
@@ -444,16 +595,30 @@ public class ScenarioEditorPane extends JPanel {
             return sb.toString();
         }
 
+        FrameData[] getFrameData() {
+            FrameData[] frameData = new FrameData[elements.size()];
+
+            for (int i = 0; i < elements.size(); i++) {
+                TimelineElement elem = elements.get(i);
+                frameData[i] = new FrameData(elem.getData(), elem.getTime());
+            }
+
+            return frameData;
+        }
+
         List<Pair<ImageFile, Double>> getCurrentState() {
             List<Pair<ImageFile, Double>> state = new ArrayList<>();
 
             for (TimelineElement elem : elements) {
-                state.add(new Pair<ImageFile, Double>(elem.data, elem.time));
+                state.add(new Pair<>(elem.data, elem.time));
             }
 
             return state;
         }
 
+        JScrollPane getScrollPane() {
+            return scrollPane;
+        }
     }
 
     private JPanel imagesListPane,
@@ -463,14 +628,78 @@ public class ScenarioEditorPane extends JPanel {
     private JScrollPane imageListScrollPane;
     private JLabel currentImageView;
 
+    /*
+     * Keyboard Adapter to allow for keyboard TimelinePane manipulation
+     */
+    private class KeyboardTimelineListener extends KeyAdapter {
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_RIGHT:
+                    if (e.isControlDown() && !e.isShiftDown())
+                        timelinePane.moveElementToRight(timelinePane.getCurrentSelectedItem());
+                    else if (e.isControlDown() && !e.isAltDown()) {
+                        timelinePane.getCurrentSelectedItem().setTime(
+                                timelinePane.getCurrentSelectedItem().getTime() + 0.05
+                        );
+                        timelinePane.updateLayout();
+                    }
+                    else if (e.isControlDown()) {
+                        timelinePane.getCurrentSelectedItem().setTime(
+                                timelinePane.getCurrentSelectedItem().getTime() + 0.1
+                        );
+                        timelinePane.updateLayout();
+                    }
+                    else
+                        timelinePane.moveSelectedIndexToRight();
+                    break;
+                case KeyEvent.VK_LEFT:
+                    if (e.isControlDown() && !e.isShiftDown())
+                        timelinePane.moveElementToLeft(timelinePane.getCurrentSelectedItem());
+                    else if (e.isControlDown() && !e.isAltDown()) {
+                        timelinePane.getCurrentSelectedItem().setTime(
+                                timelinePane.getCurrentSelectedItem().getTime() - 0.05
+                        );
+                        timelinePane.updateLayout();
+                    }
+                    else if (e.isControlDown()) {
+                        timelinePane.getCurrentSelectedItem().setTime(
+                                timelinePane.getCurrentSelectedItem().getTime() - 0.1
+                        );
+                        timelinePane.updateLayout();
+                    }
+                    else
+                        timelinePane.moveSelectedIndexToLeft();
+                    break;
+            }
+
+            if (timelinePane.getCurrentSelectedItem() != null) {
+                setCurrentImageView(timelinePane.getCurrentSelectedItem().getData());
+
+                // Ensure the selected item is visible in the scroll view
+                Rectangle bounds = timelinePane.getCurrentSelectedItem().getBounds();
+                bounds.x += timelinePane.getCurrentSelectedItem().getParent().getLocation().x;
+                timelinePane.getScrollPane().getViewport().scrollRectToVisible(bounds);
+            }
+
+
+        }
+
+    }
+
     private void initializeComponents() throws InvalidScenarioContentException {
         imagesListPane = new JPanel();
-        visualizerPane = new JPanel();
+         visualizerPane = new JPanel();
+        // visualizerPane.setFocusable(false);
+
         timelinePane = new TimelinePane(ProjectManager.getCurrent().getScenarioContent());
         imagesPanelList = new JPanel();
 
+        addKeyListener(new KeyboardTimelineListener());
+
         imagesListPane.setBackground(Color.LIGHT_GRAY);
-        visualizerPane.setBackground(Color.WHITE);
+        // visualizerPane.setBackground(Color.WHITE);
         timelinePane.setBackground(Color.GRAY);
 
         Border common = BorderFactory.createEtchedBorder(new Color(0x3C3836), new Color(0x7c6f64));
@@ -483,8 +712,8 @@ public class ScenarioEditorPane extends JPanel {
         imageListScrollPane.setPreferredSize(new Dimension(150, 0));
         imageListScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-        currentImageView = new JLabel();
-        currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
+         currentImageView = new JLabel();
+         currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void layoutComponents() {
@@ -501,12 +730,11 @@ public class ScenarioEditorPane extends JPanel {
         gbc.fill = GridBagConstraints.BOTH;
         imagesListPane.add(imageListScrollPane, gbc);
 
-        visualizerPane.setLayout(new BorderLayout());
-        visualizerPane.add(currentImageView, BorderLayout.CENTER);
-
         timelinePane.setPreferredSize(new Dimension(0, (int) (this.getPreferredSize().height * 0.8)));
 
         imagesListPane.setPreferredSize(new Dimension((int) (this.getPreferredSize().width * 0.6), 0));
+
+        visualizerPane.add(currentImageView);
     }
 
     public ScenarioEditorPane() throws InvalidScenarioContentException {
@@ -527,23 +755,27 @@ public class ScenarioEditorPane extends JPanel {
 
             @Override
             public void componentMoved(ComponentEvent e) {
+                resizeComponents();
             }
 
             @Override
             public void componentShown(ComponentEvent e) {
+                resizeComponents();
             }
 
             @Override
             public void componentHidden(ComponentEvent e) {
+                resizeComponents();
             }
         });
 
         enableDragAndDrop();
 
-        visualizerPane.removeAll();
-        remove(visualizerPane);
-        visualizerPane = new VisualizerPane(this);
-        add(visualizerPane);
+        // visualizerPane.removeAll();
+        // remove(visualizerPane);
+        // visualizerPane = new VisualizerPane(this);
+        // visualizerPane.setFocusable(false);
+        // add(visualizerPane);
     }
 
     private void enableDragAndDrop() {
@@ -568,7 +800,7 @@ public class ScenarioEditorPane extends JPanel {
                     timelinePane.addTimelineElement(droppedImageFile);
                     return true;
                 } catch (UnsupportedFlavorException | java.io.IOException ex) {
-                    ex.printStackTrace();
+                    SimpleErrorDialog.show(ex.getMessage());
                 }
                 return false;
             }
@@ -614,6 +846,8 @@ public class ScenarioEditorPane extends JPanel {
         Dimension currentSize = getSize();
 
         imagesListPane.setPreferredSize(new Dimension((int) (currentSize.width * 0.3), currentSize.height));
+
+        timelinePane.updateLayout();
         timelinePane.setPreferredSize(new Dimension(0, (int) (currentSize.height * 0.4)));
 
         revalidate();
@@ -643,6 +877,20 @@ public class ScenarioEditorPane extends JPanel {
 
         imagesPanelList.revalidate();
         imagesPanelList.repaint();
+    }
+
+    private void setCurrentImageView(ImageFile imageFile) {
+        if (imageFile != null && imageFile.getImage() != null) {
+            ImageIcon scaledIcon = new ImageIcon(scaleImage(
+                    imageFile.getImage(),
+                    currentImageView.getWidth(),
+                    currentImageView.getHeight()
+            ));
+            currentImageView.setIcon(scaledIcon);
+        } else {
+            currentImageView.setIcon(null);
+        }
+
     }
 
     // Helper method to scale images
@@ -675,12 +923,11 @@ public class ScenarioEditorPane extends JPanel {
         return timelinePane.getScenarioFileContent();
     }
 
-    public List<Pair<ImageFile, Double>> getCurrentState(long timeout, TimeUnit unit) {
-        // throws InterruptedException, TimeoutException {
-        // if (initializationLatch.await(timeout, unit)) {
+    public FrameData[] extractFrameData() {
+        return timelinePane.getFrameData();
+    }
+
+    public List<Pair<ImageFile, Double>> getCurrentState() {
         return timelinePane.getCurrentState();
-        // } else {
-        // throw new TimeoutException("Timed out waiting for initialization");
-        // }
     }
 }

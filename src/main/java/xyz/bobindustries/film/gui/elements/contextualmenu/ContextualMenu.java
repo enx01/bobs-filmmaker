@@ -1,7 +1,6 @@
 package xyz.bobindustries.film.gui.elements.contextualmenu;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -15,7 +14,7 @@ public class ContextualMenu {
     private final List<JComponent> menuItems;
 
     private ContextualMenu(List<JComponent> menuItems) {
-        this.menuItems = Collections.unmodifiableList(new ArrayList<>(menuItems));
+        this.menuItems = List.copyOf(menuItems);
     }
 
     /**
@@ -100,15 +99,12 @@ public class ContextualMenu {
         public ContextualMenu build() {
             List<JComponent> finalItems = new ArrayList<>();
 
-            for (int i = 0; i < items.size(); i++) {
-                JMenuItem item = items.get(i);
-
+            for (JMenuItem item : items) {
                 if (item == null) {
                     finalItems.add(new JSeparator());
                 } else {
                     finalItems.add(item);
                 }
-
             }
 
             return new ContextualMenu(finalItems);

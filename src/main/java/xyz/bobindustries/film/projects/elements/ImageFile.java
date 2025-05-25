@@ -1,5 +1,6 @@
 package xyz.bobindustries.film.projects.elements;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,6 +26,10 @@ public class ImageFile {
 
     public void setContent(byte[] content) {
         this.content = content;
+    }
+
+    public Image getImage() {
+        return Toolkit.getDefaultToolkit().createImage(content);
     }
 
     /**
