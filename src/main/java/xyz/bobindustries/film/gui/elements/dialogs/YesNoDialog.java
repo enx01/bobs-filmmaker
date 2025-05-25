@@ -21,6 +21,8 @@ public class YesNoDialog extends JDialog {
         setLocationRelativeTo(null); // Center the dialog on the screen
         setLayout(new BorderLayout());
 
+        setUndecorated(true);
+
         // Add label to display the query
         JLabel queryLabel = new JLabel(query, JLabel.CENTER);
         add(queryLabel, BorderLayout.CENTER);
@@ -29,14 +31,14 @@ public class YesNoDialog extends JDialog {
         JPanel buttonPanel = new JPanel(new FlowLayout());
 
         // Yes button
-        JButton yesButton = new JButton("Yes");
+        JButton yesButton = new JButton("yes");
         yesButton.addActionListener(e -> {
             choice = true;
             setVisible(false);
         });
 
         // No button
-        JButton noButton = new JButton("No");
+        JButton noButton = new JButton("no");
         noButton.addActionListener(e -> {
             choice = false;
             setVisible(false);

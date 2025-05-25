@@ -9,6 +9,7 @@ import java.util.Random;
 public class Bob extends JPanel {
     Color skin = new Color(127, 153, 26);
     double scale = 1;
+    boolean helper = false;
 
     public void setScale(double scale) {
         this.scale = scale;
@@ -28,6 +29,17 @@ public class Bob extends JPanel {
         this();
         setPreferredSize(new Dimension((int) (100 * scale), (int) (100 * scale)));
         setScale(scale);
+    }
+
+    @SuppressWarnings("unused")
+    public Bob(boolean helper) {
+        this();
+        this.helper = helper;
+    }
+
+    public Bob(boolean helper, double scale) {
+        this(scale);
+        this.helper = helper;
     }
 
     public void splash() {
@@ -56,6 +68,34 @@ public class Bob extends JPanel {
         /* Bob's mouth */
         g2d.setColor(Color.BLACK);
         g2d.fillArc((int) (25 * scale), (int) (30 * scale), (int) (50 * scale), (int) (30 * scale), 0, -180);
+
+        if (helper) {
+            /* Glasses frame */
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(new BasicStroke((int) (3 * scale)));
+            g2d.drawRect((int) (15 * scale), (int) (22 * scale), (int) (30 * scale), (int) (20 * scale));
+            g2d.drawRect((int) (55 * scale), (int) (22 * scale), (int) (30 * scale), (int) (20 * scale));
+
+            /* Glasses bridge */
+            g2d.drawLine((int) (45 * scale), (int) (30 * scale), (int) (55 * scale), (int) (30 * scale));
+
+            /* Yellow rectangle on Bob's left */
+            g2d.setColor(new Color(255, 245, 153));
+            g2d.rotate(Math.toRadians(15), (int) (95 * scale + 7.5 * scale), (int) (15 * scale + 40 * scale)); // Rotate around rectangle center
+            g2d.fillRect((int) (95 * scale), (int) (15 * scale), (int) (15 * scale), (int) (80 * scale));
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(new BasicStroke(1));
+            for (int i = 1; i < 8; i++) {
+                g2d.drawLine(
+                        (int) (100 * scale),
+                        (int) (15 * scale + i * 10 * scale),
+                        (int) (110 * scale),
+                        (int) (15 * scale + i * 10 * scale)
+                );
+            }
+            g2d.rotate(-Math.toRadians(15), (int) (95 * scale + 7.5 * scale), (int) (15 * scale + 40 * scale)); // Reset rotation
+
+        }
 
         g2d.dispose();
     }

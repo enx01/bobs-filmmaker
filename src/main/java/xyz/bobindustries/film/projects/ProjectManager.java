@@ -27,7 +27,6 @@ public class ProjectManager {
         File projectDir = new File(projectLocation);
 
         if (!projectDir.exists() || !verifyLocationContent(projectDir)) {
-            System.out.println("splash");
             throw new InvalidProjectDirectoryException();
         }
 
@@ -73,9 +72,6 @@ public class ProjectManager {
     }
 
     public static Project getCurrent() {
-        if (current == null) {
-            return new Project();
-        }
         return current;
     }
 

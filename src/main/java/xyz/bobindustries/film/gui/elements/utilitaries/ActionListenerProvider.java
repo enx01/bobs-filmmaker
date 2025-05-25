@@ -15,7 +15,6 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class ActionListenerProvider {
 
@@ -79,6 +78,37 @@ public class ActionListenerProvider {
 
     }
 
+    public static void saveCurrentProjectWithoutSuccessFeedback(ActionEvent ignoredActionEvent) {
+        LoadingWindow loadingWindow = new LoadingWindow("saving project...", 200, 100);
+
+        loadingWindow.setVisible(true);
+        loadingWindow.requestFocus();
+
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                Workspace workspace = Workspace.getInstance();
+                Project project = ProjectManager.getCurrent();
+                ScenarioEditorPane sep = workspace.getScenarioEditorPane();
+
+                project.setScenarioContent(sep.extractScenarioContent());
+
+                try {
+                    project.save();
+                } catch (IOException ioe) {
+                    SimpleErrorDialog.show("Failed to save project :(");
+                }
+
+                return null;
+            }
+
+            protected void done() {
+                loadingWindow.dispose();
+            }
+        };
+        worker.execute();
+    }
+
     public static void exportProjectAsVideo(ActionEvent ignoredActionEvent) {
         LoadingWindow loadingWindow = new LoadingWindow("exporting video...", 200, 100);
 
@@ -101,7 +131,7 @@ public class ActionListenerProvider {
                 }
 
                 try {
-                    project.exportAsVideo(Arrays.stream(sep.extractFrameData()).toList());
+                    project.exportAsVideo(sep.getCurrentState());
                 } catch (IOException ioe) {
                     SimpleErrorDialog.show("Failed to export movie :(" + "\n" + ioe.getMessage());
                 }
@@ -285,5 +315,6 @@ public class ActionListenerProvider {
             worker.execute();
         }
     }
+
 
 }
