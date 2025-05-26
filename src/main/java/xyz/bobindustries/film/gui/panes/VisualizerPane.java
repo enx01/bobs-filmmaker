@@ -68,7 +68,6 @@ public class VisualizerPane extends JPanel {
     private Thread visualizerThread;
     private final VisualizerRunnable visualizerRunnable;
 
-
     private final ScenarioEditorPane editorPane;
 
     public VisualizerPane(ScenarioEditorPane editorPane) {
@@ -340,8 +339,6 @@ public class VisualizerPane extends JPanel {
         if (currentState != null && !currentState.isEmpty() && totalDuration > 0) {
             double timeAccountedFor = 0;
             for (int i = 0; i < currentState.size(); i++) {
-                // Similar logic as before to find targetIndex & calculatedFrameElapsedTime...
-                // Handle zero duration frames correctly...
                 double frameDuration = currentState.get(i).value() != null ? currentState.get(i).value() : 0.0;
                 if (frameDuration <= 0) {
                     if (newTime == 0.0 && i == 0) {
@@ -362,7 +359,6 @@ public class VisualizerPane extends JPanel {
             }
             // Post-loop adjustments if index not found (e.g., newTime is totalDuration)
             if (targetIndex == -1) {
-                // Find last valid frame...
                 targetIndex = currentState.size() - 1; // Default to last
                 for (int i = currentState.size() - 1; i >= 0; i--) {
                     double fd = currentState.get(i).value() != null ? currentState.get(i).value() : 0.0;
@@ -372,7 +368,7 @@ public class VisualizerPane extends JPanel {
                     }
                 }
                 if (targetIndex == -1)
-                    targetIndex = 0; // Fallback
+                    targetIndex = 0;
                 newTime = totalDuration; // Snap time to end
                 calculatedFrameElapsedTime = currentState.get(targetIndex).value();
             }
@@ -543,7 +539,7 @@ public class VisualizerPane extends JPanel {
                     long timeTakenNs = System.nanoTime() - loopStartTimeNs;
                     long sleepTimeNs = (long) (REFRESH_RATE * 1_000_000) - timeTakenNs;
                     if (sleepTimeNs > 0) {
-                        //noinspection BusyWait
+                        // noinspection BusyWait
                         Thread.sleep(sleepTimeNs / 1_000_000, (int) (sleepTimeNs % 1_000_000));
                     } else {
                         Thread.yield();
