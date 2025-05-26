@@ -261,6 +261,23 @@ public class Workspace extends JDesktopPane {
                 menubar.revalidate();
                 menubar.repaint();
             }
+
+            @Override
+            public void internalFrameClosing(InternalFrameEvent e) {
+                int result = JOptionPane.showConfirmDialog(
+                        imageEditorFrame,
+                        "Voulez-vous vraiment fermer l'éditeur d'image ? Les modifications non enregistrées seront perdues",
+                        "Confirmation",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (result == JOptionPane.NO_OPTION) {
+                    // Annule la fermeture
+                    imageEditorFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+                } else {
+                    imageEditorFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                }
+                imageEditorFrame.setContentPane(new OpenEditor(imageEditorFrame));
+            }
         });
     }
 
