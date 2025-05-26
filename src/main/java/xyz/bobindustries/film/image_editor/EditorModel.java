@@ -1,18 +1,14 @@
-package xyz.bobindustries.film.ImageEditor;
+package xyz.bobindustries.film.image_editor;
 
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.panes.EditorPane;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.VolatileImage;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

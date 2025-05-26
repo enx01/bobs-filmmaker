@@ -1,6 +1,6 @@
 package xyz.bobindustries.film.gui.elements;
 
-import xyz.bobindustries.film.ImageEditor.ToolsSettings;
+import xyz.bobindustries.film.image_editor.ToolsSettings;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.panes.EditorPane;
 

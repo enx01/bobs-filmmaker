@@ -1,10 +1,9 @@
 package xyz.bobindustries.film.gui.elements;
 
-import xyz.bobindustries.film.ImageEditor.ToolsList;
+import xyz.bobindustries.film.image_editor.ToolsList;
 
 import java.awt.*;
 import javax.swing.*;
-import java.awt.event.*;
 import java.util.ArrayList;
 
 public class ToolBoxUI extends JPanel {

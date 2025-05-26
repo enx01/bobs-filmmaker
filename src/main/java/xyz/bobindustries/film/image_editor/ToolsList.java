@@ -1,4 +1,4 @@
-package xyz.bobindustries.film.ImageEditor;
+package xyz.bobindustries.film.image_editor;
 
 public enum ToolsList {
     PEN,

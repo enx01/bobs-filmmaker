@@ -1,8 +1,7 @@
 package xyz.bobindustries.film.gui.panes;
 
-import xyz.bobindustries.film.ImageEditor.*;
+import xyz.bobindustries.film.image_editor.*;
 import xyz.bobindustries.film.gui.Workspace;
-import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.elements.CoordinateBar;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 
@@ -12,15 +11,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.awt.image.VolatileImage;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class EditorPane extends JPanel {
 

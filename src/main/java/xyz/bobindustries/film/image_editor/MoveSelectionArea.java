@@ -1,4 +1,4 @@
-package xyz.bobindustries.film.ImageEditor;
+package xyz.bobindustries.film.image_editor;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

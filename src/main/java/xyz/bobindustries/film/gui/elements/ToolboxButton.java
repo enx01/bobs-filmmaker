@@ -1,14 +1,11 @@
 package xyz.bobindustries.film.gui.elements;
 
-import xyz.bobindustries.film.ImageEditor.ToolsList;
+import xyz.bobindustries.film.image_editor.ToolsList;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
-import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.InputStream;
 

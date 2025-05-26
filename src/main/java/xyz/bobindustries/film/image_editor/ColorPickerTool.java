@@ -1,10 +1,13 @@
-package xyz.bobindustries.film.ImageEditor;
+package xyz.bobindustries.film.image_editor;
+
+import xyz.bobindustries.film.gui.Workspace;
+import xyz.bobindustries.film.gui.elements.ColorBox;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 
-public class Pen implements Tools {
+public class ColorPickerTool implements Tools {
     @Override
     public void mouseReleasedAction(MouseEvent e, EditorModel model) {
 
@@ -35,27 +38,14 @@ public class Pen implements Tools {
         model.setHoveredGridY(-1);
         if (model.getDrawingArea().contains(adjustedPoint)) {
             System.out.println(adjustedPoint.x + " " + adjustedPoint.y);
-            model.colorGridSquare(adjustedPoint, null);
-            model.updateImage(adjustedPoint);
+            Color pickedColor = model.getGridColor(adjustedPoint);
+            ColorBox colorBoxPanel = (ColorBox) Workspace.getInstance().getEditorColors().getContentPane();
+            colorBoxPanel.setSelectedColor(pickedColor);
         }
     }
 
     @Override
     public void mouseDraggedAction(MouseEvent e, EditorModel model) {
-        Point adjustedPoint = new Point(
-                (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-                (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
-
-        if (model.getDrawingArea().contains(adjustedPoint)) {
-            if (model.getLastDragPoint() != null) {
-                model.interpolatePoints(model.getLastDragPoint(), adjustedPoint);
-            } else {
-                model.getDrawQueue().offer(adjustedPoint);
-            }
-            model.setLastDragPoint(adjustedPoint);
-        } else {
-            model.setLastDragPoint(null);
-        }
 
     }
 
