@@ -21,6 +21,11 @@ public class HelperBobPopUp extends JDialog {
             "if you ever feel sad, remember you were able to make bob smile!"
     };
 
+    public static final int BOB_TUTORIAL = 0,
+            IMAGE_EDITOR_TUTORIAL = 1,
+            SCENARIO_EDITOR_TUTORIAL = 2,
+            VISUALIZER_TUTORIAL = 3;
+
     public HelperBobPopUp(Frame owner) {
         super(owner, "", true);
         setSize(800, 600);
@@ -63,7 +68,7 @@ public class HelperBobPopUp extends JDialog {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public static void loadBobTutorial() {
+    public static void loadTutorial(int tutorialId) {
         HelperBobPopUp hbpu = new HelperBobPopUp(App.getFrame());
 
         String content = null;
@@ -80,10 +85,26 @@ public class HelperBobPopUp extends JDialog {
             String pathStr = htmlURL.toString();
             String baseURL = pathStr.substring(0, pathStr.lastIndexOf('/') + 1);
 
+            String filename = "";
+            switch (tutorialId) {
+                case BOB_TUTORIAL:
+                    filename = "bob_tutorial.html";
+                    break;
+                case IMAGE_EDITOR_TUTORIAL:
+                    // TODO
+                    break;
+                case SCENARIO_EDITOR_TUTORIAL:
+                    filename = "scenario_editor_tutorial.html";
+                    break;
+                case VISUALIZER_TUTORIAL:
+                    filename = "visualizer_tutorial.html";
+                    break;
+            }
+
             BufferedReader reader = new BufferedReader(
                     new InputStreamReader(
                             Objects.requireNonNull(
-                                    HelperBobPopUp.class.getResourceAsStream("bob_tutorial.html"))));
+                                    HelperBobPopUp.class.getResourceAsStream(filename))));
             String line;
             while ((line = reader.readLine()) != null) {
                 contentBuilder.append(line).append("\n");

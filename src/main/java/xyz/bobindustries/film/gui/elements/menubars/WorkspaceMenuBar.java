@@ -82,9 +82,11 @@ public class WorkspaceMenuBar extends JMenuBar {
 
         JMenuItem scenarioEditorTutorial = new JMenuItem("scenario editor tutorial");
         scenarioEditorTutorial.setMnemonic('S');
+        scenarioEditorTutorial.addActionListener(ActionListenerProvider::getShowScenarioEditorTutorialPopup);
 
         JMenuItem filmVisualizerTutorial = new JMenuItem("film visualizer tutorial");
         filmVisualizerTutorial.setMnemonic('V');
+        filmVisualizerTutorial.addActionListener(ActionListenerProvider::getShowVisualizerTutorialPopup);
 
         helpMenu.add(bobFilmmakerTutorial);
         helpMenu.add(imageEditorTutorial);

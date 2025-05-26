@@ -156,39 +156,39 @@ public class ActionListenerProvider {
         loadingWindow.setVisible(true);
         loadingWindow.requestFocus();
 
-            SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                @Override
-                protected Void doInBackground() {
-                    if (result == YesNoDialog.YES) {
-                        Workspace workspace = Workspace.getInstance();
-                        Project project = ProjectManager.getCurrent();
-                        ScenarioEditorPane sep = workspace.getScenarioEditorPane();
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                if (result == YesNoDialog.YES) {
+                    Workspace workspace = Workspace.getInstance();
+                    Project project = ProjectManager.getCurrent();
+                    ScenarioEditorPane sep = workspace.getScenarioEditorPane();
 
-                        project.setScenarioContent(sep.extractScenarioContent());
+                    project.setScenarioContent(sep.extractScenarioContent());
 
-                        try {
-                            project.save();
-                        } catch (IOException ioe) {
-                            SimpleErrorDialog.show("Failed to save project :(" + "\n" + ioe.getMessage());
-                        }
+                    try {
+                        project.save();
+                    } catch (IOException ioe) {
+                        SimpleErrorDialog.show("Failed to save project :(" + "\n" + ioe.getMessage());
                     }
-
-                    App.getFrame().getContentPane().removeAll();
-                    App.getFrame().add(new WelcomePane());
-                    App.getFrame().setJMenuBar(null);
-
-                    ProjectManager.setCurrent(null);
-
-                    App.getFrame().revalidate();
-
-                    return null;
                 }
 
-                protected void done() {
-                    loadingWindow.dispose();
-                }
-            };
-            worker.execute();
+                App.getFrame().getContentPane().removeAll();
+                App.getFrame().add(new WelcomePane());
+                App.getFrame().setJMenuBar(null);
+
+                ProjectManager.setCurrent(null);
+
+                App.getFrame().revalidate();
+
+                return null;
+            }
+
+            protected void done() {
+                loadingWindow.dispose();
+            }
+        };
+        worker.execute();
 
     }
 
@@ -251,7 +251,19 @@ public class ActionListenerProvider {
      */
 
     public static void getShowBobTutorialPopup(ActionEvent ignoredActionEvent) {
-        HelperBobPopUp.loadBobTutorial();
+        HelperBobPopUp.loadTutorial(HelperBobPopUp.BOB_TUTORIAL);
+    }
+
+    public static void getShowImageEditorTutorialPopup(ActionEvent ignoredActionEvent) {
+        HelperBobPopUp.loadTutorial(HelperBobPopUp.IMAGE_EDITOR_TUTORIAL);
+    }
+
+    public static void getShowScenarioEditorTutorialPopup(ActionEvent ignoredActionEvent) {
+        HelperBobPopUp.loadTutorial(HelperBobPopUp.SCENARIO_EDITOR_TUTORIAL);
+    }
+
+    public static void getShowVisualizerTutorialPopup(ActionEvent ignoredActionEvent) {
+        HelperBobPopUp.loadTutorial(HelperBobPopUp.VISUALIZER_TUTORIAL);
     }
 
     /*
@@ -325,6 +337,5 @@ public class ActionListenerProvider {
             worker.execute();
         }
     }
-
 
 }
