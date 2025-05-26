@@ -4,6 +4,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class NameImageDialog extends JDialog {
     private JTextField champTexte;
@@ -16,9 +20,10 @@ public class NameImageDialog extends JDialog {
 
     public NameImageDialog(Frame parent) {
         super(parent, "Saisie de texte", true); // true = modal
-        setSize(300, 150);
+        setSize(500, 100);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        setUndecorated(true);
 
         champTexte = new JTextField(20);
         boutonValider = new JButton("Valider");
@@ -31,6 +36,12 @@ public class NameImageDialog extends JDialog {
         boutonValider.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 texteSaisi = champTexte.getText();
+                if (texteSaisi.trim().isEmpty()) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy/HH:mm");
+                    LocalDateTime now = LocalDateTime.now();
+                    String timestamp = now.format(formatter);
+                    texteSaisi = "image" + timestamp;
+                }
                 isSuccess = true;
                 dispose();
             }

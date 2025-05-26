@@ -16,9 +16,9 @@ public class ProjectWelcomePane extends JPanel {
         buttonsPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        JButton editImagesButton = ButtonFactory.createButton("edit images", "base_image.png", 150, 150);
-        JButton editScenarioButton = ButtonFactory.createButton("edit scenario", "base_image.png", 150, 150);
-        JButton visualizerButton = ButtonFactory.createButton("view film", "base_image.png", 150, 150);
+        JButton editImagesButton = ButtonFactory.createButton("edit images", "base_image.png", 125, 125);
+        JButton editScenarioButton = ButtonFactory.createButton("edit scenario", "base_image.png", 125, 125);
+        JButton visualizerButton = ButtonFactory.createButton("view film", "base_image.png", 125, 125);
 
         editImagesButton.addActionListener(ActionListenerProvider::getShowImageEditorFrameAction);
         editScenarioButton.addActionListener(ActionListenerProvider::getShowScenarioEditorFrameAction);
