@@ -5,9 +5,10 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
-public class RectangleTool implements Tools {
+public class RectangleTool implements Tools, ToolsSettings {
     private Point startPoint = null;
     private Point currentDragPoint = null;
+    private int thickness = 1;
 
     @Override
     public void mousePressedAction(MouseEvent e, EditorModel model) {
@@ -34,7 +35,9 @@ public class RectangleTool implements Tools {
 
         for (int y = y1; y <= y2; y++) {
             for (int x = x1; x <= x2; x++) {
-                boolean isBorder = y == y1 || y == y2 || x == x1 || x == x2;
+                boolean isBorder =
+                    (x >= x1 && x < x1 + thickness) || (x <= x2 && x > x2 - thickness) ||
+                    (y >= y1 && y < y1 + thickness) || (y <= y2 && y > y2 - thickness);
                 if (isBorder) {
                     Point p = new Point(x, y);
                     if (model.getDrawingArea().contains(p)) {
@@ -80,7 +83,9 @@ public class RectangleTool implements Tools {
 
             for (int y = y1; y <= y2; y++) {
                 for (int x = x1; x <= x2; x++) {
-                    boolean isBorder = y == y1 || y == y2 || x == x1 || x == x2;
+                    boolean isBorder =
+                        (x >= x1 && x < x1 + thickness) || (x <= x2 && x > x2 - thickness) ||
+                        (y >= y1 && y < y1 + thickness) || (y <= y2 && y > y2 - thickness);
                     if (isBorder) {
                         Point p = new Point(x, y);
                         if (model.getDrawingArea().contains(p)) {
@@ -116,5 +121,20 @@ public class RectangleTool implements Tools {
                 (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
                 (int) ((e.getY() - model.getOrigin().y) / model.getScale())
         );
+    }
+
+    @Override
+    public int[] getSliderBounds() {
+        return new int[]{1, 20, thickness};
+    }
+
+    @Override
+    public int getCurrentThickness() {
+        return thickness;
+    }
+
+    @Override
+    public void updateCurrentThickness(int thickness) {
+        this.thickness = thickness;
     }
 }

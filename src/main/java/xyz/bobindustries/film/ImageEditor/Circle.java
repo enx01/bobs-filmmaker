@@ -6,10 +6,10 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Circle implements Tools{
+public class Circle implements Tools, ToolsSettings{
     private Point startPoint = null;
     private Point currentDragPoint = null;
-
+    private int thickness = 1; // Valeur par défaut pour l'épaisseur
 
     @Override
     public void mousePressedAction(MouseEvent e, EditorModel model) {
@@ -29,7 +29,7 @@ public class Circle implements Tools{
         Point endPoint = getAdjustedPoint(e, model);
         if (!model.getDrawingArea().contains(endPoint)) return;
 
-        ArrayList<Point> points = getCirclePoints(startPoint, endPoint);
+        ArrayList<Point> points = getCirclePoints(startPoint, endPoint, thickness);
 
         for (Point point : points) {
             if (model.getDrawingArea().contains(point)) {
@@ -66,7 +66,7 @@ public class Circle implements Tools{
     public void paintHoveredArea(Graphics2D g, EditorModel model, AffineTransform at) {
         if (currentDragPoint != null && startPoint != null) {
 
-            ArrayList<Point> points = getCirclePoints(startPoint, currentDragPoint);
+            ArrayList<Point> points = getCirclePoints(startPoint, currentDragPoint, thickness);
 
             g.setColor(new Color(0, 0, 255, 128)); // Bleu semi-transparent
 
@@ -88,7 +88,6 @@ public class Circle implements Tools{
 
         g.setTransform(at);
     }
-
 
     private Point gridToScreen(Point logical, EditorModel model) {
         int gridSize = model.getGridSquareSize();
@@ -114,7 +113,7 @@ public class Circle implements Tools{
         g.fillOval(topLeftX, topLeftY, diameter, diameter); // Remplir un cercle
     }
 
-    private static ArrayList<Point> getCirclePoints(Point startPoint, Point endPoint) {
+    private static ArrayList<Point> getCirclePoints(Point startPoint, Point endPoint, int thickness) {
         ArrayList<Point> points = new ArrayList<>();
         double dx = endPoint.x - startPoint.x;
         double dy = endPoint.y - startPoint.y;
@@ -122,7 +121,7 @@ public class Circle implements Tools{
         for (int y = -radius; y <= radius; y++) {
             for (int x = -radius; x <= radius; x++) {
                 int distance = x * x + y * y;
-                if (distance <= radius * radius && distance >= (radius - 1) * (radius - 1)) {
+                if (distance <= radius * radius && distance >= (radius - thickness) * (radius - thickness)) {
                     Point p = new Point(startPoint.x + x, startPoint.y + y);
                     points.add(p);
                 }
@@ -131,4 +130,23 @@ public class Circle implements Tools{
         return points;
     }
 
+    // Setter pour l'épaisseur
+    public void setThickness(int thickness) {
+        this.thickness = Math.max(1, thickness);
+    }
+
+    @Override
+    public int[] getSliderBounds() {
+        return new int[]{1, 100, thickness};
+    }
+
+    @Override
+    public int getCurrentThickness() {
+        return thickness;
+    }
+
+    @Override
+    public void updateCurrentThickness(int thickness) {
+        this.thickness = thickness;
+    }
 }

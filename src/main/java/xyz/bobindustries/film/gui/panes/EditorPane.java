@@ -81,7 +81,12 @@ public class EditorPane extends JPanel {
     }
 
     public ToolsSettings getSelectedToolsSettings() {
-        return (ToolsSettings) selectedTool;
+        try {
+            return (ToolsSettings) selectedTool;
+
+        } catch (ClassCastException ex) {
+            return null;
+        }
     }
 
     private MouseAdapter setMouseAdapter() {
@@ -223,7 +228,8 @@ public class EditorPane extends JPanel {
                 data.reDrawGrid(data.getGridColors());
             }
             default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
-            }
+        }
+        Workspace.getInstance().updateToolsSettings(getSelectedToolsSettings());
     }
 
     public void setCurrentImageIndex(int currentImageIndex) {

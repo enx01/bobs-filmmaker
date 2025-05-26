@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
-public class Erase implements Tools {
+public class Erase implements Tools, ToolsSettings {
     private int radius;
     ArrayList<Point> brushOffsets;
 
@@ -146,6 +146,22 @@ public class Erase implements Tools {
 
     public ArrayList<Point> getBrushOffsets() {
         return brushOffsets;
+    }
+
+    @Override
+    public int[] getSliderBounds() {
+        return new int[]{0,100,20};
+    }
+
+    @Override
+    public int getCurrentThickness() {
+        return radius;
+    }
+
+    @Override
+    public void updateCurrentThickness(int thickness) {
+        this.radius = thickness;
+        generateBrush(radius);
     }
 }
 

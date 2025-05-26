@@ -1,6 +1,7 @@
 package xyz.bobindustries.film.gui;
 
 import xyz.bobindustries.film.App;
+import xyz.bobindustries.film.ImageEditor.ToolsSettings;
 import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.elements.NoSettings;
 import xyz.bobindustries.film.gui.elements.ToolBoxUI;
@@ -261,6 +262,24 @@ public class Workspace extends JDesktopPane {
                 menubar.repaint();
             }
         });
+    }
+
+    public void updateToolsSettings(ToolsSettings ts) {
+        if (ts!=null) {
+            int[] sliderParams = ts.getSliderBounds();
+            System.out.println("params:"+sliderParams[0]+";"+sliderParams[1]+";"+sliderParams[2]);
+            try {
+                ToolsSettingsUI tsui = (ToolsSettingsUI) ToolsSettings.getContentPane();
+                tsui.setSlider(sliderParams[0], sliderParams[1], sliderParams[2]);
+
+            } catch (ClassCastException e) {
+                ToolsSettingsUI tsui = new ToolsSettingsUI(ToolsSettings, sliderParams[0], sliderParams[1], sliderParams[2]);
+                ToolsSettings.setContentPane(tsui);
+            }
+        } else {
+            ToolsSettings.setContentPane(new NoSettings());
+        }
+        ToolsSettings.pack();
     }
 
     public static Workspace getInstance() {
