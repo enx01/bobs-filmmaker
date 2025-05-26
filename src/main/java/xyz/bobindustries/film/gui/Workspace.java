@@ -79,7 +79,7 @@ public class Workspace extends JDesktopPane {
     private final BoundedDesktopManager desktopManager;
     private final JInternalFrame editorToolbox;
     private final JInternalFrame editorColors;
-    private final JInternalFrame ToolsSettings;
+    private final JInternalFrame toolsSettings;
 
     private final JInternalFrame welcomeFrame,
             imageEditorFrame,
@@ -124,7 +124,7 @@ public class Workspace extends JDesktopPane {
     }
 
     public JInternalFrame getToolsSettings() {
-        return ToolsSettings;
+        return toolsSettings;
     }
 
     public Workspace() throws InvalidScenarioContentException {
@@ -234,7 +234,7 @@ public class Workspace extends JDesktopPane {
         editorColors.setContentPane(new ColorBox(editorColors));
         editorColors.pack();
 
-        ToolsSettings = new JInternalFrame(
+        toolsSettings = new JInternalFrame(
                 "tools settings",
                 false,
                 true,
@@ -242,8 +242,56 @@ public class Workspace extends JDesktopPane {
                 false
         );
         //ToolsSettings.setContentPane(new ToolsSettingsUI(ToolsSettings, 0, 100, 20));
-        ToolsSettings.setContentPane(new NoSettings());
-        ToolsSettings.pack();
+        toolsSettings.setContentPane(new NoSettings());
+        toolsSettings.pack();
+
+        editorToolbox.addInternalFrameListener(new InternalFrameAdapter() {
+            @Override
+            public void internalFrameActivated(InternalFrameEvent e) {
+                menubar.displayEditorOptions();
+                menubar.revalidate();
+                menubar.repaint();
+            }
+
+            @Override
+            public void internalFrameDeactivated(InternalFrameEvent e) {
+                menubar.displayDefaultOptions();
+                menubar.revalidate();
+                menubar.repaint();
+            }
+        });
+
+        editorColors.addInternalFrameListener(new InternalFrameAdapter() {
+            @Override
+            public void internalFrameActivated(InternalFrameEvent e) {
+                menubar.displayEditorOptions();
+                menubar.revalidate();
+                menubar.repaint();
+            }
+
+            @Override
+            public void internalFrameDeactivated(InternalFrameEvent e) {
+                menubar.displayDefaultOptions();
+                menubar.revalidate();
+                menubar.repaint();
+            }
+        });
+
+        toolsSettings.addInternalFrameListener(new InternalFrameAdapter() {
+            @Override
+            public void internalFrameActivated(InternalFrameEvent e) {
+                menubar.displayEditorOptions();
+                menubar.revalidate();
+                menubar.repaint();
+            }
+
+            @Override
+            public void internalFrameDeactivated(InternalFrameEvent e) {
+                menubar.displayDefaultOptions();
+                menubar.revalidate();
+                menubar.repaint();
+            }
+        });
 
         imageEditorFrame.addInternalFrameListener(new InternalFrameAdapter() {
             @Override
@@ -253,6 +301,7 @@ public class Workspace extends JDesktopPane {
                 menubar.repaint();
                 editorToolbox.toFront();
                 editorColors.toFront();
+                toolsSettings.toFront();
             }
 
             @Override
@@ -275,8 +324,11 @@ public class Workspace extends JDesktopPane {
                     imageEditorFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                 } else {
                     imageEditorFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    editorColors.dispose();
+                    editorToolbox.dispose();
+                    toolsSettings.dispose();
+                    imageEditorFrame.setContentPane(new OpenEditor(imageEditorFrame));
                 }
-                imageEditorFrame.setContentPane(new OpenEditor(imageEditorFrame));
             }
         });
     }
@@ -286,17 +338,17 @@ public class Workspace extends JDesktopPane {
             int[] sliderParams = ts.getSliderBounds();
             System.out.println("params:"+sliderParams[0]+";"+sliderParams[1]+";"+sliderParams[2]);
             try {
-                ToolsSettingsUI tsui = (ToolsSettingsUI) ToolsSettings.getContentPane();
+                ToolsSettingsUI tsui = (ToolsSettingsUI) toolsSettings.getContentPane();
                 tsui.setSlider(sliderParams[0], sliderParams[1], sliderParams[2]);
 
             } catch (ClassCastException e) {
-                ToolsSettingsUI tsui = new ToolsSettingsUI(ToolsSettings, sliderParams[0], sliderParams[1], sliderParams[2]);
-                ToolsSettings.setContentPane(tsui);
+                ToolsSettingsUI tsui = new ToolsSettingsUI(toolsSettings, sliderParams[0], sliderParams[1], sliderParams[2]);
+                toolsSettings.setContentPane(tsui);
             }
         } else {
-            ToolsSettings.setContentPane(new NoSettings());
+            toolsSettings.setContentPane(new NoSettings());
         }
-        ToolsSettings.pack();
+        toolsSettings.pack();
     }
 
     public static Workspace getInstance() {
