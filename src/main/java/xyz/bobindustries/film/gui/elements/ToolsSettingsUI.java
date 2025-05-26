@@ -1,16 +1,20 @@
 package xyz.bobindustries.film.gui.elements;
 
+import xyz.bobindustries.film.ImageEditor.ToolsSettings;
+import xyz.bobindustries.film.gui.Workspace;
+import xyz.bobindustries.film.gui.panes.EditorPane;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 
-public class ToolsSettings extends JPanel {
+public class ToolsSettingsUI extends JPanel {
 
     private JSlider slider;
     private JLabel currentValue;
 
-    public ToolsSettings(JInternalFrame parent, int min, int max, int def) {
+    public ToolsSettingsUI(JInternalFrame parent, int min, int max, int def) {
         setLayout(new BorderLayout());
         slider = new JSlider(min, max, def);
         slider.setPaintLabels(true);
@@ -22,8 +26,10 @@ public class ToolsSettings extends JPanel {
             @Override
             public void stateChanged(ChangeEvent e) {
                 int value = slider.getValue();
-                System.out.println(value);
                 currentValue.setText(""+value);
+                EditorPane editor = (EditorPane) Workspace.getInstance().getImageEditorFrame().getContentPane();
+                ToolsSettings ts = editor.getSelectedToolsSettings();
+                ts.updateCurrentThickness(value);
             }
         });
 

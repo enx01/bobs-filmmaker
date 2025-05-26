@@ -4,13 +4,12 @@ import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.elements.NoSettings;
 import xyz.bobindustries.film.gui.elements.ToolBoxUI;
-import xyz.bobindustries.film.gui.elements.ToolsSettings;
+import xyz.bobindustries.film.gui.elements.ToolsSettingsUI;
 import xyz.bobindustries.film.gui.elements.menubars.WorkspaceMenuBar;
 import xyz.bobindustries.film.gui.elements.utilitaries.Bob;
 import xyz.bobindustries.film.gui.elements.utilitaries.ConstantsProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.panes.AboutPane;
-import xyz.bobindustries.film.gui.panes.EditorPane;
 import xyz.bobindustries.film.gui.panes.ProjectWelcomePane;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
 import xyz.bobindustries.film.gui.panes.VisualizerPane;
@@ -241,8 +240,8 @@ public class Workspace extends JDesktopPane {
                 false,
                 false
         );
-        ToolsSettings.setContentPane(new ToolsSettings(ToolsSettings, 0, 100, 20));
-        //ToolsSettings.setContentPane(new NoSettings());
+        //ToolsSettings.setContentPane(new ToolsSettingsUI(ToolsSettings, 0, 100, 20));
+        ToolsSettings.setContentPane(new NoSettings());
         ToolsSettings.pack();
 
         imageEditorFrame.addInternalFrameListener(new InternalFrameAdapter() {
