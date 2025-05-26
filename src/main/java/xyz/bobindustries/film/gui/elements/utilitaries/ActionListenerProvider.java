@@ -115,6 +115,7 @@ public class ActionListenerProvider {
                 Workspace workspace = Workspace.getInstance();
                 Project project = ProjectManager.getCurrent();
                 ScenarioEditorPane sep = workspace.getScenarioEditorPane();
+                EditorPane ep = (EditorPane) workspace.getImageEditorFrame().getContentPane();
 
                 project.setScenarioContent(sep.extractScenarioContent());
 
@@ -203,7 +204,6 @@ public class ActionListenerProvider {
 
                 ProjectManager.setCurrent(null);
 
-
                 App.getFrame().revalidate();
 
                 return null;
@@ -248,7 +248,8 @@ public class ActionListenerProvider {
             EditorPane pane = (EditorPane) ief.getContentPane();
             pane.addNewImage(imf.getColorMatrix(), imf.getFileName());
         } catch (ClassCastException ccex) {
-            EditorPane pane = ActionListenerProvider.openImageEditorOpening(ief, imf.getColorMatrix(), imf.getFileName());
+            EditorPane pane = ActionListenerProvider.openImageEditorOpening(ief, imf.getColorMatrix(),
+                    imf.getFileName());
             ief.setContentPane(pane);
             showFrameIfClosed(current_ws, ief);
         }
@@ -391,7 +392,8 @@ public class ActionListenerProvider {
             for (String currentFrame : selectedFrames) {
                 if (editor == null) {
                     System.out.println("editor is null");
-                    editor = openImageEditorOpening(editorFrame, ProjectManager.getImageMatrix(currentFrame), currentFrame);
+                    editor = openImageEditorOpening(editorFrame, ProjectManager.getImageMatrix(currentFrame),
+                            currentFrame);
                 } else {
                     editor.addNewImage(ProjectManager.getImageMatrix(currentFrame), currentFrame);
                 }

@@ -37,7 +37,7 @@ public class NameImageDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 texteSaisi = champTexte.getText();
                 if (texteSaisi.trim().isEmpty()) {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy/HH:mm");
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd_MM_yy_HH:mm");
                     LocalDateTime now = LocalDateTime.now();
                     String timestamp = now.format(formatter);
                     texteSaisi = "image" + timestamp;

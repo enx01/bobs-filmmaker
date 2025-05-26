@@ -24,7 +24,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class EditorPane extends JPanel {
 
-    //private ArrayList<EditorModel> openedImages;
+    // private ArrayList<EditorModel> openedImages;
     private HashMap<Integer, String> openedFiles;
     private HashMap<Integer, EditorModel> openedFilesModels;
     private int currentImageIndex;
@@ -41,7 +41,7 @@ public class EditorPane extends JPanel {
         openedFiles = new HashMap<>();
         openedFilesModels = new HashMap<>();
 
-        currentImageIndex=0;
+        currentImageIndex = 0;
         openedFiles.put(currentImageIndex, currentFile);
 
         data = new EditorModel(this, gridColors, gridWidth, gridHeight);
@@ -77,7 +77,7 @@ public class EditorPane extends JPanel {
         startDrawingThread();
     }
 
-    public String getCurrentFileName(){
+    public String getCurrentFileName() {
         return openedFiles.get(currentImageIndex);
     }
 
@@ -191,7 +191,7 @@ public class EditorPane extends JPanel {
             System.out.println("image merged");
         }
         currentTools = chosenToolsList;
-        System.out.println("selecting tool: "+chosenToolsList.name());
+        System.out.println("selecting tool: " + chosenToolsList.name());
         switch (chosenToolsList) {
             case PEN -> selectedTool = new Pen();
             case BRUSH -> {
@@ -220,16 +220,18 @@ public class EditorPane extends JPanel {
                 data.redo();
             }
             case PREVIOUS_FRAME -> {
-                if (openedFilesModels.containsKey(currentImageIndex-1) && openedFiles.containsKey(currentImageIndex-1)) {
-                    changeCurrentImage(currentImageIndex-1);
-                    System.out.println("index:"+currentImageIndex);
+                if (openedFilesModels.containsKey(currentImageIndex - 1)
+                        && openedFiles.containsKey(currentImageIndex - 1)) {
+                    changeCurrentImage(currentImageIndex - 1);
+                    System.out.println("index:" + currentImageIndex);
                     data.reDrawGrid(data.getGridColors());
                 } else {
                     SimpleErrorDialog.show("no previous frame available");
                 }
             }
             case NEXT_FRAME -> {
-                if (openedFilesModels.containsKey(currentImageIndex+1) && openedFiles.containsKey(currentImageIndex+1)) {
+                if (openedFilesModels.containsKey(currentImageIndex + 1)
+                        && openedFiles.containsKey(currentImageIndex + 1)) {
                     changeCurrentImage(currentImageIndex + 1);
                     System.out.println("index:" + currentImageIndex);
                     data.reDrawGrid(data.getGridColors());
@@ -253,8 +255,8 @@ public class EditorPane extends JPanel {
     public void addNewImage(Color[][] gridColors, String name) {
         if (openedFiles.containsValue(name)) {
             EditorModel newData = new EditorModel(this, gridColors, gridColors[0].length, gridColors.length);
-            openedFiles.put(Collections.max(openedFilesModels.keySet())+1, name);
-            openedFilesModels.put(Collections.max(openedFilesModels.keySet())+1, newData);
+            openedFiles.put(Collections.max(openedFilesModels.keySet()) + 1, name);
+            openedFilesModels.put(Collections.max(openedFilesModels.keySet()) + 1, newData);
         } else {
             SimpleErrorDialog.show("Erreur: l'image existe déjà");
         }

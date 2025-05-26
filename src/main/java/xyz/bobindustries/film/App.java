@@ -76,11 +76,7 @@ public class App {
                                             curProject.getProjectName() +
                                             "\" before exiting ?");
                             if (userResponse == YesNoDialog.YES) {
-                                try {
-                                    curProject.save();
-                                } catch (Exception ex) {
-                                    SimpleErrorDialog.show("failed to save project :(" + "\n" + ex.getMessage());
-                                }
+                                ActionListenerProvider.saveCurrentProjectWithoutSuccessFeedback(null);
                             }
                         }
                     }
