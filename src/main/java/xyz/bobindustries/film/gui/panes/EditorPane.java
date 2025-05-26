@@ -205,11 +205,12 @@ public class EditorPane extends JPanel {
             case RECTANGLE -> {
                 selectedTool = new RectangleTool();
             }
+            case COLOR_PICKER -> selectedTool = new ColorPickerTool();
             case SELECT -> selectedTool = new SelectionTool();
             case MOVE_SELECTION_AREA -> selectedTool = new MoveSelectionArea();
             case MOVE_SELECTION -> {
-            selectedTool = new MoveSelection();
-            data.setDraggedImage();
+                selectedTool = new MoveSelection();
+                data.setDraggedImage();
             }
             case UNDO -> {
                 data.undo();

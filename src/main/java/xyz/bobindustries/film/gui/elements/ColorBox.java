@@ -56,4 +56,8 @@ public class ColorBox extends JPanel {
     public Color getSelectedColor() {
         return selectedColor;
     }
+
+    public void setSelectedColor(Color selectedColor) {
+        this.selectedColor = selectedColor;
+    }
 }

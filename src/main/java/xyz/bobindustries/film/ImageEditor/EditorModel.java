@@ -338,6 +338,17 @@ public class EditorModel {
         }
     }
 
+    public Color getGridColor(Point p) {
+        int gridSize = gridSquareSize;
+        int gridX = (p.x - drawingArea.x) / gridSize;
+        int gridY = (p.y - drawingArea.y) / gridSize;
+
+        if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+            return gridColors[gridY][gridX];
+        }
+        return null;
+    }
+
     public void interpolatePoints(Point p1, Point p2) {
         int dx = p2.x - p1.x;
         int dy = p2.y - p1.y;
