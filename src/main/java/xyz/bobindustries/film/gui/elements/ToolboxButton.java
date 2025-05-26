@@ -34,4 +34,14 @@ public class ToolboxButton extends JButton {
 
         addActionListener(ActionListenerProvider::setTool);
     }
+
+    public void setHoveredStyle(boolean hovered) {
+        if (hovered) {
+            setBackground(new Color(200, 200, 255)); // couleur de survol
+            setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+        } else {
+            setBackground(UIManager.getColor("Button.background"));
+            setBorder(UIManager.getBorder("Button.border"));
+        }
+    }
 }

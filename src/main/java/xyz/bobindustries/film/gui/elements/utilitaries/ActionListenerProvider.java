@@ -3,6 +3,7 @@ package xyz.bobindustries.film.gui.elements.utilitaries;
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.ImageEditor.ToolsList;
 import xyz.bobindustries.film.gui.Workspace;
+import xyz.bobindustries.film.gui.elements.ToolBoxUI;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
 import xyz.bobindustries.film.gui.elements.dialogs.*;
 import xyz.bobindustries.film.gui.helpers.Pair;
@@ -306,6 +307,9 @@ public class ActionListenerProvider {
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
         EditorPane editor = (EditorPane) editorFrame.getContentPane();
         editor.setSelectedTool(ToolsList.valueOf(e.getActionCommand()));
+        JInternalFrame toolboxFrame = workspace.getEditorToolbox();
+        ToolBoxUI tui = (ToolBoxUI) toolboxFrame.getContentPane();
+        tui.setSelectedButton(e.getActionCommand());
         System.out.println("tool set : "+ e.getActionCommand());
     }
 
