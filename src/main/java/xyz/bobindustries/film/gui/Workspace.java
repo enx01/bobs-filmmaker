@@ -74,7 +74,6 @@ public class Workspace extends JDesktopPane {
 
     private static Workspace instance;
 
-
     private WorkspaceMenuBar menubar;
     private final BoundedDesktopManager desktopManager;
     private final JInternalFrame editorToolbox;
@@ -213,14 +212,12 @@ public class Workspace extends JDesktopPane {
         aboutFrame.setMinimumSize(ConstantsProvider.IFRAME_MIN_SIZE);
         aboutFrame.setContentPane(new AboutPane());
 
-
         editorToolbox = new JInternalFrame(
                 "tools",
                 false,
                 true,
                 false,
-                false
-        );
+                false);
         editorToolbox.setContentPane(new ToolBoxUI());
         editorToolbox.pack();
 
@@ -229,8 +226,7 @@ public class Workspace extends JDesktopPane {
                 false,
                 true,
                 false,
-                false
-        );
+                false);
         editorColors.setContentPane(new ColorBox(editorColors));
         editorColors.pack();
 
@@ -239,9 +235,8 @@ public class Workspace extends JDesktopPane {
                 false,
                 true,
                 false,
-                false
-        );
-        //ToolsSettings.setContentPane(new ToolsSettingsUI(ToolsSettings, 0, 100, 20));
+                false);
+        // ToolsSettings.setContentPane(new ToolsSettingsUI(ToolsSettings, 0, 100, 20));
         toolsSettings.setContentPane(new NoSettings());
         toolsSettings.pack();
 
@@ -317,8 +312,7 @@ public class Workspace extends JDesktopPane {
                         imageEditorFrame,
                         "Voulez-vous vraiment fermer l'éditeur d'image ? Les modifications non enregistrées seront perdues",
                         "Confirmation",
-                        JOptionPane.YES_NO_OPTION
-                );
+                        JOptionPane.YES_NO_OPTION);
                 if (result == JOptionPane.NO_OPTION) {
                     // Annule la fermeture
                     imageEditorFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -334,15 +328,16 @@ public class Workspace extends JDesktopPane {
     }
 
     public void updateToolsSettings(ToolsSettings ts) {
-        if (ts!=null) {
+        if (ts != null) {
             int[] sliderParams = ts.getSliderBounds();
-            System.out.println("params:"+sliderParams[0]+";"+sliderParams[1]+";"+sliderParams[2]);
+            System.out.println("params:" + sliderParams[0] + ";" + sliderParams[1] + ";" + sliderParams[2]);
             try {
                 ToolsSettingsUI tsui = (ToolsSettingsUI) toolsSettings.getContentPane();
                 tsui.setSlider(sliderParams[0], sliderParams[1], sliderParams[2]);
 
             } catch (ClassCastException e) {
-                ToolsSettingsUI tsui = new ToolsSettingsUI(toolsSettings, sliderParams[0], sliderParams[1], sliderParams[2]);
+                ToolsSettingsUI tsui = new ToolsSettingsUI(toolsSettings, sliderParams[0], sliderParams[1],
+                        sliderParams[2]);
                 toolsSettings.setContentPane(tsui);
             }
         } else {
@@ -364,7 +359,6 @@ public class Workspace extends JDesktopPane {
         System.out.println("fin creation workspace");
         return instance;
     }
-
 
     @Override
     protected void paintComponent(Graphics g) {

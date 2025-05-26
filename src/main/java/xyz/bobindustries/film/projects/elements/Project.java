@@ -120,33 +120,14 @@ public class Project {
         return images;
     }
 
-    /*
-     * public void addOrUpdateImage(String fileName, byte[] content) {
-     * =======
-     * 
-     * @SuppressWarnings("unused")
-     * public void addOrUpdateImage(String fileName, byte[] content) {
-     * >>>>>>> eac57ec07a5f1f6336eaf54755edf452859c05ba
-     * boolean found = false;
-     * for (ImageFile img : images) {
-     * if (img.getFileName().equals(fileName)) {
-     * img.setContent(content);
-     * found = true;
-     * break;
-     * }
-     * }
-     * 
-     * if (!found) {
-     * images.add(new ImageFile(fileName, content));
-     * }
-     * }
-     */
-
     public void addImage(ImageFile imageFileToAdd) {
-        System.out.println("image added");
-        System.out.println("past img add;" + imageFileToAdd.getPath());
+        for (ImageFile img : images) {
+            if (img.getFileName().equals(imageFileToAdd.getFileName())) {
+                images.remove(img);
+                break;
+            }
+        }
         images.add(imageFileToAdd);
-        System.out.println("size:" + images.size());
     }
 
     public void save() throws IOException {
@@ -163,7 +144,6 @@ public class Project {
             Files.write(imagePath, img.getContent());
         }
     }
-
 
     public void exportAsVideo(List<Pair<ImageFile, Double>> data) throws IOException {
         if (data.isEmpty()) {

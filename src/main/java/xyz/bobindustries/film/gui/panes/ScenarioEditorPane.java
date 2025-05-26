@@ -79,7 +79,6 @@ public class ScenarioEditorPane extends JPanel {
 
         class TimelineElement extends JPanel {
 
-
             // Private HandleDragListener class
             private class HandleDragListener extends MouseAdapter {
                 TimelinePane pane;
@@ -104,10 +103,8 @@ public class ScenarioEditorPane extends JPanel {
                     }
 
                     ScenarioEditorPane.this.setCurrentImageView(
-                            currentSelectedItem != null ?
-                                    currentSelectedItem.getData()
-                                    : null
-                    );
+                            currentSelectedItem != null ? currentSelectedItem.getData()
+                                    : null);
                 }
 
                 @Override
@@ -232,7 +229,7 @@ public class ScenarioEditorPane extends JPanel {
 
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-//                int width = getWidth();
+                // int width = getWidth();
                 int width = calculatePreferredWidth();
                 int height = getHeight();
 
@@ -274,7 +271,6 @@ public class ScenarioEditorPane extends JPanel {
                     g2d.drawString(timeString, textX, textY);
                 }
 
-
                 String filename = data.getFileName();
                 textWidth = fm.stringWidth(filename);
                 int textHeight = fm.getAscent();
@@ -289,7 +285,6 @@ public class ScenarioEditorPane extends JPanel {
                 if (textX + textWidth < width - HANDLE_PADDING) {
                     g2d.drawString(filename, textX, textY);
                 }
-
 
                 g2d.dispose();
             }
@@ -366,7 +361,6 @@ public class ScenarioEditorPane extends JPanel {
             };
             contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
             contentPane.setBackground(Color.DARK_GRAY);
-
 
             scrollPane = new JScrollPane(contentPane);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
@@ -477,7 +471,6 @@ public class ScenarioEditorPane extends JPanel {
                 if (!contains) {
                     contentPane.add(elem);
                 }
-
 
                 int totalWidth = (int) (elem.getTime() * PIXELS_PER_SECOND);
                 elem.setPreferredSize(new Dimension(totalWidth, 50));
@@ -639,17 +632,13 @@ public class ScenarioEditorPane extends JPanel {
                         timelinePane.moveElementToRight(timelinePane.getCurrentSelectedItem());
                     else if (e.isControlDown() && !e.isAltDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
-                                timelinePane.getCurrentSelectedItem().getTime() + 0.05
-                        );
+                                timelinePane.getCurrentSelectedItem().getTime() + 0.05);
                         timelinePane.updateLayout();
-                    }
-                    else if (e.isControlDown()) {
+                    } else if (e.isControlDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
-                                timelinePane.getCurrentSelectedItem().getTime() + 0.1
-                        );
+                                timelinePane.getCurrentSelectedItem().getTime() + 0.1);
                         timelinePane.updateLayout();
-                    }
-                    else
+                    } else
                         timelinePane.moveSelectedIndexToRight();
                     break;
                 case KeyEvent.VK_LEFT:
@@ -657,17 +646,13 @@ public class ScenarioEditorPane extends JPanel {
                         timelinePane.moveElementToLeft(timelinePane.getCurrentSelectedItem());
                     else if (e.isControlDown() && !e.isAltDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
-                                timelinePane.getCurrentSelectedItem().getTime() - 0.05
-                        );
+                                timelinePane.getCurrentSelectedItem().getTime() - 0.05);
                         timelinePane.updateLayout();
-                    }
-                    else if (e.isControlDown()) {
+                    } else if (e.isControlDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
-                                timelinePane.getCurrentSelectedItem().getTime() - 0.1
-                        );
+                                timelinePane.getCurrentSelectedItem().getTime() - 0.1);
                         timelinePane.updateLayout();
-                    }
-                    else
+                    } else
                         timelinePane.moveSelectedIndexToLeft();
                     break;
             }
@@ -680,7 +665,6 @@ public class ScenarioEditorPane extends JPanel {
                 bounds.x += timelinePane.getCurrentSelectedItem().getParent().getLocation().x;
                 timelinePane.getScrollPane().getViewport().scrollRectToVisible(bounds);
             }
-
 
         }
 
@@ -855,6 +839,7 @@ public class ScenarioEditorPane extends JPanel {
     public void refresh() {
         populateImageList();
         timelinePane.updateLayoutOrder();
+        timelinePane.updateLayout();
     }
 
     private void populateImageList() {
@@ -878,8 +863,7 @@ public class ScenarioEditorPane extends JPanel {
                             int userResponse = YesNoDialog.show(App.getFrame(),
                                     "<html><body>do you really want to delete this image?<br>"
                                             + imf.getFileName()
-                                            + "</body></html>"
-                            );
+                                            + "</body></html>");
 
                             if (userResponse == YesNoDialog.YES) {
                                 Project curProject = ProjectManager.getCurrent();
@@ -916,8 +900,7 @@ public class ScenarioEditorPane extends JPanel {
             ImageIcon scaledIcon = new ImageIcon(scaleImage(
                     imageFile.getImage(),
                     currentImageView.getWidth(),
-                    currentImageView.getHeight()
-            ));
+                    currentImageView.getHeight()));
             currentImageView.setIcon(scaledIcon);
         } else {
             currentImageView.setIcon(null);
