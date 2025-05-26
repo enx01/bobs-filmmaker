@@ -16,8 +16,6 @@ public class ToolboxButton extends JButton {
         setPreferredSize(new Dimension(40, 40));
         setToolTipText("Outil " + tool);
 
-        System.out.println("creating tool button:"+tool.name());
-
         try (InputStream is = ToolboxButton.class.getResourceAsStream(tool.name().toLowerCase()+".jpg")) {
             if (is != null) {
                 BufferedImage img = ImageIO.read(is);

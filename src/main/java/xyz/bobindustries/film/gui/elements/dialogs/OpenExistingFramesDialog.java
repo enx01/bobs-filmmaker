@@ -70,14 +70,6 @@ public class OpenExistingFramesDialog extends JDialog {
 
     private void enregistrerSelections(ArrayList<String> selections, ArrayList<String> selectedFrames) {
         int[] selectedIndices = liste.getSelectedIndices();
-        if (selectedIndices.length == 0) {
-            System.out.println("Aucun élément sélectionné.");
-        } else {
-            System.out.println("Index des éléments sélectionnés :");
-            for (String s : selections) {
-                System.out.println("- " + s);
-            }
-        }
         isSuccess = true;
         dispose();
     }

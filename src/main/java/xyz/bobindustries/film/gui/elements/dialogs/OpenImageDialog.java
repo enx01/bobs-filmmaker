@@ -62,11 +62,6 @@ public class OpenImageDialog extends JDialog {
             Path paths = Paths.get(imageLocation);
             String imageName = paths.getFileName().toString();
 
-            System.out.println("imgloc:"+imageLocation);
-
-            System.out.println(locationField.getText());
-            System.out.println(nameField.getText());
-
             if (!imageName.isEmpty() && !imageLocation.isEmpty()) {
                 try {
                     ImageFile image = new ImageFile(imageLocation);

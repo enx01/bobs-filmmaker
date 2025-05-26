@@ -37,7 +37,6 @@ public class ColorPickerTool implements Tools {
         model.setHoveredGridX(-1);
         model.setHoveredGridY(-1);
         if (model.getDrawingArea().contains(adjustedPoint)) {
-            System.out.println(adjustedPoint.x + " " + adjustedPoint.y);
             Color pickedColor = model.getGridColor(adjustedPoint);
             ColorBox colorBoxPanel = (ColorBox) Workspace.getInstance().getEditorColors().getContentPane();
             colorBoxPanel.setSelectedColor(pickedColor);

@@ -178,8 +178,6 @@ public class EditorModel {
     public Color[][] getGridColorsCopy() {
         int rows = gridColors.length;
         int cols = gridColors[0].length;
-        System.out.println(gridColors.length);
-        System.out.println(gridColors[0].length);
         Color[][] copy = new Color[rows][cols];
 
         for (int i = 0; i < rows; i++) {
@@ -211,7 +209,6 @@ public class EditorModel {
             } else {
                 scale /= 1.1;
             }
-            System.out.println(scale);
             Point zoomCenter;
             if (scale <= minZoomThreshold) {
                 int centerX = drawingArea.x + drawingArea.width / 2;
@@ -224,8 +221,6 @@ public class EditorModel {
                 origin.y = (int) (viewCenterY - centerY * scale);
             } else {
                 zoomCenter = e.getPoint();
-                System.out.println(zoomCenter.x);
-                System.out.println(zoomCenter.y);
                 origin.x = (int) (zoomCenter.x - (zoomCenter.x - origin.x) * (scale / oldScale));
                 origin.y = (int) (zoomCenter.y - (zoomCenter.y - origin.y) * (scale / oldScale));
             }
@@ -538,9 +533,6 @@ public class EditorModel {
         int gridCountX = selectionToMove.width / gridSquareSize;
         int gridCountY = selectionToMove.height / gridSquareSize;
 
-        System.out.println("gridCountXY");
-        System.out.println(gridCountX + " " + gridCountY);
-
         for (int i = gridStartX; i < gridStartX + gridCountX; i++) {
             for (int j = gridStartY; j < gridStartY + gridCountY; j++) {
                 int relX = (i - gridStartX)*10;
@@ -584,7 +576,6 @@ public class EditorModel {
         undoStack.push(copy);
         // Quand on fait une nouvelle action, on vide la pile redo
         redoStack.clear();
-        System.out.println("undo saved");
     }
 
     public void undo() {

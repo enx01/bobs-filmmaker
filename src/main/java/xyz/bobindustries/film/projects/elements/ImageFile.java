@@ -26,7 +26,6 @@ public class ImageFile {
     Path imgPath = Paths.get(path);
     fileName = imgPath.getFileName().toString();
     this.path = path;
-    System.out.println("pathcst;"+path);
   }
 
   public String getPath() {
@@ -47,7 +46,6 @@ public class ImageFile {
 
   public Color[][] getColorMatrix() {
     try {
-      System.out.println("path;"+path);
       BufferedImage image = ImageIO.read(new File(path));
       if (image == null) {
         System.out.println("L'image n'a pas pu être lue. Vérifie le format.");
@@ -56,8 +54,6 @@ public class ImageFile {
 
       int width = image.getWidth();
       int height = image.getHeight();
-      System.out.println("width: " + width);
-      System.out.println("height: " + height);
 
       Color[][] colorArray = new Color[height][width];
 

@@ -27,7 +27,6 @@ public class ToolBoxUI extends JPanel {
 
     initializeButtons();
 
-    System.out.println("pill1 workspace");
     add(buttonPanel, BorderLayout.CENTER);
   }
 

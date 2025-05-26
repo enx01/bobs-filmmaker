@@ -91,7 +91,6 @@ public class Project {
                     if (Files.isRegularFile(imagePath)) {
                         byte[] content = Files.readAllBytes(imagePath);
                         images.add(new ImageFile(imagePath.getFileName().toString(), imagePath.toString()));
-                        System.out.println("Added image " + imagePath.getFileName() + " to project " + projectName);
                     }
                 }
             }
@@ -144,9 +143,7 @@ public class Project {
 
     public void addImage(ImageFile imageFileToAdd) {
         System.out.println("image added");
-        System.out.println("past img add;" + imageFileToAdd.getPath());
         images.add(imageFileToAdd);
-        System.out.println("size:" + images.size());
     }
 
     public void save() throws IOException {
