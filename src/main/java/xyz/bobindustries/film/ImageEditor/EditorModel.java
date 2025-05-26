@@ -559,6 +559,14 @@ public class EditorModel {
                 updateImage(gridPoint);
             }
         }
+        scale=0.1;
+        int centerX = drawingArea.x + drawingArea.width / 2;
+        int centerY = drawingArea.y + drawingArea.height / 2;
+
+        int viewCenterX = parent.getWidth() / 2;
+        int viewCenterY = parent.getHeight() / 2;
+        origin.x = (int) (viewCenterX - centerX * scale);
+        origin.y = (int) (viewCenterY - centerY * scale);
     }
 
     public void saveStateForUndo() {
