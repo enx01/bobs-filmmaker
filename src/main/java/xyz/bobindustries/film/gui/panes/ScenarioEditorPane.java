@@ -856,6 +856,11 @@ public class ScenarioEditorPane extends JPanel {
         repaint();
     }
 
+    public void refresh() {
+        populateImageList();
+        timelinePane.updateLayoutOrder();
+    }
+
     private void populateImageList() {
         imagesPanelList.removeAll();
         Project current = ProjectManager.getCurrent();

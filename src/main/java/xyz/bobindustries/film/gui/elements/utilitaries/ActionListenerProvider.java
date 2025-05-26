@@ -339,6 +339,7 @@ public class ActionListenerProvider {
         }
         ImageUtils.exportImage(editor.getData().getGridColors(), projectPath+"/images/"+fileName);
         editor.setFileName(fileName);
+        workspace.getScenarioEditorPane().refresh();
     }
 
     public static void openExistingFrames(ActionEvent ignoredActionEvent) {
