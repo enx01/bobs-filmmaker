@@ -203,6 +203,19 @@ public class ActionListenerProvider {
         showFrameIfClosed(workspace, imageEditorFrame);
     }
 
+    public static void ShowImageEditorFrame(ImageFile imf) {
+        Workspace current_ws = Workspace.getInstance();
+        JInternalFrame ief = current_ws.getImageEditorFrame();
+        try {
+            EditorPane pane = (EditorPane) ief.getContentPane();
+            pane.addNewImage(imf.getColorMatrix(), imf.getFileName());
+        } catch (ClassCastException ccex) {
+            EditorPane pane = ActionListenerProvider.openImageEditor(ief, imf.getColorMatrix(), imf.getFileName());
+            ief.setContentPane(pane);
+            showFrameIfClosed(current_ws, ief);
+        }
+    }
+
     /**
      * Launch senarioEditorFrame in the workspace.
      */

@@ -15,7 +15,7 @@ public class SaisieTexteDialog extends JDialog {
     public static final int FAILURE = 0;
 
     public SaisieTexteDialog(Frame parent) {
-        super(parent, "Saisie de texte", true); // true = modal
+        super(parent, "Choisir un nom", true); // true = modal
         setSize(300, 150);
         setLocationRelativeTo(parent);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -24,7 +24,7 @@ public class SaisieTexteDialog extends JDialog {
         boutonValider = new JButton("Valider");
 
         setLayout(new FlowLayout());
-        add(new JLabel("Entrez un texte :"));
+        add(new JLabel("Entrez un nom :"));
         add(champTexte);
         add(boutonValider);
 

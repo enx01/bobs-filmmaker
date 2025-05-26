@@ -13,8 +13,10 @@ import javax.swing.*;
 import javax.swing.border.Border;
 
 import xyz.bobindustries.film.App;
+import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
 import xyz.bobindustries.film.gui.elements.popups.SimpleValueChangerPopUp;
+import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.ProjectManager;
@@ -867,6 +869,9 @@ public class ScenarioEditorPane extends JPanel {
                 ContextualMenu imgPanelContxt = new ContextualMenu.Builder()
 
                         .addItem("insert into timeline", e -> timelinePane.addTimelineElement(imf))
+                        .addItem("send to image editor", e -> {
+                            ActionListenerProvider.ShowImageEditorFrame(imf);
+                        })
                         .build();
 
                 imgPanelContxt.attachTo(imagePanel);
