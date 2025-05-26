@@ -557,7 +557,7 @@ public class EditorModel {
         }
     }
 
-    public void reDrawGrid(Color[][] newGridColors) {
+    public void reDrawGrid(Color[][] newGridColors, boolean zoom) {
         for (int i = 0; i < gridColors.length; i++) {
             for (int j = 0; j < gridColors[i].length; j++) {
                 gridColors[i][j] = newGridColors[i][j];
@@ -566,14 +566,16 @@ public class EditorModel {
                 updateImage(gridPoint);
             }
         }
-        scale=0.1;
-        int centerX = drawingArea.x + drawingArea.width / 2;
-        int centerY = drawingArea.y + drawingArea.height / 2;
+        if (zoom) {
+            scale=0.1;
+            int centerX = drawingArea.x + drawingArea.width / 2;
+            int centerY = drawingArea.y + drawingArea.height / 2;
 
-        int viewCenterX = parent.getWidth() / 2;
-        int viewCenterY = parent.getHeight() / 2;
-        origin.x = (int) (viewCenterX - centerX * scale);
-        origin.y = (int) (viewCenterY - centerY * scale);
+            int viewCenterX = parent.getWidth() / 2;
+            int viewCenterY = parent.getHeight() / 2;
+            origin.x = (int) (viewCenterX - centerX * scale);
+            origin.y = (int) (viewCenterY - centerY * scale);
+        }
     }
 
     public void saveStateForUndo() {
@@ -589,7 +591,7 @@ public class EditorModel {
         if (!undoStack.isEmpty()) {
             Color[][] previous = undoStack.pop();
             redoStack.push(getGridColorsCopy());
-            reDrawGrid(previous);
+            reDrawGrid(previous, false);
             parent.repaint();
         }
     }
@@ -598,7 +600,7 @@ public class EditorModel {
         if (!redoStack.isEmpty()) {
             Color[][] next = redoStack.pop();
             undoStack.push(getGridColorsCopy());
-            reDrawGrid(next);
+            reDrawGrid(next, false);
             parent.repaint();
         }
     }

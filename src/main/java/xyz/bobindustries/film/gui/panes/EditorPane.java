@@ -212,11 +212,10 @@ public class EditorPane extends JPanel {
                 data.redo();
             }
             case PREVIOUS_FRAME -> {
-                if (openedFilesModels.containsKey(currentImageIndex - 1)
-                        && openedFiles.containsKey(currentImageIndex - 1)) {
-                    changeCurrentImage(currentImageIndex - 1);
-                    System.out.println("index:" + currentImageIndex);
-                    data.reDrawGrid(data.getGridColors());
+                if (openedFilesModels.containsKey(currentImageIndex-1) && openedFiles.containsKey(currentImageIndex-1)) {
+                    changeCurrentImage(currentImageIndex-1);
+                    System.out.println("index:"+currentImageIndex);
+                    data.reDrawGrid(data.getGridColors(), true);
                 } else {
                     SimpleErrorDialog.show("no previous frame available");
                 }
@@ -226,7 +225,7 @@ public class EditorPane extends JPanel {
                         && openedFiles.containsKey(currentImageIndex + 1)) {
                     changeCurrentImage(currentImageIndex + 1);
                     System.out.println("index:" + currentImageIndex);
-                    data.reDrawGrid(data.getGridColors());
+                    data.reDrawGrid(data.getGridColors(), true);
                 } else {
                     SimpleErrorDialog.show("no next frame available");
                 }
