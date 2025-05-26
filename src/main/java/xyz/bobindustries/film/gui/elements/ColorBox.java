@@ -19,8 +19,6 @@ public class ColorBox extends JPanel {
     }; // Palette de couleurs
     private JPanel colorPanel; // Panneau qui contiendra la grille des couleurs
 
-
-
     public ColorBox(JInternalFrame parent) {
         setPreferredSize(new Dimension(100,100));
         setLayout(new BorderLayout());

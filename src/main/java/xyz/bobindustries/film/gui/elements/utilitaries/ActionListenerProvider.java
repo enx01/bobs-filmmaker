@@ -287,6 +287,20 @@ public class ActionListenerProvider {
         }
     }
 
+    public static void openEditorToolsSettings(ActionEvent ignoredActionEvent) {
+        Workspace workspace = Workspace.getInstance();
+        JInternalFrame toolsSettingsFrame = workspace.getToolsSettings();
+
+        showFrameIfClosed(workspace, toolsSettingsFrame);
+
+        try {
+            toolsSettingsFrame.setSelected(true);
+            toolsSettingsFrame.toFront();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public static void setTool(ActionEvent e) {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();

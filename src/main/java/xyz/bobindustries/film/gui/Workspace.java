@@ -2,7 +2,9 @@ package xyz.bobindustries.film.gui;
 
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.ColorBox;
+import xyz.bobindustries.film.gui.elements.NoSettings;
 import xyz.bobindustries.film.gui.elements.ToolBoxUI;
+import xyz.bobindustries.film.gui.elements.ToolsSettings;
 import xyz.bobindustries.film.gui.elements.menubars.WorkspaceMenuBar;
 import xyz.bobindustries.film.gui.elements.utilitaries.Bob;
 import xyz.bobindustries.film.gui.elements.utilitaries.ConstantsProvider;
@@ -77,6 +79,7 @@ public class Workspace extends JDesktopPane {
     private final BoundedDesktopManager desktopManager;
     private final JInternalFrame editorToolbox;
     private final JInternalFrame editorColors;
+    private final JInternalFrame ToolsSettings;
 
     private final JInternalFrame welcomeFrame,
             imageEditorFrame,
@@ -118,6 +121,10 @@ public class Workspace extends JDesktopPane {
 
     public JInternalFrame getEditorColors() {
         return editorColors;
+    }
+
+    public JInternalFrame getToolsSettings() {
+        return ToolsSettings;
     }
 
     public Workspace() throws InvalidScenarioContentException {
@@ -226,6 +233,17 @@ public class Workspace extends JDesktopPane {
         );
         editorColors.setContentPane(new ColorBox(editorColors));
         editorColors.pack();
+
+        ToolsSettings = new JInternalFrame(
+                "tools settings",
+                false,
+                true,
+                false,
+                false
+        );
+        ToolsSettings.setContentPane(new ToolsSettings(ToolsSettings, 0, 100, 20));
+        //ToolsSettings.setContentPane(new NoSettings());
+        ToolsSettings.pack();
 
         imageEditorFrame.addInternalFrameListener(new InternalFrameAdapter() {
             @Override

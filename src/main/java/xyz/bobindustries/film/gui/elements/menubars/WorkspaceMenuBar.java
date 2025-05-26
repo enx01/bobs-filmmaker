@@ -83,18 +83,17 @@ public class WorkspaceMenuBar extends JMenuBar {
 
         JMenuItem showToolsItem = new JMenuItem("Show tools");
         JMenuItem showColorsItem = new JMenuItem("Show colors");
-        JMenuItem resizeItem = new JMenuItem("Resize image");
-        JMenuItem canvasSizeItem = new JMenuItem("Resize drawing area");
+        JMenuItem showToolsSettings = new JMenuItem("Show tools settings");
         JMenuItem saveItem = new JMenuItem("Save image");
 
         windowMenu.add(showToolsItem);
         windowMenu.add(showColorsItem);
-        windowMenu.add(resizeItem);
-        windowMenu.add(canvasSizeItem);
+        windowMenu.add(showToolsSettings);
         windowMenu.add(saveItem);
 
         showToolsItem.addActionListener(ActionListenerProvider::openEditorToolbox);
         showColorsItem.addActionListener(ActionListenerProvider::openEditorColorBox);
+        showToolsSettings.addActionListener(ActionListenerProvider::openEditorToolsSettings);
         saveItem.addActionListener(ActionListenerProvider::saveImageAction);
         add(windowMenu);
     }
