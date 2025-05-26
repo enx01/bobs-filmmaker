@@ -290,10 +290,15 @@ public class EditorModel {
             g2d.setColor(Color.WHITE);
             g2d.fillRect(0, 0, gridImage.getWidth(), gridImage.getHeight());
 
+            System.out.println("gridhgeight:"+gridHeight);
+            System.out.println("gridwidth:"+gridWidth);
+
             for (int i = 0; i < gridHeight; i++) {
                 for (int j = 0; j < gridWidth; j++) {
                     int x = j * gridSquareSize;
                     int y = i * gridSquareSize;
+                    /*System.out.println("i:"+i);
+                    System.out.println("j:"+j);*/
                     g2d.setColor(gridColors[i][j]);
                     g2d.fillRect(x, y, gridSquareSize, gridSquareSize);
                 }

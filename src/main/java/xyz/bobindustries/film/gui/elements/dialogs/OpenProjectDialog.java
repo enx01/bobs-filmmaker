@@ -90,6 +90,7 @@ public class OpenProjectDialog extends JDialog {
                     String selectedProject = (String) recentProjectsComboBox.getSelectedItem();
                     try {
                         Project newProject = ProjectManager.openProject(pathsShortened.get(selectedProject));
+                        newProject.loadProperties();
                         ProjectManager.setCurrent(newProject);
                         RecentProjectsProvider.writeConfigFile(newProject.getProjectDir().toString());
                         isSuccess = true;
@@ -109,6 +110,7 @@ public class OpenProjectDialog extends JDialog {
                 if (!projectLocation.isEmpty()) {
                     try {
                         Project newProject = ProjectManager.openProject(projectLocation);
+                        newProject.loadProperties();
                         ProjectManager.setCurrent(newProject);
 
                         RecentProjectsProvider.writeConfigFile(newProject.getProjectDir().toString());

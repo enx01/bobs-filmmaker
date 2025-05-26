@@ -31,4 +31,30 @@ public class ImageUtils {
       return false;
     }
   }
+
+  public static Color[][] resizeColorArray(Color[][] originalPixels, int largeur, int hauteur) {
+    int hauteurOriginale = originalPixels.length;
+    int largeurOriginale = originalPixels[0].length;
+
+    Color[][] redimensionnee = new Color[hauteur][largeur];
+
+    double scaleX = (double) largeurOriginale / largeur;
+    double scaleY = (double) hauteurOriginale / hauteur;
+
+    for (int y = 0; y < hauteur; y++) {
+      for (int x = 0; x < largeur; x++) {
+        int origY = (int) (y * scaleY);
+        int origX = (int) (x * scaleX);
+
+        origY = Math.min(origY, hauteurOriginale - 1);
+        origX = Math.min(origX, largeurOriginale - 1);
+
+        redimensionnee[y][x] = originalPixels[origY][origX];
+      }
+    }
+
+    return redimensionnee;
+  }
+
+
 }

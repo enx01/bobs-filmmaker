@@ -8,17 +8,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.jcodec.api.awt.AWTSequenceEncoder;
 
 
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
+import xyz.bobindustries.film.projects.ConfigProvider;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
 
 public class Project {
     private final Path projectDir;
     private final String projectName;
 
+    private static Properties config;
     private String scenarioContent;
     private final List<ImageFile> images;
 
@@ -42,6 +45,14 @@ public class Project {
         this.projectDir = null;
         this.projectName = "null_project";
         this.images = new ArrayList<>();
+    }
+
+    public static Properties getConfig() {
+        return config;
+    }
+
+    public void loadProperties() {
+        config = ConfigProvider.loadProperties(this);
     }
 
     private void loadProject(boolean create) throws IOException, InvalidProjectDirectoryException {

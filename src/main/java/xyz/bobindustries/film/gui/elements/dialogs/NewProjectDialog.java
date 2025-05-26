@@ -7,6 +7,7 @@ import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.RecentProjectsProvider;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
+import xyz.bobindustries.film.projects.ConfigProvider;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,8 +22,8 @@ public class NewProjectDialog extends JDialog {
 
     public NewProjectDialog(Frame parent) {
         super(parent, "new project", true);
-        setSize(400, 150);
-        setResizable(false);
+        setSize(600, 300);
+        setResizable(true);
         setMinimumSize(new Dimension(600, 150));
         setLocationRelativeTo(null); // Center the dialog on the screen
         setLayout(new GridBagLayout());
@@ -49,39 +50,6 @@ public class NewProjectDialog extends JDialog {
 
         JButton createButton = new JButton("create");
 
-        // Create button action
-        createButton.addActionListener(e -> {
-            String projectName = nameField.getText().trim();
-            String projectLocation = locationField.getText().trim();
-
-            if (!projectName.isEmpty() && !projectLocation.isEmpty()) {
-                try {
-
-                    Project newProject = ProjectManager.createProject(projectName, projectLocation);
-
-                    ProjectManager.setCurrent(newProject);
-
-                    System.out.println(newProject.getProjectDir().toString());
-                    RecentProjectsProvider.writeConfigFile(newProject.getProjectDir().toString());
-
-                    isSuccess = true;
-                    dispose();
-
-                } catch (IOException | InvalidProjectDirectoryException ex) {
-                    SimpleErrorDialog.show("Error creating project : invalid project directory");
-                    isSuccess = false;
-                    dispose();
-                }
-
-                dispose();
-            } else {
-                SimpleErrorDialog.show("Please provide a valid project name and location.");
-                isSuccess = false;
-                dispose();
-            }
-
-        });
-
         // Add components to the layout
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -103,11 +71,70 @@ public class NewProjectDialog extends JDialog {
         gbc.fill = GridBagConstraints.NONE;
         add(browseButton, gbc);
 
-        gbc.gridx = 1;
+        JLabel resolutionLabel = new JLabel("resolution (WxH):");
+        JTextField widthField = new JTextField("1920", 6);
+        JTextField heightField = new JTextField("1080", 6);
+        JLabel xLabel = new JLabel("x");
+
+        // Add components to the layout
+        gbc.gridx = 0;
         gbc.gridy = 2;
+        add(resolutionLabel, gbc);
+
+        gbc.gridx = 1;
+        JPanel resolutionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        resolutionPanel.add(widthField);
+        resolutionPanel.add(xLabel);
+        resolutionPanel.add(heightField);
+        add(resolutionPanel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 3;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.CENTER; // Center the button
         add(createButton, gbc);
+
+        // Create button action
+        createButton.addActionListener(e -> {
+            String projectName = nameField.getText().trim();
+            String projectLocation = locationField.getText().trim();
+            String widthText = widthField.getText().trim();
+            String heightText = heightField.getText().trim();
+
+            if (!projectName.isEmpty() && !projectLocation.isEmpty() && !widthText.isEmpty() && !heightText.isEmpty()) {
+                int width, height;
+                try {
+                    width = Integer.parseInt(widthText);
+                    height = Integer.parseInt(heightText);
+                    if (width <= 0 || height <= 0) throw new NumberFormatException();
+                } catch (NumberFormatException ex) {
+                    SimpleErrorDialog.show("Please provide valid positive integers for resolution.");
+                    isSuccess = false;
+                    return;
+                }
+                try {
+                    Project newProject = ProjectManager.createProject(projectName, projectLocation);
+                    newProject.loadProperties();
+                    ProjectManager.setCurrent(newProject);
+                    // Sauvegarde la résolution dans la config du projet
+                    java.util.Properties props = ConfigProvider.loadProperties(newProject);
+                    ConfigProvider.setResolution(props, width, height);
+                    ConfigProvider.saveProperties(newProject, props);
+                    System.out.println(newProject.getProjectDir().toString());
+                    RecentProjectsProvider.writeConfigFile(newProject.getProjectDir().toString());
+                    isSuccess = true;
+                    dispose();
+                } catch (IOException | InvalidProjectDirectoryException ex) {
+                    SimpleErrorDialog.show("Error creating project : invalid project directory");
+                    isSuccess = false;
+                    dispose();
+                }
+            } else {
+                SimpleErrorDialog.show("Please provide a valid project name, location, and resolution.");
+                isSuccess = false;
+                dispose();
+            }
+        });
 
     }
 

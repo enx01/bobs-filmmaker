@@ -3,6 +3,7 @@ package xyz.bobindustries.film.projects;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
@@ -52,6 +53,7 @@ public class ProjectManager {
         boolean hasImagesDir = false;
         boolean hasTxtFile = false;
         boolean hasOutputDir = false;
+        boolean hasConfigFile = false;
 
         // Iterate through the contents of the directory
         for (File content : contents) {
@@ -62,13 +64,17 @@ public class ProjectManager {
                     hasOutputDir = true;
             } else if (content.isFile() && content.getName().equals("scenario.txt")) {
                 hasTxtFile = true;
+            } else if (content.isFile() && content.getName().equals(".config.properties")) {
+                hasConfigFile = true;
             }
         }
 
         if (contents.length == 2) {
             return hasImagesDir && hasTxtFile;
         } else if (contents.length == 3) {
-            return hasImagesDir && hasTxtFile && hasOutputDir;
+            return hasImagesDir && hasTxtFile && hasOutputDir || hasImagesDir && hasTxtFile && hasConfigFile;
+        } else if (contents.length == 4) {
+            return hasImagesDir && hasTxtFile && hasOutputDir && hasConfigFile;
         }
 
         return false;

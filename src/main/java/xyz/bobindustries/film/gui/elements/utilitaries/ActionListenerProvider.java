@@ -8,6 +8,7 @@ import xyz.bobindustries.film.gui.elements.dialogs.*;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
 import xyz.bobindustries.film.gui.panes.WelcomePane;
+import xyz.bobindustries.film.projects.ConfigProvider;
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
@@ -401,18 +402,21 @@ public class ActionListenerProvider {
 
     public static EditorPane openImageEditor(JInternalFrame frame, Color[][] imageMatrix, String fileName) {
         EditorPane editor = null;
+        int height = ConfigProvider.getResolutionHeight(Project.getConfig());
+        int width = ConfigProvider.getResolutionWidth(Project.getConfig());
         if (imageMatrix == null) {
-            Color[][] defaultCanvas = new Color[600][800];
+            Color[][] defaultCanvas = new Color[height][width];
             for (int i = 0; i < defaultCanvas.length; i+=1) {
                 for (int j = 0; j < defaultCanvas[0].length; j+=1) {
                     defaultCanvas[i][j] = new Color(255, 255, 255);
                 }
             }
             System.out.println("fini");
-            editor = new EditorPane(defaultCanvas, 800, 600, "");
+            editor = new EditorPane(defaultCanvas, width, height, "");
             System.out.println("index:"+editor.getCurrentImageIndex());
         } else {
-            editor = new EditorPane(imageMatrix, imageMatrix[0].length, imageMatrix.length, fileName);
+            Color[][] resizedImage = ImageUtils.resizeColorArray(imageMatrix, width, height);
+            editor = new EditorPane(resizedImage, width, height, fileName);
             System.out.println("index:"+editor.getCurrentImageIndex());
         }
         return editor;
