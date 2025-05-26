@@ -15,14 +15,15 @@ import javax.swing.border.Border;
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
+import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
 import xyz.bobindustries.film.gui.elements.popups.SimpleValueChangerPopUp;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.ProjectManager;
-import xyz.bobindustries.film.projects.elements.FrameData;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
+import xyz.bobindustries.film.projects.elements.exceptions.CouldntDeleteImageException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 
 public class ScenarioEditorPane extends JPanel {
@@ -37,11 +38,13 @@ public class ScenarioEditorPane extends JPanel {
             this.nameLabel = new JLabel(imageFile.getFileName());
             setLayout(new BorderLayout());
             add(nameLabel, BorderLayout.CENTER);
-            setPreferredSize(new Dimension(100, 50)); // Adjust as needed
-            setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Add a border
-            // setBackground(new Color(0x3C3836));
-            // nameLabel.setForeground(new Color(0xEBDBB2));
-            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // indicate draggable
+            setPreferredSize(new Dimension(350, 40));
+            setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+            setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 1, true));
+            setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+            String text = ProjectManager.getCurrent().getToolTipImageText(imageFile);
+            setToolTipText(text);
         }
 
         // Implementation of Transferable interface
@@ -326,8 +329,8 @@ public class ScenarioEditorPane extends JPanel {
             dummy.setPreferredSize(new Dimension(500, 50));
 
             Color primaryMarkerColor = new Color(0xeb, 0xdb, 0xb2);
-            Color secondaryMarkerColor = new Color(112, 97, 87);
-            Color terciaryMarkerColor = new Color(53, 47, 47);
+            Color terciaryMarkerColor = new Color(112, 97, 87);
+            Color secondaryMarkerColor = new Color(53, 47, 47);
 
             contentPane = new JPanel() {
                 @Override
@@ -364,9 +367,8 @@ public class ScenarioEditorPane extends JPanel {
             contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
             contentPane.setBackground(Color.DARK_GRAY);
 
-            loadScenarioContent(scenarioContent);
 
-             scrollPane = new JScrollPane(contentPane);
+            scrollPane = new JScrollPane(contentPane);
             scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
             scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
             scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
@@ -394,11 +396,13 @@ public class ScenarioEditorPane extends JPanel {
             });
 
             add(centerContainer, BorderLayout.CENTER);
-            updateLayout();
+
+            loadScenarioContent(scenarioContent);
         }
 
         private void loadScenarioContent(String scenarioContent) throws InvalidScenarioContentException {
             Project current = ProjectManager.getCurrent();
+            elements.clear();
 
             if (current != null) {
                 List<ImageFile> images = current.getImages();
@@ -444,6 +448,9 @@ public class ScenarioEditorPane extends JPanel {
                     }
                 }
             }
+
+            updateLayout();
+            updateLayoutOrder();
         }
 
         /**
@@ -597,17 +604,6 @@ public class ScenarioEditorPane extends JPanel {
             return sb.toString();
         }
 
-        FrameData[] getFrameData() {
-            FrameData[] frameData = new FrameData[elements.size()];
-
-            for (int i = 0; i < elements.size(); i++) {
-                TimelineElement elem = elements.get(i);
-                frameData[i] = new FrameData(elem.getData(), elem.getTime());
-            }
-
-            return frameData;
-        }
-
         List<Pair<ImageFile, Double>> getCurrentState() {
             List<Pair<ImageFile, Double>> state = new ArrayList<>();
 
@@ -692,7 +688,7 @@ public class ScenarioEditorPane extends JPanel {
 
     private void initializeComponents() throws InvalidScenarioContentException {
         imagesListPane = new JPanel();
-         visualizerPane = new JPanel();
+        visualizerPane = new JPanel();
         // visualizerPane.setFocusable(false);
 
         timelinePane = new TimelinePane(ProjectManager.getCurrent().getScenarioContent());
@@ -714,8 +710,8 @@ public class ScenarioEditorPane extends JPanel {
         imageListScrollPane.setPreferredSize(new Dimension(150, 0));
         imageListScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
-         currentImageView = new JLabel();
-         currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
+        currentImageView = new JLabel();
+        currentImageView.setHorizontalAlignment(SwingConstants.CENTER);
     }
 
     private void layoutComponents() {
@@ -877,6 +873,32 @@ public class ScenarioEditorPane extends JPanel {
                         .addItem("send to image editor", e -> {
                             ActionListenerProvider.ShowImageEditorFrame(imf);
                         })
+                        .addSeparator()
+                        .addItem("delete image", e -> {
+                            int userResponse = YesNoDialog.show(App.getFrame(),
+                                    "<html><body>do you really want to delete this image?<br>"
+                                            + imf.getFileName()
+                                            + "</body></html>"
+                            );
+
+                            if (userResponse == YesNoDialog.YES) {
+                                Project curProject = ProjectManager.getCurrent();
+
+                                try {
+                                    curProject.deleteImage(imf);
+                                } catch (CouldntDeleteImageException cdie) {
+                                    SimpleErrorDialog.show(cdie.getMessage());
+                                }
+
+                                populateImageList();
+
+                                try {
+                                    timelinePane.loadScenarioContent(curProject.getScenarioContent());
+                                } catch (InvalidScenarioContentException ex) {
+                                    throw new RuntimeException(ex);
+                                }
+                            }
+                        })
                         .build();
 
                 imgPanelContxt.attachTo(imagePanel);
@@ -931,10 +953,6 @@ public class ScenarioEditorPane extends JPanel {
 
     public String extractScenarioContent() {
         return timelinePane.getScenarioFileContent();
-    }
-
-    public FrameData[] extractFrameData() {
-        return timelinePane.getFrameData();
     }
 
     public List<Pair<ImageFile, Double>> getCurrentState() {

@@ -7,6 +7,11 @@ import xyz.bobindustries.film.gui.elements.ToolBoxUI;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
 import xyz.bobindustries.film.gui.elements.dialogs.*;
 import xyz.bobindustries.film.gui.helpers.Pair;
+import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
+import xyz.bobindustries.film.gui.elements.dialogs.OpenProjectDialog;
+import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
+import xyz.bobindustries.film.gui.elements.popups.HelperBobPopUp;
+
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
 import xyz.bobindustries.film.gui.panes.WelcomePane;
 import xyz.bobindustries.film.projects.ConfigProvider;
@@ -98,6 +103,37 @@ public class ActionListenerProvider {
 
     }
 
+    public static void saveCurrentProjectWithoutSuccessFeedback(ActionEvent ignoredActionEvent) {
+        LoadingWindow loadingWindow = new LoadingWindow("saving project...", 200, 100);
+
+        loadingWindow.setVisible(true);
+        loadingWindow.requestFocus();
+
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                Workspace workspace = Workspace.getInstance();
+                Project project = ProjectManager.getCurrent();
+                ScenarioEditorPane sep = workspace.getScenarioEditorPane();
+
+                project.setScenarioContent(sep.extractScenarioContent());
+
+                try {
+                    project.save();
+                } catch (IOException ioe) {
+                    SimpleErrorDialog.show("Failed to save project :(");
+                }
+
+                return null;
+            }
+
+            protected void done() {
+                loadingWindow.dispose();
+            }
+        };
+        worker.execute();
+    }
+
     public static void exportProjectAsVideo(ActionEvent ignoredActionEvent) {
         LoadingWindow loadingWindow = new LoadingWindow("exporting video...", 200, 100);
 
@@ -120,7 +156,7 @@ public class ActionListenerProvider {
                 }
 
                 try {
-                    project.exportAsVideo(Arrays.stream(sep.extractFrameData()).toList());
+                    project.exportAsVideo(sep.getCurrentState());
                 } catch (IOException ioe) {
                     SimpleErrorDialog.show("Failed to export movie :(" + "\n" + ioe.getMessage());
                 }
@@ -137,7 +173,6 @@ public class ActionListenerProvider {
     }
 
     public static void closeCurrentProject(ActionEvent ignoredActionEvent) {
-        System.out.println("splash");
         int result = YesNoDialog.show(App.getFrame(), "Would you like to save the project before closing it ?");
 
         LoadingWindow loadingWindow = new LoadingWindow("closing project...", 200, 100);
@@ -165,6 +200,9 @@ public class ActionListenerProvider {
                 App.getFrame().getContentPane().removeAll();
                 App.getFrame().add(new WelcomePane());
                 App.getFrame().setJMenuBar(null);
+
+                ProjectManager.setCurrent(null);
+
 
                 App.getFrame().revalidate();
 
@@ -268,7 +306,7 @@ public class ActionListenerProvider {
 
         Pair<Color[][], String> result = OpenImageDialog.show(App.getFrame());
 
-        EditorPane editor = openImageEditorOpening(editorFrame, result.getKey(), result.getValue());
+        EditorPane editor = openImageEditorOpening(editorFrame, result.key(), result.value());
         editorFrame.setContentPane(editor);
 
     }
@@ -360,6 +398,26 @@ public class ActionListenerProvider {
             }
             editorFrame.setContentPane(editor);
         }
+    }
+
+    /*
+     * Methods to launch tutorial popups
+     */
+
+    public static void getShowBobTutorialPopup(ActionEvent ignoredActionEvent) {
+        HelperBobPopUp.loadTutorial(HelperBobPopUp.BOB_TUTORIAL);
+    }
+
+    public static void getShowImageEditorTutorialPopup(ActionEvent ignoredActionEvent) {
+        HelperBobPopUp.loadTutorial(HelperBobPopUp.IMAGE_EDITOR_TUTORIAL);
+    }
+
+    public static void getShowScenarioEditorTutorialPopup(ActionEvent ignoredActionEvent) {
+        HelperBobPopUp.loadTutorial(HelperBobPopUp.SCENARIO_EDITOR_TUTORIAL);
+    }
+
+    public static void getShowVisualizerTutorialPopup(ActionEvent ignoredActionEvent) {
+        HelperBobPopUp.loadTutorial(HelperBobPopUp.VISUALIZER_TUTORIAL);
     }
 
     /*

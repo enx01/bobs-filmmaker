@@ -43,10 +43,16 @@ public class VisualizerPane extends JPanel {
     /* UI */
     private final JLabel imageLabel;
     private final JSlider timeSlider;
+
+    @SuppressWarnings("FieldCanBeLocal")
     private final JButton ppButton;
+    @SuppressWarnings("FieldCanBeLocal")
     private final JButton rewindButton;
+    @SuppressWarnings("FieldCanBeLocal")
     private final JButton forwardButton;
+    @SuppressWarnings("FieldCanBeLocal")
     private final JButton replayButton;
+    @SuppressWarnings("FieldCanBeLocal")
     private final JButton toEndButton;
     private final JLabel timeLabel;
 
@@ -61,7 +67,6 @@ public class VisualizerPane extends JPanel {
 
     private Thread visualizerThread;
     private final VisualizerRunnable visualizerRunnable;
-
 
     private final ScenarioEditorPane editorPane;
 
@@ -219,8 +224,8 @@ public class VisualizerPane extends JPanel {
         double totalDuration = 0.0;
 
         for (Pair<ImageFile, Double> p : currentState) {
-            if (p.getValue() != null && p.getValue() > 0)
-                totalDuration += p.getValue();
+            if (p.value() != null && p.value() > 0)
+                totalDuration += p.value();
         }
 
         return totalDuration;
@@ -236,7 +241,7 @@ public class VisualizerPane extends JPanel {
 
     private void displayImage(int index) {
         if (index >= 0 && index < currentState.size()) {
-            ImageFile file = currentState.get(index).getKey();
+            ImageFile file = currentState.get(index).key();
             BufferedImage img = file.getBufferedImage();
             if (img != null) {
                 int panelW = imageLabel.getWidth() > 0 ? imageLabel.getWidth() : 400;
@@ -259,6 +264,7 @@ public class VisualizerPane extends JPanel {
         imageLabel.repaint();
     }
 
+    @SuppressWarnings("unused")
     private void updateSliderPosition() {
         if (timeSlider != null && !isSeeking) {
             int sliderValue = (int) Math.round(totalElapsedTime * 10);
@@ -333,9 +339,7 @@ public class VisualizerPane extends JPanel {
         if (currentState != null && !currentState.isEmpty() && totalDuration > 0) {
             double timeAccountedFor = 0;
             for (int i = 0; i < currentState.size(); i++) {
-                // Similar logic as before to find targetIndex & calculatedFrameElapsedTime...
-                // Handle zero duration frames correctly...
-                double frameDuration = currentState.get(i).getValue() != null ? currentState.get(i).getValue() : 0.0;
+                double frameDuration = currentState.get(i).value() != null ? currentState.get(i).value() : 0.0;
                 if (frameDuration <= 0) {
                     if (newTime == 0.0 && i == 0) {
                         targetIndex = 0;
@@ -355,24 +359,21 @@ public class VisualizerPane extends JPanel {
             }
             // Post-loop adjustments if index not found (e.g., newTime is totalDuration)
             if (targetIndex == -1) {
-                // Find last valid frame...
                 targetIndex = currentState.size() - 1; // Default to last
                 for (int i = currentState.size() - 1; i >= 0; i--) {
-                    double fd = currentState.get(i).getValue() != null ? currentState.get(i).getValue() : 0.0;
+                    double fd = currentState.get(i).value() != null ? currentState.get(i).value() : 0.0;
                     if (fd > 0) {
                         targetIndex = i;
-                        calculatedFrameElapsedTime = fd;
                         break;
                     }
                 }
-                if (targetIndex == -1 && !currentState.isEmpty())
-                    targetIndex = 0; // Fallback
+                if (targetIndex == -1)
+                    targetIndex = 0;
                 newTime = totalDuration; // Snap time to end
-                calculatedFrameElapsedTime = currentState.get(targetIndex).getValue();
+                calculatedFrameElapsedTime = currentState.get(targetIndex).value();
             }
         } else {
             newTime = 0.0;
-            targetIndex = -1;
             calculatedFrameElapsedTime = 0.0;
         }
 
@@ -411,30 +412,27 @@ public class VisualizerPane extends JPanel {
                 return;
 
             if (timeSlider.getValueIsAdjusting()) {
-                if (!isSeeking) { // Start of drag
+                if (!isSeeking) {
                     wasPlayingBeforeDrag = isPlaying;
                     if (wasPlayingBeforeDrag) {
-                        pausePlayback(); // Stop background thread updates
+                        pausePlayback();
                     }
-                    isSeeking = true; // Signal seeking state
+                    isSeeking = true;
                 }
                 // Update time label continuously during drag for feedback
                 double sliderTime = timeSlider.getValue() / 10.0;
                 updateTimeLabelComponent(sliderTime);
 
             } else { // End of drag
-                if (isSeeking) { // Only process if we initiated the seek
+                if (isSeeking) {
                     double newTime = timeSlider.getValue() / 10.0;
-                    // Set state and update UI (synchronously on EDT)
                     setPlaybackStateAndUISync(newTime);
-                    // Crucially, allow background thread to resume processing
                     isSeeking = false;
 
                     // Resume playback if needed
                     if (wasPlayingBeforeDrag && totalElapsedTime < totalDuration) {
                         startPlayback();
                     } else {
-                        // Ensure button is Play if drag ended at the very end
                         if (totalElapsedTime >= totalDuration) {
                             isPlaying = false; // Sync state var
                         }
@@ -471,29 +469,27 @@ public class VisualizerPane extends JPanel {
                         /* Check State Validity */
                         if (frameIndex < 0 || frameIndex >= currentState.size()) {
                             System.err.println("Invalid frame index in background thread: " + frameIndex);
-                            SwingUtilities.invokeLater(() -> pausePlayback());
+                            SwingUtilities.invokeLater(VisualizerPane.this::pausePlayback);
                             continue;
                         }
 
                         /* End of Film Check */
                         if (newTotalElapsedTime >= totalDuration) {
-                            // Update state variables (volatile writes)
                             totalElapsedTime = totalDuration;
-                            currentFrameElapsedTime = currentState.get(frameIndex).getValue();
+                            currentFrameElapsedTime = currentState.get(frameIndex).value();
 
                             final double finalTime = totalDuration;
-                            // Schedule UI update and pause on EDT
                             SwingUtilities.invokeLater(() -> {
                                 updateSliderComponent(finalTime);
                                 updateTimeLabelComponent(finalTime);
-                                // Optionally display last frame if needed displayImageComponent(finalIndex);
-                                pausePlayback(); // Update button and isPlaying flag
+
+                                pausePlayback();
                             });
-                            continue; // Skip rest of loop iteration, wait for user action
+                            continue;
                         }
 
                         /* Frame Advancement Check */
-                        double currentFrameDuration = currentState.get(frameIndex).getValue();
+                        double currentFrameDuration = currentState.get(frameIndex).value();
                         boolean frameChanged = false;
 
                         // Loop to handle skipping frames with zero/short duration
@@ -503,7 +499,7 @@ public class VisualizerPane extends JPanel {
                                     : newFrameElapsedTime - currentFrameDuration;
                             frameIndex++;
                             newFrameElapsedTime = overshoot;
-                            currentFrameDuration = currentState.get(frameIndex).getValue();
+                            currentFrameDuration = currentState.get(frameIndex).value();
                             frameChanged = true;
                         }
 
@@ -512,27 +508,22 @@ public class VisualizerPane extends JPanel {
                         currentFrameElapsedTime = newFrameElapsedTime;
 
                         /* Schedule UI Update on EDT */
-                        final double finalTime = newTotalElapsedTime; // Final for lambda
+                        final double finalTime = newTotalElapsedTime;
                         final int finalIndex = frameIndex;
 
                         if (frameChanged) {
-                            currentImageIndex = frameIndex; // Update shared index *after* calculation
-                            // Load image and update all UI components
+                            currentImageIndex = frameIndex;
                             SwingUtilities.invokeLater(() -> {
-                                // Check if still relevant (e.g., user didn't seek in the meantime)
-                                if (currentImageIndex == finalIndex) { // Check against volatile state
-                                    displayImage(finalIndex); // Loads image on EDT
+                                if (currentImageIndex == finalIndex) {
+                                    displayImage(finalIndex);
                                     updateSliderComponent(finalTime);
                                     updateTimeLabelComponent(finalTime);
                                 }
                             });
                         } else {
-                            // Frame didn't change, but update slider/label periodically if enough time
-                            // passed
                             if (loopStartTimeNs >= nextRefreshTimeNs) {
                                 SwingUtilities.invokeLater(() -> {
-                                    // Check if still relevant
-                                    if (!isSeeking) { // Only update if not actively seeking
+                                    if (!isSeeking) {
                                         updateSliderComponent(finalTime);
                                         updateTimeLabelComponent(finalTime);
                                     }
@@ -541,35 +532,32 @@ public class VisualizerPane extends JPanel {
                             }
                         }
                     } else {
-                        // If paused or seeking, update lastUpdateTime to avoid large jump when resuming
                         lastUpdateTimeNs = loopStartTimeNs;
                     }
 
                     /* Sleep */
-                    // Calculate time taken and sleep for the remainder of the interval
                     long timeTakenNs = System.nanoTime() - loopStartTimeNs;
                     long sleepTimeNs = (long) (REFRESH_RATE * 1_000_000) - timeTakenNs;
                     if (sleepTimeNs > 0) {
+                        // noinspection BusyWait
                         Thread.sleep(sleepTimeNs / 1_000_000, (int) (sleepTimeNs % 1_000_000));
                     } else {
-                        // Yield if loop took too long, prevent busy-waiting
                         Thread.yield();
                     }
 
                 } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt(); // Re-set interrupt flag
-                    running = false; // Signal loop to exit
+                    Thread.currentThread().interrupt();
+                    running = false;
                     System.out.println("Visualizer thread interrupted.");
                 } catch (Exception e) {
                     System.err.println("Error in visualizer thread: " + e);
-                    e.printStackTrace();
-                    running = false; // Stop on unexpected error
-                    SwingUtilities.invokeLater(() -> pausePlayback()); // Attempt to update UI state
+                    running = false;
+                    SwingUtilities.invokeLater(VisualizerPane.this::pausePlayback);
                 }
-            } // end while(running)
+            }
 
-            running = false; // Ensure flag is false on exit
-        } // end run()
-    } // end VisualizerRunnable
+            running = false;
+        }
+    }
 
 }

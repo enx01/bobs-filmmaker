@@ -2,6 +2,8 @@ package xyz.bobindustries.film.projects.elements;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +16,8 @@ import org.jcodec.api.awt.AWTSequenceEncoder;
 
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.projects.ConfigProvider;
+import xyz.bobindustries.film.gui.helpers.Pair;
+import xyz.bobindustries.film.projects.elements.exceptions.CouldntDeleteImageException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
 
 public class Project {
@@ -160,7 +164,8 @@ public class Project {
         }
     }
 
-    public void exportAsVideo(List<FrameData> data) throws IOException {
+
+    public void exportAsVideo(List<Pair<ImageFile, Double>> data) throws IOException {
         if (data.isEmpty()) {
             throw new IOException("Data is empty!");
         }
@@ -170,35 +175,95 @@ public class Project {
             Files.createDirectories(outputDir);
         }
 
+        System.out.println("[?] rendering video (20fps) at " + projectDir + "/output/" + projectName
+                + ".mp4 \n data size: " + data.size());
+
         AWTSequenceEncoder encoder;
 
         try {
             encoder = AWTSequenceEncoder.createSequenceEncoder(new File(projectDir + "/output/" + projectName + ".mp4"),
                     20);
 
-            for (FrameData frame : data) {
-                if (frame.getImageFile() == null) {
-                    System.err.println("Warning: Frame " + data.indexOf(frame) + " has a null image. Skipping.");
+            for (int i = 0; i < data.size(); i++) {
+                Pair<ImageFile, Double> frame = data.get(i);
+                if (frame.key() == null) {
+                    System.err.println("Warning: Frame " + i + " has a null image. Skipping.");
                     continue;
                 }
-                if (frame.getDuration() <= 0) {
-                    System.err.println(
-                            "Warning: Frame " + data.indexOf(frame) + " has a non-positive duration. Skipping.");
+                if (frame.value() <= 0) {
+                    System.err.println("Warning: Frame " + i + " has a non-positive duration. Skipping.");
                     continue;
                 }
 
-                int numberOfVideoFrames = (int) Math.max(1, Math.round(frame.getDuration() * 20));
+                int numberOfVideoFrames = (int) Math.max(1, Math.round(frame.value() * 20));
 
-                for (int i = 0; i < numberOfVideoFrames; i++) {
-                    encoder.encodeImage(frame.getImageFile().getBufferedImage());
+                System.out.println("[?] encoding frame " + i + " (" + numberOfVideoFrames + " frames)");
+                for (int j = 0; j < numberOfVideoFrames; j++) {
+                    encoder.encodeImage(frame.key().getBufferedImage());
                 }
             }
 
             encoder.finish();
+
         } catch (IOException e) {
             System.err.println("IOException during video encoding: " + e.getMessage());
             throw e;
         }
     }
 
+    public String getToolTipImageText(ImageFile imageFile) {
+        File file = new File(projectDir + "/images/" + imageFile.getFileName());
+
+        try {
+            if (file.exists()) {
+                URL imageURL = file.toURI().toURL();
+
+                return "<html><img src='" + imageURL + "' width='120' height='80'></html>";
+            } else {
+                return "Image not found!";
+            }
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteImage(ImageFile imf) throws CouldntDeleteImageException {
+        if (!images.contains(imf)) {
+            throw new CouldntDeleteImageException("image not found in project memory.");
+        }
+
+        images.remove(imf);
+
+        Path imagePath = projectDir.resolve("images/" + imf.getFileName());
+        if (!Files.exists(imagePath)) {
+            throw new CouldntDeleteImageException("image file not found.");
+        }
+
+        try {
+            Path garbageDir = projectDir.resolve("images/.garbage");
+            if (!Files.exists(garbageDir)) {
+                Files.createDirectories(garbageDir);
+            }
+
+            Path garbageFilePath = garbageDir.resolve(imf.getFileName());
+            Files.copy(imagePath, garbageFilePath);
+
+            Files.delete(imagePath);
+        } catch (IOException e) {
+            throw new CouldntDeleteImageException("error deleting image file: " + e.getMessage());
+        }
+
+        if (scenarioContent != null) {
+            String[] lines = scenarioContent.split(System.lineSeparator());
+            StringBuilder updatedContent = new StringBuilder();
+            for (String line : lines) {
+                if (!line.split(",")[0].equals(imf.getFileName())) {
+                    updatedContent.append(line).append(System.lineSeparator());
+                }
+            }
+            scenarioContent = updatedContent.toString().trim();
+        }
+
+        System.out.println("[+] deleted image " + imf.getFileName());
+    }
 }

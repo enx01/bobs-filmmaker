@@ -17,8 +17,7 @@ public class LoadingWindow extends JWindow {
         panel.setBackground(Color.WHITE);
 
         if (text.isEmpty()) {
-            Bob bob = new Bob();
-            bob.setScale(1.5);
+            Bob bob = new Bob( 1.5);
 
             JPanel paddedPanel = new JPanel(new BorderLayout());
             paddedPanel.setOpaque(false);
