@@ -13,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 public class NewProjectDialog extends JDialog {
     public static final int SUCCESS = 1;
@@ -106,7 +107,8 @@ public class NewProjectDialog extends JDialog {
                 try {
                     width = Integer.parseInt(widthText);
                     height = Integer.parseInt(heightText);
-                    if (width <= 0 || height <= 0) throw new NumberFormatException();
+                    if (width <= 0 || height <= 0)
+                        throw new NumberFormatException();
                 } catch (NumberFormatException ex) {
                     SimpleErrorDialog.show("Please provide valid positive integers for resolution.");
                     isSuccess = false;
@@ -114,10 +116,10 @@ public class NewProjectDialog extends JDialog {
                 }
                 try {
                     Project newProject = ProjectManager.createProject(projectName, projectLocation);
-                    newProject.loadProperties();
+                    Properties props = newProject.loadProperties();
                     ProjectManager.setCurrent(newProject);
                     // Sauvegarde la résolution dans la config du projet
-                    java.util.Properties props = ConfigProvider.loadProperties(newProject);
+                    // Properties props = ConfigProvider.loadProperties(newProject);
                     ConfigProvider.setResolution(props, width, height);
                     ConfigProvider.saveProperties(newProject, props);
                     System.out.println(newProject.getProjectDir().toString());

@@ -12,7 +12,6 @@ import java.util.Properties;
 
 import org.jcodec.api.awt.AWTSequenceEncoder;
 
-
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.projects.ConfigProvider;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
@@ -51,8 +50,9 @@ public class Project {
         return config;
     }
 
-    public void loadProperties() {
+    public Properties loadProperties() {
         config = ConfigProvider.loadProperties(this);
+        return config;
     }
 
     private void loadProject(boolean create) throws IOException, InvalidProjectDirectoryException {
@@ -65,6 +65,11 @@ public class Project {
             File imagesDir = new File(projectDir.toString(), "images");
             if (!imagesDir.mkdir()) {
                 SimpleErrorDialog.show("Couldn't create images directory");
+            }
+
+            File properties = new File(projectDir.toString(), ".config.properties");
+            if (!properties.createNewFile()) {
+                SimpleErrorDialog.show("Couldn't create .config.properties file.");
             }
         }
 
@@ -87,6 +92,8 @@ public class Project {
                 }
             }
         }
+
+        loadProperties();
     }
 
     public Path getProjectDir() {
@@ -109,30 +116,33 @@ public class Project {
         return images;
     }
 
-    /*public void addOrUpdateImage(String fileName, byte[] content) {
-=======
-    @SuppressWarnings("unused")
-    public void addOrUpdateImage(String fileName, byte[] content) {
->>>>>>> eac57ec07a5f1f6336eaf54755edf452859c05ba
-        boolean found = false;
-        for (ImageFile img : images) {
-            if (img.getFileName().equals(fileName)) {
-                img.setContent(content);
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            images.add(new ImageFile(fileName, content));
-        }
-    }*/
+    /*
+     * public void addOrUpdateImage(String fileName, byte[] content) {
+     * =======
+     * 
+     * @SuppressWarnings("unused")
+     * public void addOrUpdateImage(String fileName, byte[] content) {
+     * >>>>>>> eac57ec07a5f1f6336eaf54755edf452859c05ba
+     * boolean found = false;
+     * for (ImageFile img : images) {
+     * if (img.getFileName().equals(fileName)) {
+     * img.setContent(content);
+     * found = true;
+     * break;
+     * }
+     * }
+     * 
+     * if (!found) {
+     * images.add(new ImageFile(fileName, content));
+     * }
+     * }
+     */
 
     public void addImage(ImageFile imageFileToAdd) {
         System.out.println("image added");
-        System.out.println("past img add;"+imageFileToAdd.getPath());
+        System.out.println("past img add;" + imageFileToAdd.getPath());
         images.add(imageFileToAdd);
-        System.out.println("size:"+images.size());
+        System.out.println("size:" + images.size());
     }
 
     public void save() throws IOException {
@@ -149,7 +159,7 @@ public class Project {
             Files.write(imagePath, img.getContent());
         }
     }
-    
+
     public void exportAsVideo(List<FrameData> data) throws IOException {
         if (data.isEmpty()) {
             throw new IOException("Data is empty!");
@@ -163,7 +173,8 @@ public class Project {
         AWTSequenceEncoder encoder;
 
         try {
-            encoder = AWTSequenceEncoder.createSequenceEncoder(new File(projectDir + "/output/" + projectName + ".mp4"), 20);
+            encoder = AWTSequenceEncoder.createSequenceEncoder(new File(projectDir + "/output/" + projectName + ".mp4"),
+                    20);
 
             for (FrameData frame : data) {
                 if (frame.getImageFile() == null) {
@@ -171,7 +182,8 @@ public class Project {
                     continue;
                 }
                 if (frame.getDuration() <= 0) {
-                    System.err.println("Warning: Frame " + data.indexOf(frame) + " has a non-positive duration. Skipping.");
+                    System.err.println(
+                            "Warning: Frame " + data.indexOf(frame) + " has a non-positive duration. Skipping.");
                     continue;
                 }
 

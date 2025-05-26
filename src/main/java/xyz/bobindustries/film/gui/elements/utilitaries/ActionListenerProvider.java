@@ -145,37 +145,37 @@ public class ActionListenerProvider {
         loadingWindow.setVisible(true);
         loadingWindow.requestFocus();
 
-            SwingWorker<Void, Void> worker = new SwingWorker<>() {
-                @Override
-                protected Void doInBackground() {
-                    if (result == YesNoDialog.YES) {
-                        Workspace workspace = Workspace.getInstance();
-                        Project project = ProjectManager.getCurrent();
-                        ScenarioEditorPane sep = workspace.getScenarioEditorPane();
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() {
+                if (result == YesNoDialog.YES) {
+                    Workspace workspace = Workspace.getInstance();
+                    Project project = ProjectManager.getCurrent();
+                    ScenarioEditorPane sep = workspace.getScenarioEditorPane();
 
-                        project.setScenarioContent(sep.extractScenarioContent());
+                    project.setScenarioContent(sep.extractScenarioContent());
 
-                        try {
-                            project.save();
-                        } catch (IOException ioe) {
-                            SimpleErrorDialog.show("Failed to save project :(" + "\n" + ioe.getMessage());
-                        }
+                    try {
+                        project.save();
+                    } catch (IOException ioe) {
+                        SimpleErrorDialog.show("Failed to save project :(" + "\n" + ioe.getMessage());
                     }
-
-                    App.getFrame().getContentPane().removeAll();
-                    App.getFrame().add(new WelcomePane());
-                    App.getFrame().setJMenuBar(null);
-
-                    App.getFrame().revalidate();
-
-                    return null;
                 }
 
-                protected void done() {
-                    loadingWindow.dispose();
-                }
-            };
-            worker.execute();
+                App.getFrame().getContentPane().removeAll();
+                App.getFrame().add(new WelcomePane());
+                App.getFrame().setJMenuBar(null);
+
+                App.getFrame().revalidate();
+
+                return null;
+            }
+
+            protected void done() {
+                loadingWindow.dispose();
+            }
+        };
+        worker.execute();
 
     }
 
@@ -323,7 +323,7 @@ public class ActionListenerProvider {
         JInternalFrame toolboxFrame = workspace.getEditorToolbox();
         ToolBoxUI tui = (ToolBoxUI) toolboxFrame.getContentPane();
         tui.setSelectedButton(e.getActionCommand());
-        System.out.println("tool set : "+ e.getActionCommand());
+        System.out.println("tool set : " + e.getActionCommand());
     }
 
     public static void saveImageAction(ActionEvent ignorActionEvent) {
@@ -332,12 +332,12 @@ public class ActionListenerProvider {
         EditorPane editor = (EditorPane) editorFrame.getContentPane();
         String projectPath = ProjectManager.getCurrent().getProjectDir().toString();
         String fileName = editor.getCurrentFileName();
-        System.out.println("pp:"+projectPath);
+        System.out.println("pp:" + projectPath);
         if (fileName.isEmpty() || fileName.contains("/")) {
             fileName = NameImageDialog.show(App.getFrame(), fileName);
-            fileName+=".png";
+            fileName += ".png";
         }
-        ImageUtils.exportImage(editor.getData().getGridColors(), projectPath+"/images/"+fileName);
+        ImageUtils.exportImage(editor.getData().getGridColors(), projectPath + "/images/" + fileName);
         editor.setFileName(fileName);
         workspace.getScenarioEditorPane().refresh();
     }
@@ -346,7 +346,7 @@ public class ActionListenerProvider {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
         Project current = ProjectManager.getCurrent();
-        ArrayList <String> selectedFrames = new ArrayList<>();
+        ArrayList<String> selectedFrames = new ArrayList<>();
         EditorPane editor = null;
         selectedFrames = OpenExistingFramesDialog.show(App.getFrame(), (ArrayList<ImageFile>) current.getImages());
         System.out.println(selectedFrames.size());
@@ -436,23 +436,23 @@ public class ActionListenerProvider {
         EditorPane editor = null;
         int height = ConfigProvider.getResolutionHeight(Project.getConfig());
         int width = ConfigProvider.getResolutionWidth(Project.getConfig());
+        System.out.println("height : " + height + ", width : " + width);
         if (imageMatrix == null) {
             Color[][] defaultCanvas = new Color[height][width];
-            for (int i = 0; i < defaultCanvas.length; i+=1) {
-                for (int j = 0; j < defaultCanvas[0].length; j+=1) {
+            for (int i = 0; i < defaultCanvas.length; i += 1) {
+                for (int j = 0; j < defaultCanvas[0].length; j += 1) {
                     defaultCanvas[i][j] = new Color(255, 255, 255);
                 }
             }
             System.out.println("fini");
             editor = new EditorPane(defaultCanvas, width, height, "");
-            System.out.println("index:"+editor.getCurrentImageIndex());
+            System.out.println("index:" + editor.getCurrentImageIndex());
         } else {
             Color[][] resizedImage = ImageUtils.resizeColorArray(imageMatrix, width, height);
             editor = new EditorPane(resizedImage, width, height, fileName);
-            System.out.println("index:"+editor.getCurrentImageIndex());
+            System.out.println("index:" + editor.getCurrentImageIndex());
         }
         return editor;
     }
-
 
 }

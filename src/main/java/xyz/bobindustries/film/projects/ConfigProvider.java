@@ -13,13 +13,15 @@ public class ConfigProvider {
 
     /**
      * Charge le fichier properties du dossier du projet.
+     * 
      * @param project le projet dont on veut lire la config
      * @return les propriétés chargées, ou un objet vide si le fichier n'existe pas
      */
     public static Properties loadProperties(Project project) {
         Properties properties = new Properties();
         Path projectDir = project.getProjectDir();
-        if (projectDir == null) return properties;
+        if (projectDir == null)
+            return properties;
         File configFile = projectDir.resolve(CONFIG_FILE_NAME).toFile();
         if (configFile.exists()) {
             try (FileInputStream fis = new FileInputStream(configFile)) {
@@ -33,13 +35,22 @@ public class ConfigProvider {
 
     /**
      * Sauvegarde les propriétés dans le fichier properties du dossier du projet.
-     * @param project le projet dont on veut sauvegarder la config
+     * 
+     * @param project    le projet dont on veut sauvegarder la config
      * @param properties les propriétés à sauvegarder
      */
-    public static void saveProperties(Project project, Properties properties) {
+    public static void saveProperties(Project project, Properties properties) throws IOException {
         Path projectDir = project.getProjectDir();
-        if (projectDir == null) return;
-        File configFile = projectDir.resolve(CONFIG_FILE_NAME).toFile();
+        if (projectDir == null)
+            return;
+
+        System.out.println("file : " + projectDir + "/" + CONFIG_FILE_NAME);
+        File configFile = new File(projectDir + "/" + CONFIG_FILE_NAME);
+        if (!configFile.exists()) {
+            if (!configFile.createNewFile()) {
+                return;
+            }
+        }
         try (FileOutputStream fos = new FileOutputStream(configFile)) {
             properties.store(fos, "Configuration du projet");
         } catch (IOException e) {
@@ -49,9 +60,10 @@ public class ConfigProvider {
 
     /**
      * Définit la résolution (largeur et hauteur) dans les propriétés du projet.
+     * 
      * @param properties les propriétés à modifier
-     * @param width la largeur de la résolution
-     * @param height la hauteur de la résolution
+     * @param width      la largeur de la résolution
+     * @param height     la hauteur de la résolution
      */
     public static void setResolution(Properties properties, int width, int height) {
         properties.setProperty("resolution.width", String.valueOf(width));
@@ -60,12 +72,14 @@ public class ConfigProvider {
 
     /**
      * Récupère la largeur de la résolution depuis les propriétés du projet.
+     * 
      * @param properties les propriétés à lire
      * @return la largeur, ou -1 si non définie ou invalide
      */
     public static int getResolutionWidth(Properties properties) {
         String width = properties.getProperty("resolution.width");
-        if (width == null) return -1;
+        if (width == null)
+            return -1;
         try {
             return Integer.parseInt(width);
         } catch (NumberFormatException e) {
@@ -75,12 +89,14 @@ public class ConfigProvider {
 
     /**
      * Récupère la hauteur de la résolution depuis les propriétés du projet.
+     * 
      * @param properties les propriétés à lire
      * @return la hauteur, ou -1 si non définie ou invalide
      */
     public static int getResolutionHeight(Properties properties) {
         String height = properties.getProperty("resolution.height");
-        if (height == null) return -1;
+        if (height == null)
+            return -1;
         try {
             return Integer.parseInt(height);
         } catch (NumberFormatException e) {
