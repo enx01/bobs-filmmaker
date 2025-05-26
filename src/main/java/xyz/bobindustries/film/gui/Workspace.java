@@ -1,7 +1,7 @@
 package xyz.bobindustries.film.gui;
 
 import xyz.bobindustries.film.App;
-import xyz.bobindustries.film.ImageEditor.ToolsSettings;
+import xyz.bobindustries.film.image_editor.ToolsSettings;
 import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.elements.NoSettings;
 import xyz.bobindustries.film.gui.elements.ToolBoxUI;

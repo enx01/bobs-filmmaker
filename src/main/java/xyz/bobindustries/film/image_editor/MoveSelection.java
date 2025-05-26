@@ -1,15 +1,10 @@
-package xyz.bobindustries.film.ImageEditor;
+package xyz.bobindustries.film.image_editor;
 
 import xyz.bobindustries.film.gui.Workspace;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.awt.image.VolatileImage;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MoveSelection implements Tools {
     private Point dragStartPoint = null;

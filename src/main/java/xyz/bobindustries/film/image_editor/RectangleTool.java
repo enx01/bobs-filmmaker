@@ -1,15 +1,13 @@
-package xyz.bobindustries.film.ImageEditor;
+package xyz.bobindustries.film.image_editor;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.HashMap;
 
-public class Circle implements Tools, ToolsSettings{
+public class RectangleTool implements Tools, ToolsSettings {
     private Point startPoint = null;
     private Point currentDragPoint = null;
-    private int thickness = 1; // Valeur par défaut pour l'épaisseur
+    private int thickness = 1;
 
     @Override
     public void mousePressedAction(MouseEvent e, EditorModel model) {
@@ -29,12 +27,23 @@ public class Circle implements Tools, ToolsSettings{
         Point endPoint = getAdjustedPoint(e, model);
         if (!model.getDrawingArea().contains(endPoint)) return;
 
-        ArrayList<Point> points = getCirclePoints(startPoint, endPoint, thickness);
+        int x1 = Math.min(startPoint.x, endPoint.x);
+        int y1 = Math.min(startPoint.y, endPoint.y);
+        int x2 = Math.max(startPoint.x, endPoint.x);
+        int y2 = Math.max(startPoint.y, endPoint.y);
 
-        for (Point point : points) {
-            if (model.getDrawingArea().contains(point)) {
-                model.colorGridSquare(point, null);
-                model.updateImage(point);
+        for (int y = y1; y <= y2; y++) {
+            for (int x = x1; x <= x2; x++) {
+                boolean isBorder =
+                    (x >= x1 && x < x1 + thickness) || (x <= x2 && x > x2 - thickness) ||
+                    (y >= y1 && y < y1 + thickness) || (y <= y2 && y > y2 - thickness);
+                if (isBorder) {
+                    Point p = new Point(x, y);
+                    if (model.getDrawingArea().contains(p)) {
+                        model.colorGridSquare(p, null);
+                        model.updateImage(p);
+                    }
+                }
             }
         }
 
@@ -45,7 +54,6 @@ public class Circle implements Tools, ToolsSettings{
     @Override
     public void mouseDraggedAction(MouseEvent e, EditorModel model) {
         if (startPoint == null) return;
-
         currentDragPoint = getAdjustedPoint(e, model);
     }
 
@@ -65,20 +73,29 @@ public class Circle implements Tools, ToolsSettings{
     @Override
     public void paintHoveredArea(Graphics2D g, EditorModel model, AffineTransform at) {
         if (currentDragPoint != null && startPoint != null) {
-
-            ArrayList<Point> points = getCirclePoints(startPoint, currentDragPoint, thickness);
+            int x1 = Math.min(startPoint.x, currentDragPoint.x);
+            int y1 = Math.min(startPoint.y, currentDragPoint.y);
+            int x2 = Math.max(startPoint.x, currentDragPoint.x);
+            int y2 = Math.max(startPoint.y, currentDragPoint.y);
 
             g.setColor(new Color(0, 0, 255, 128)); // Bleu semi-transparent
 
-            for (Point point : points) {
-                if (model.getDrawingArea().contains(point)) {
-                    Point screen = gridToScreen(point, model);
-                    g.fillRect(screen.x, screen.y, model.getGridSquareSize(), model.getGridSquareSize());
+            for (int y = y1; y <= y2; y++) {
+                for (int x = x1; x <= x2; x++) {
+                    boolean isBorder =
+                        (x >= x1 && x < x1 + thickness) || (x <= x2 && x > x2 - thickness) ||
+                        (y >= y1 && y < y1 + thickness) || (y <= y2 && y > y2 - thickness);
+                    if (isBorder) {
+                        Point p = new Point(x, y);
+                        if (model.getDrawingArea().contains(p)) {
+                            Point screen = gridToScreen(p, model);
+                            g.fillRect(screen.x, screen.y, model.getGridSquareSize(), model.getGridSquareSize());
+                        }
+                    }
                 }
             }
         }
 
-        // Rendu normal du survol
         if (model.getHoveredGridX() >= 0 && model.getHoveredGridY() >= 0) {
             int hoverX = model.getDrawingArea().x + (model.getHoveredGridX() * model.getGridSquareSize());
             int hoverY = model.getDrawingArea().y + (model.getHoveredGridY() * model.getGridSquareSize());
@@ -105,39 +122,9 @@ public class Circle implements Tools, ToolsSettings{
         );
     }
 
-    private void drawFilledCircle(Graphics2D g, Point center, int radius) {
-        int diameter = radius * 2;
-        int topLeftX = center.x - radius;
-        int topLeftY = center.y - radius;
-
-        g.fillOval(topLeftX, topLeftY, diameter, diameter); // Remplir un cercle
-    }
-
-    private static ArrayList<Point> getCirclePoints(Point startPoint, Point endPoint, int thickness) {
-        ArrayList<Point> points = new ArrayList<>();
-        double dx = endPoint.x - startPoint.x;
-        double dy = endPoint.y - startPoint.y;
-        int radius = (int) Math.round(Math.sqrt(dx * dx + dy * dy));
-        for (int y = -radius; y <= radius; y++) {
-            for (int x = -radius; x <= radius; x++) {
-                int distance = x * x + y * y;
-                if (distance <= radius * radius && distance >= (radius - thickness) * (radius - thickness)) {
-                    Point p = new Point(startPoint.x + x, startPoint.y + y);
-                    points.add(p);
-                }
-            }
-        }
-        return points;
-    }
-
-    // Setter pour l'épaisseur
-    public void setThickness(int thickness) {
-        this.thickness = Math.max(1, thickness);
-    }
-
     @Override
     public int[] getSliderBounds() {
-        return new int[]{1, 100, thickness};
+        return new int[]{1, 20, thickness};
     }
 
     @Override

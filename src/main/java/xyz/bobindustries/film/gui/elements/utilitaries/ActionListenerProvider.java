@@ -1,10 +1,9 @@
 package xyz.bobindustries.film.gui.elements.utilitaries;
 
 import xyz.bobindustries.film.App;
-import xyz.bobindustries.film.ImageEditor.ToolsList;
+import xyz.bobindustries.film.image_editor.ToolsList;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.ToolBoxUI;
-import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
 import xyz.bobindustries.film.gui.elements.dialogs.*;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.gui.elements.dialogs.NewProjectDialog;
@@ -28,9 +27,6 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 public class ActionListenerProvider {
 

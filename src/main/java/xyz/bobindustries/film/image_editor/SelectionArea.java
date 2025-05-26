@@ -1,6 +1,5 @@
-package xyz.bobindustries.film.ImageEditor;
+package xyz.bobindustries.film.image_editor;
 
-import javax.swing.*;
 import java.awt.*;
 
 public class SelectionArea extends Rectangle {
