@@ -47,8 +47,13 @@ public class OpenExistingFramesDialog extends JDialog {
         boutonEnregistrer.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                setSelectedFrames((ArrayList<String>) liste.getSelectedValuesList());
-                isSuccess = true;
+                if (!liste.getSelectedValuesList().isEmpty()) {
+                    setSelectedFrames((ArrayList<String>) liste.getSelectedValuesList());
+                    isSuccess = true;
+                } else {
+                   SimpleErrorDialog.show("Erreur, aucune frame sélectionnée");
+                    isSuccess = false;
+                }
                 dispose();
             }
         });

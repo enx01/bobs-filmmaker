@@ -4,6 +4,7 @@ import xyz.bobindustries.film.ImageEditor.*;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.elements.CoordinateBar;
+import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 
 import javax.swing.*;
 import java.awt.*;
@@ -219,14 +220,22 @@ public class EditorPane extends JPanel {
                 data.redo();
             }
             case PREVIOUS_FRAME -> {
-                changeCurrentImage(currentImageIndex-1);
-                System.out.println("index:"+currentImageIndex);
-                data.reDrawGrid(data.getGridColors());
+                if (openedFilesModels.containsKey(currentImageIndex-1) && openedFiles.containsKey(currentImageIndex-1)) {
+                    changeCurrentImage(currentImageIndex-1);
+                    System.out.println("index:"+currentImageIndex);
+                    data.reDrawGrid(data.getGridColors());
+                } else {
+                    SimpleErrorDialog.show("no previous frame available");
+                }
             }
             case NEXT_FRAME -> {
-                changeCurrentImage(currentImageIndex+1);
-                System.out.println("index:"+currentImageIndex);
-                data.reDrawGrid(data.getGridColors());
+                if (openedFilesModels.containsKey(currentImageIndex+1) && openedFiles.containsKey(currentImageIndex+1)) {
+                    changeCurrentImage(currentImageIndex + 1);
+                    System.out.println("index:" + currentImageIndex);
+                    data.reDrawGrid(data.getGridColors());
+                } else {
+                    SimpleErrorDialog.show("no next frame available");
+                }
             }
             default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
         }
@@ -242,9 +251,13 @@ public class EditorPane extends JPanel {
     }
 
     public void addNewImage(Color[][] gridColors, String name) {
-        EditorModel newData = new EditorModel(this, gridColors, gridColors[0].length, gridColors.length);
-        openedFiles.put(Collections.max(openedFilesModels.keySet())+1, name);
-        openedFilesModels.put(Collections.max(openedFilesModels.keySet())+1, newData);
+        if (openedFiles.containsValue(name)) {
+            EditorModel newData = new EditorModel(this, gridColors, gridColors[0].length, gridColors.length);
+            openedFiles.put(Collections.max(openedFilesModels.keySet())+1, name);
+            openedFilesModels.put(Collections.max(openedFilesModels.keySet())+1, newData);
+        } else {
+            SimpleErrorDialog.show("Erreur: l'image existe déjà");
+        }
     }
 
     public void changeCurrentImage(int idImage) {
