@@ -47,6 +47,7 @@ public class EditorPane extends JPanel {
         openedFilesModels.put(currentImageIndex, data);
 
         coordinatToolbar = new CoordinateBar();
+        coordinatToolbar.setFileName(currentFile);
 
         printPaintPanelSize(gridWidth, gridHeight);
 
@@ -161,6 +162,11 @@ public class EditorPane extends JPanel {
         coordinatToolbar.getCoordinates().setText(posX + ",  " + posY + " px");
     }
 
+    public void setFileName(String fileName) {
+        openedFiles.put(currentImageIndex, fileName);
+        coordinatToolbar.setFileName(fileName);
+    }
+
     public void printPaintPanelSize(int width, int height) {
         coordinatToolbar.getFrameSize().setText(width + ",  " + height + " px");
     }
@@ -225,6 +231,7 @@ public class EditorPane extends JPanel {
 
     public void changeCurrentImage(int idImage) {
         currentImageIndex = idImage;
+        coordinatToolbar.setFileName(openedFiles.get(currentImageIndex));
         data = openedFilesModels.get(currentImageIndex);
     }
 

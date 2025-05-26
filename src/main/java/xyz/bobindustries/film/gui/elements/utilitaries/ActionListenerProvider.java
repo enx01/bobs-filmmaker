@@ -303,8 +303,10 @@ public class ActionListenerProvider {
         System.out.println("pp:"+projectPath);
         if (fileName.isEmpty() || fileName.contains("/")) {
             fileName = NameImageDialog.show(App.getFrame(), fileName);
+            fileName+=".png";
         }
-        ImageUtils.exportImage(editor.getData().getGridColors(), projectPath+"/images/"+fileName+".png");
+        ImageUtils.exportImage(editor.getData().getGridColors(), projectPath+"/images/"+fileName);
+        editor.setFileName(fileName);
     }
 
     public static void openExistingFrames(ActionEvent ignoredActionEvent) {

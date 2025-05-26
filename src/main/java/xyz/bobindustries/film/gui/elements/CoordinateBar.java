@@ -6,6 +6,7 @@ import javax.swing.*;
 public class CoordinateBar extends JToolBar {
     private JLabel coordinates;
     private JLabel frameSize;
+    private JLabel fileName;
     private Separator separator;
 
     public CoordinateBar() {
@@ -22,14 +23,16 @@ public class CoordinateBar extends JToolBar {
 
         coordinates = new JLabel("  0 x 0  ");
 
+        fileName = new JLabel("  Aucun fichier  ");
 
         separator = new Separator();
         separator.setPreferredSize(new Dimension(10, 20));
 
         frameSize = new JLabel("  0 x 0  ");
 
-
         leftContainer.add(coordinates);
+        leftContainer.add(Box.createHorizontalStrut(10));
+        leftContainer.add(fileName);
         leftContainer.add(Box.createHorizontalStrut(10));
         leftContainer.add(separator);
         leftContainer.add(Box.createHorizontalStrut(10));
@@ -38,11 +41,18 @@ public class CoordinateBar extends JToolBar {
         this.add(leftContainer, BorderLayout.WEST);
     }
 
-
-
     public JLabel getCoordinates()
     {
         return coordinates;
+    }
+
+    public JLabel getFileName()
+    {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName.setText(fileName);
     }
 
     public JLabel getFrameSize()
