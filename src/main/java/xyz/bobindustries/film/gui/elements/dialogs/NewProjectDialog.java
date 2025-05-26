@@ -25,7 +25,7 @@ public class NewProjectDialog extends JDialog {
         super(parent, "new project", true);
         setSize(600, 300);
         setResizable(true);
-        setMinimumSize(new Dimension(600, 150));
+        setMinimumSize(new Dimension(825, 300));
         setLocationRelativeTo(null); // Center the dialog on the screen
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -73,8 +73,8 @@ public class NewProjectDialog extends JDialog {
         add(browseButton, gbc);
 
         JLabel resolutionLabel = new JLabel("resolution (WxH):");
-        JTextField widthField = new JTextField("1920", 6);
-        JTextField heightField = new JTextField("1080", 6);
+        JTextField widthField = new JTextField("800", 6);
+        JTextField heightField = new JTextField("600", 6);
         JLabel xLabel = new JLabel("x");
 
         // Add components to the layout
