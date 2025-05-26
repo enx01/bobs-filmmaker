@@ -91,7 +91,7 @@ public class HelperBobPopUp extends JDialog {
                     filename = "bob_tutorial.html";
                     break;
                 case IMAGE_EDITOR_TUTORIAL:
-                    // TODO
+                    filename = "image_editor_tutorial.html";
                     break;
                 case SCENARIO_EDITOR_TUTORIAL:
                     filename = "scenario_editor_tutorial.html";

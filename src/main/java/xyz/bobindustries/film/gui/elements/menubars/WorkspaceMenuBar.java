@@ -79,6 +79,7 @@ public class WorkspaceMenuBar extends JMenuBar {
 
         JMenuItem imageEditorTutorial = new JMenuItem("image editor tutorial");
         imageEditorTutorial.setMnemonic('I');
+        imageEditorTutorial.addActionListener(ActionListenerProvider::getShowImageEditorTutorialPopup);
 
         JMenuItem scenarioEditorTutorial = new JMenuItem("scenario editor tutorial");
         scenarioEditorTutorial.setMnemonic('S');
