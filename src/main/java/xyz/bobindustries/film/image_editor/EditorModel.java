@@ -178,8 +178,6 @@ public class EditorModel {
     public Color[][] getGridColorsCopy() {
         int rows = gridColors.length;
         int cols = gridColors[0].length;
-        System.out.println(gridColors.length);
-        System.out.println(gridColors[0].length);
         Color[][] copy = new Color[rows][cols];
 
         for (int i = 0; i < rows; i++) {
@@ -211,7 +209,6 @@ public class EditorModel {
             } else {
                 scale /= 1.1;
             }
-            System.out.println(scale);
             Point zoomCenter;
             if (scale <= minZoomThreshold) {
                 int centerX = drawingArea.x + drawingArea.width / 2;
@@ -224,8 +221,6 @@ public class EditorModel {
                 origin.y = (int) (viewCenterY - centerY * scale);
             } else {
                 zoomCenter = e.getPoint();
-                System.out.println(zoomCenter.x);
-                System.out.println(zoomCenter.y);
                 origin.x = (int) (zoomCenter.x - (zoomCenter.x - origin.x) * (scale / oldScale));
                 origin.y = (int) (zoomCenter.y - (zoomCenter.y - origin.y) * (scale / oldScale));
             }
@@ -538,9 +533,6 @@ public class EditorModel {
         int gridCountX = selectionToMove.width / gridSquareSize;
         int gridCountY = selectionToMove.height / gridSquareSize;
 
-        System.out.println("gridCountXY");
-        System.out.println(gridCountX + " " + gridCountY);
-
         for (int i = gridStartX; i < gridStartX + gridCountX; i++) {
             for (int j = gridStartY; j < gridStartY + gridCountY; j++) {
                 int relX = (i - gridStartX)*10;
@@ -557,7 +549,7 @@ public class EditorModel {
         }
     }
 
-    public void reDrawGrid(Color[][] newGridColors) {
+    public void reDrawGrid(Color[][] newGridColors, boolean zoom) {
         for (int i = 0; i < gridColors.length; i++) {
             for (int j = 0; j < gridColors[i].length; j++) {
                 gridColors[i][j] = newGridColors[i][j];
@@ -566,14 +558,16 @@ public class EditorModel {
                 updateImage(gridPoint);
             }
         }
-        scale=0.1;
-        int centerX = drawingArea.x + drawingArea.width / 2;
-        int centerY = drawingArea.y + drawingArea.height / 2;
+        if (zoom) {
+            scale=0.1;
+            int centerX = drawingArea.x + drawingArea.width / 2;
+            int centerY = drawingArea.y + drawingArea.height / 2;
 
-        int viewCenterX = parent.getWidth() / 2;
-        int viewCenterY = parent.getHeight() / 2;
-        origin.x = (int) (viewCenterX - centerX * scale);
-        origin.y = (int) (viewCenterY - centerY * scale);
+            int viewCenterX = parent.getWidth() / 2;
+            int viewCenterY = parent.getHeight() / 2;
+            origin.x = (int) (viewCenterX - centerX * scale);
+            origin.y = (int) (viewCenterY - centerY * scale);
+        }
     }
 
     public void saveStateForUndo() {
@@ -582,14 +576,13 @@ public class EditorModel {
         undoStack.push(copy);
         // Quand on fait une nouvelle action, on vide la pile redo
         redoStack.clear();
-        System.out.println("undo saved");
     }
 
     public void undo() {
         if (!undoStack.isEmpty()) {
             Color[][] previous = undoStack.pop();
             redoStack.push(getGridColorsCopy());
-            reDrawGrid(previous);
+            reDrawGrid(previous, false);
             parent.repaint();
         }
     }
@@ -598,7 +591,7 @@ public class EditorModel {
         if (!redoStack.isEmpty()) {
             Color[][] next = redoStack.pop();
             undoStack.push(getGridColorsCopy());
-            reDrawGrid(next);
+            reDrawGrid(next, false);
             parent.repaint();
         }
     }

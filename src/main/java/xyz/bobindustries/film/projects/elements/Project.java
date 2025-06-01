@@ -91,7 +91,6 @@ public class Project {
                     if (Files.isRegularFile(imagePath)) {
                         byte[] content = Files.readAllBytes(imagePath);
                         images.add(new ImageFile(imagePath.getFileName().toString(), imagePath.toString()));
-                        System.out.println("Added image " + imagePath.getFileName() + " to project " + projectName);
                     }
                 }
             }
@@ -127,6 +126,7 @@ public class Project {
                 break;
             }
         }
+
         images.add(imageFileToAdd);
     }
 

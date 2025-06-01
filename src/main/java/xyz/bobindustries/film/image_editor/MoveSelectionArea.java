@@ -40,10 +40,6 @@ public class MoveSelectionArea implements Tools {
 
     @Override
     public void mouseReleasedAction(MouseEvent e, EditorModel model) {
-        System.out.println(model.getSelectionToMove().x);
-        System.out.println(model.getSelectionToMove().y);
-        System.out.println(model.getSelectionToMove().height);
-        System.out.println(model.getSelectionToMove().width);
         isDragging = false;
         dragStartPoint = null;
         originalSelectionBounds = null;

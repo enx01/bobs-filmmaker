@@ -299,8 +299,6 @@ public class ActionListenerProvider {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
 
-        System.out.println("image");
-
         Pair<Color[][], String> result = OpenImageDialog.show(App.getFrame());
 
         EditorPane editor = openImageEditorOpening(editorFrame, result.key(), result.value());
@@ -358,7 +356,6 @@ public class ActionListenerProvider {
         JInternalFrame toolboxFrame = workspace.getEditorToolbox();
         ToolBoxUI tui = (ToolBoxUI) toolboxFrame.getContentPane();
         tui.setSelectedButton(e.getActionCommand());
-        System.out.println("tool set : " + e.getActionCommand());
     }
 
     public static void saveImageAction(ActionEvent ignorActionEvent) {
@@ -367,7 +364,6 @@ public class ActionListenerProvider {
         EditorPane editor = (EditorPane) editorFrame.getContentPane();
         String projectPath = ProjectManager.getCurrent().getProjectDir().toString();
         String fileName = editor.getCurrentFileName();
-        System.out.println("pp:" + projectPath);
         if (fileName.isEmpty() || fileName.contains("/")) {
             fileName = NameImageDialog.show(App.getFrame(), fileName);
             fileName += ".png";
@@ -387,7 +383,6 @@ public class ActionListenerProvider {
         if (selectedFrames != null) {
             for (String currentFrame : selectedFrames) {
                 if (editor == null) {
-                    System.out.println("editor is null");
                     editor = openImageEditorOpening(editorFrame, ProjectManager.getImageMatrix(currentFrame),
                             currentFrame);
                 } else {
@@ -493,16 +488,13 @@ public class ActionListenerProvider {
         EditorPane editor = null;
         int height = ConfigProvider.getResolutionHeight(Project.getConfig());
         int width = ConfigProvider.getResolutionWidth(Project.getConfig());
-        System.out.println("height : " + height + ", width : " + width);
         Color[][] defaultCanvas = new Color[height][width];
         for (int i = 0; i < defaultCanvas.length; i += 1) {
             for (int j = 0; j < defaultCanvas[0].length; j += 1) {
                 defaultCanvas[i][j] = new Color(255, 255, 255);
             }
         }
-        System.out.println("fini");
         editor = new EditorPane(defaultCanvas, width, height, "");
-        System.out.println("index:" + editor.getCurrentImageIndex());
         return editor;
     }
 
@@ -510,10 +502,8 @@ public class ActionListenerProvider {
         EditorPane editor = null;
         int height = ConfigProvider.getResolutionHeight(Project.getConfig());
         int width = ConfigProvider.getResolutionWidth(Project.getConfig());
-        System.out.println("height : " + height + ", width : " + width);
         Color[][] resizedImage = ImageUtils.resizeColorArray(imageMatrix, width, height);
         editor = new EditorPane(resizedImage, width, height, fileName);
-        System.out.println("index:" + editor.getCurrentImageIndex());
         return editor;
     }
 

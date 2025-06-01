@@ -196,7 +196,6 @@ public class VisualizerPane extends JPanel {
                 Thread.currentThread().interrupt();
             }
         }
-        System.out.println("Playback thread signaled to stop.");
     }
 
     public void updateState() {
@@ -548,7 +547,6 @@ public class VisualizerPane extends JPanel {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     running = false;
-                    System.out.println("Visualizer thread interrupted.");
                 } catch (Exception e) {
                     System.err.println("Error in visualizer thread: " + e);
                     running = false;

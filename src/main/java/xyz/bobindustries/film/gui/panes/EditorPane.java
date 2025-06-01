@@ -178,12 +178,9 @@ public class EditorPane extends JPanel {
 
     public void setSelectedTool(ToolsList chosenToolsList) {
         if (getSelectedTool().equals("MOVE_SELECTION")) {
-            System.out.println("image merging start");
             data.mergeDraggedImageToGrid();
-            System.out.println("image merged");
         }
         currentTools = chosenToolsList;
-        System.out.println("selecting tool: " + chosenToolsList.name());
         switch (chosenToolsList) {
             case PEN -> selectedTool = new Pen();
             case BRUSH -> {
@@ -212,11 +209,9 @@ public class EditorPane extends JPanel {
                 data.redo();
             }
             case PREVIOUS_FRAME -> {
-                if (openedFilesModels.containsKey(currentImageIndex - 1)
-                        && openedFiles.containsKey(currentImageIndex - 1)) {
-                    changeCurrentImage(currentImageIndex - 1);
-                    System.out.println("index:" + currentImageIndex);
-                    data.reDrawGrid(data.getGridColors());
+                if (openedFilesModels.containsKey(currentImageIndex-1) && openedFiles.containsKey(currentImageIndex-1)) {
+                    changeCurrentImage(currentImageIndex-1);
+                    data.reDrawGrid(data.getGridColors(), true);
                 } else {
                     SimpleErrorDialog.show("no previous frame available");
                 }
@@ -225,8 +220,7 @@ public class EditorPane extends JPanel {
                 if (openedFilesModels.containsKey(currentImageIndex + 1)
                         && openedFiles.containsKey(currentImageIndex + 1)) {
                     changeCurrentImage(currentImageIndex + 1);
-                    System.out.println("index:" + currentImageIndex);
-                    data.reDrawGrid(data.getGridColors());
+                    data.reDrawGrid(data.getGridColors(), true);
                 } else {
                     SimpleErrorDialog.show("no next frame available");
                 }

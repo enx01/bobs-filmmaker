@@ -122,7 +122,6 @@ public class NewProjectDialog extends JDialog {
                     // Properties props = ConfigProvider.loadProperties(newProject);
                     ConfigProvider.setResolution(props, width, height);
                     ConfigProvider.saveProperties(newProject, props);
-                    System.out.println(newProject.getProjectDir().toString());
                     RecentProjectsProvider.writeConfigFile(newProject.getProjectDir().toString());
                     isSuccess = true;
                     dispose();

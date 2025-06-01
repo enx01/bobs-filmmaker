@@ -330,7 +330,6 @@ public class Workspace extends JDesktopPane {
     public void updateToolsSettings(ToolsSettings ts) {
         if (ts != null) {
             int[] sliderParams = ts.getSliderBounds();
-            System.out.println("params:" + sliderParams[0] + ";" + sliderParams[1] + ";" + sliderParams[2]);
             try {
                 ToolsSettingsUI tsui = (ToolsSettingsUI) toolsSettings.getContentPane();
                 tsui.setSlider(sliderParams[0], sliderParams[1], sliderParams[2]);
@@ -354,9 +353,7 @@ public class Workspace extends JDesktopPane {
 
     public static Workspace newInstance() throws InvalidScenarioContentException {
         /* Return a clean instance of the workspace */
-        System.out.println("debut creation workspace");
         instance = new Workspace();
-        System.out.println("fin creation workspace");
         return instance;
     }
 
