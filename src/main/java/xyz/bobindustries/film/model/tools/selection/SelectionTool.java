@@ -1,8 +1,11 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model.tools.selection;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+
+import xyz.bobindustries.film.model.EditorModel;
+import xyz.bobindustries.film.model.tools.Tools;
 
 public class SelectionTool implements Tools {
 
@@ -39,10 +42,12 @@ public class SelectionTool implements Tools {
             return;
         }
 
-        if (startPoint == null) return;
+        if (startPoint == null)
+            return;
 
         Point endPoint = getAdjustedPoint(e, model);
-        if (!model.getDrawingArea().contains(endPoint)) return;
+        if (!model.getDrawingArea().contains(endPoint))
+            return;
 
         model.setSelectionToMove(createGridAlignedRect(startPoint, currentDragPoint, model)); // ALIGN TO GRID
         startPoint = null;
@@ -54,7 +59,7 @@ public class SelectionTool implements Tools {
         Point adjusted = getAdjustedPoint(e, model);
 
         if (model.getSelectionToMove() != null && activeHandle != null && activeHandle != ResizeHandle.NONE) {
-            resizeSelection(adjusted, model);  // ALIGN TO GRID
+            resizeSelection(adjusted, model); // ALIGN TO GRID
             return;
         }
 
@@ -70,7 +75,8 @@ public class SelectionTool implements Tools {
         Point adjustedPoint = getAdjustedPoint(e, model);
 
         if (model.getSelectionToMove() != null) {
-            ResizeHandle hoverHandle = getHandleAtPoint(adjustedPoint, model);  // Vérifie si la souris est sur une poignée
+            ResizeHandle hoverHandle = getHandleAtPoint(adjustedPoint, model); // Vérifie si la souris est sur une
+                                                                               // poignée
 
             // Change le curseur selon la poignée
             Cursor cursor = switch (hoverHandle) {
@@ -82,10 +88,10 @@ public class SelectionTool implements Tools {
                 case NW -> Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR);
                 case SE -> Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR);
                 case SW -> Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR);
-                default -> Cursor.getDefaultCursor();  // Par défaut, curseur normal
+                default -> Cursor.getDefaultCursor(); // Par défaut, curseur normal
             };
 
-            model.getParent().setCursor(cursor);  // Applique le curseur à la zone de dessin
+            model.getParent().setCursor(cursor); // Applique le curseur à la zone de dessin
         } else {
             model.getParent().setCursor(Cursor.getDefaultCursor());
         }
@@ -94,7 +100,8 @@ public class SelectionTool implements Tools {
     @Override
     public void paintHoveredArea(Graphics2D g, EditorModel model, AffineTransform at) {
         // Ne pas remplir le rectangle bleu de prévisualisation
-        //g.setColor(new Color(0, 0, 255, 128)); // Cette ligne est supprimée pour ne pas remplir le rectangle.
+        // g.setColor(new Color(0, 0, 255, 128)); // Cette ligne est supprimée pour ne
+        // pas remplir le rectangle.
 
         if (model.getSelectionToMove() != null) {
             // Remplissage bleu semi-transparent constant
@@ -103,10 +110,17 @@ public class SelectionTool implements Tools {
             g.fill(model.getSelectionToMove());
 
             // Dessiner les carrés noirs à l’intérieur
-            for (int y = model.getSelectionToMove().y; y < model.getSelectionToMove().y + model.getSelectionToMove().height; y += model.getGridSquareSize()) {
-                for (int x = model.getSelectionToMove().x; x < model.getSelectionToMove().x + model.getSelectionToMove().width; x += model.getGridSquareSize()) {
-                    boolean isInside = (x > model.getSelectionToMove().x && x + model.getGridSquareSize() < model.getSelectionToMove().x + model.getSelectionToMove().width &&
-                            y > model.getSelectionToMove().y && y + model.getGridSquareSize() < model.getSelectionToMove().y + model.getSelectionToMove().height);
+            for (int y = model.getSelectionToMove().y; y < model.getSelectionToMove().y
+                    + model.getSelectionToMove().height; y += model.getGridSquareSize()) {
+                for (int x = model.getSelectionToMove().x; x < model.getSelectionToMove().x
+                        + model.getSelectionToMove().width; x += model.getGridSquareSize()) {
+                    boolean isInside = (x > model.getSelectionToMove().x
+                            && x + model.getGridSquareSize() < model.getSelectionToMove().x
+                                    + model.getSelectionToMove().width
+                            &&
+                            y > model.getSelectionToMove().y
+                            && y + model.getGridSquareSize() < model.getSelectionToMove().y
+                                    + model.getSelectionToMove().height);
                     if (isInside) {
                         Point screen = gridToScreen(new Point(x, y), model);
                         g.fillRect(screen.x, screen.y, model.getGridSquareSize(), model.getGridSquareSize());
@@ -122,7 +136,6 @@ public class SelectionTool implements Tools {
             drawHandles(g, model.getSelectionToMove());
         }
 
-
         if (activeHandle != null && activeHandle != ResizeHandle.NONE && model.getSelectionToMove() != null) {
             Color semiTransparent = new Color(0, 0, 255, 64);
             g.setColor(semiTransparent);
@@ -132,15 +145,16 @@ public class SelectionTool implements Tools {
         // Dessiner le rectangle de sélection (sans le remplir, juste les bordures)
         if (model.getSelectionToMove() != null) {
             g.setColor(Color.RED);
-            g.draw(model.getSelectionToMove());  // Bordure rouge de la zone de sélection
-            drawHandles(g, model.getSelectionToMove());  // Dessiner les poignées de redimensionnement
+            g.draw(model.getSelectionToMove()); // Bordure rouge de la zone de sélection
+            drawHandles(g, model.getSelectionToMove()); // Dessiner les poignées de redimensionnement
         }
 
         g.setTransform(at);
     }
 
     private void resizeSelection(Point p, EditorModel model) {
-        if (model.getSelectionToMove() == null) return;
+        if (model.getSelectionToMove() == null)
+            return;
 
         Rectangle r = model.getSelectionToMove();
         int x1 = r.x;
@@ -157,10 +171,22 @@ public class SelectionTool implements Tools {
             case S -> y2 = p.y;
             case W -> x1 = p.x;
             case E -> x2 = p.x;
-            case NW -> { x1 = p.x; y1 = p.y; }
-            case NE -> { x2 = p.x; y1 = p.y; }
-            case SW -> { x1 = p.x; y2 = p.y; }
-            case SE -> { x2 = p.x; y2 = p.y; }
+            case NW -> {
+                x1 = p.x;
+                y1 = p.y;
+            }
+            case NE -> {
+                x2 = p.x;
+                y1 = p.y;
+            }
+            case SW -> {
+                x1 = p.x;
+                y2 = p.y;
+            }
+            case SE -> {
+                x2 = p.x;
+                y2 = p.y;
+            }
         }
 
         model.setSelectionToMove(createGridAlignedRect(new Point(x1, y1), new Point(x2, y2), model)); // ALIGN TO GRID
@@ -189,7 +215,7 @@ public class SelectionTool implements Tools {
     }
 
     private Point[] getHandlePoints(Rectangle r) {
-        return new Point[]{
+        return new Point[] {
                 new Point(r.x, r.y),
                 new Point(r.x + r.width / 2, r.y),
                 new Point(r.x + r.width, r.y),
@@ -213,9 +239,9 @@ public class SelectionTool implements Tools {
             Rectangle area = new Rectangle(
                     handles[i].x - tolerance / 2,
                     handles[i].y - tolerance / 2,
-                    tolerance, tolerance
-            );
-            if (area.contains(p)) return types[i];
+                    tolerance, tolerance);
+            if (area.contains(p))
+                return types[i];
         }
 
         return ResizeHandle.NONE;
@@ -233,9 +259,7 @@ public class SelectionTool implements Tools {
     private Point getAdjustedPoint(MouseEvent e, EditorModel model) {
         return new Point(
                 (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-                (int) ((e.getY() - model.getOrigin().y) / model.getScale())
-        );
+                (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
     }
 
 }
-

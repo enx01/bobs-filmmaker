@@ -1,6 +1,18 @@
 package xyz.bobindustries.film.gui.panes;
 
-import xyz.bobindustries.film.image_editor.*;
+import xyz.bobindustries.film.model.EditorModel;
+import xyz.bobindustries.film.model.tools.Tools;
+import xyz.bobindustries.film.model.tools.ToolsList;
+import xyz.bobindustries.film.model.tools.ToolsSettings;
+import xyz.bobindustries.film.model.tools.drawing.Brush;
+import xyz.bobindustries.film.model.tools.drawing.Circle;
+import xyz.bobindustries.film.model.tools.drawing.ColorPickerTool;
+import xyz.bobindustries.film.model.tools.drawing.Erase;
+import xyz.bobindustries.film.model.tools.drawing.Pen;
+import xyz.bobindustries.film.model.tools.drawing.RectangleTool;
+import xyz.bobindustries.film.model.tools.selection.MoveSelection;
+import xyz.bobindustries.film.model.tools.selection.MoveSelectionArea;
+import xyz.bobindustries.film.model.tools.selection.SelectionTool;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.CoordinateBar;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
@@ -209,8 +221,9 @@ public class EditorPane extends JPanel {
                 data.redo();
             }
             case PREVIOUS_FRAME -> {
-                if (openedFilesModels.containsKey(currentImageIndex-1) && openedFiles.containsKey(currentImageIndex-1)) {
-                    changeCurrentImage(currentImageIndex-1);
+                if (openedFilesModels.containsKey(currentImageIndex - 1)
+                        && openedFiles.containsKey(currentImageIndex - 1)) {
+                    changeCurrentImage(currentImageIndex - 1);
                     data.reDrawGrid(data.getGridColors(), true);
                 } else {
                     SimpleErrorDialog.show("no previous frame available");

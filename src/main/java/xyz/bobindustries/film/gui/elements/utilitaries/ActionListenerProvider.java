@@ -1,7 +1,7 @@
 package xyz.bobindustries.film.gui.elements.utilitaries;
 
 import xyz.bobindustries.film.App;
-import xyz.bobindustries.film.image_editor.ToolsList;
+import xyz.bobindustries.film.model.tools.ToolsList;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.ToolBoxUI;
 import xyz.bobindustries.film.gui.elements.dialogs.*;
@@ -373,6 +373,7 @@ public class ActionListenerProvider {
         workspace.getScenarioEditorPane().refresh();
     }
 
+    // TODO : Investigate : Erreur : l'image existe deja.
     public static void openExistingFrames(ActionEvent ignoredActionEvent) {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
@@ -380,6 +381,7 @@ public class ActionListenerProvider {
         ArrayList<String> selectedFrames = new ArrayList<>();
         EditorPane editor = null;
         selectedFrames = OpenExistingFramesDialog.show(App.getFrame(), (ArrayList<ImageFile>) current.getImages());
+        System.out.println("selected frames size : " + selectedFrames.size());
         if (selectedFrames != null) {
             for (String currentFrame : selectedFrames) {
                 if (editor == null) {
@@ -486,8 +488,8 @@ public class ActionListenerProvider {
 
     public static EditorPane openImageEditorCreation(JInternalFrame frame) {
         EditorPane editor = null;
-        int height = ConfigProvider.getResolutionHeight(Project.getConfig());
-        int width = ConfigProvider.getResolutionWidth(Project.getConfig());
+        int height = ConfigProvider.getResolutionHeight(ProjectManager.getCurrent().getConfig());
+        int width = ConfigProvider.getResolutionWidth(ProjectManager.getCurrent().getConfig());
         Color[][] defaultCanvas = new Color[height][width];
         for (int i = 0; i < defaultCanvas.length; i += 1) {
             for (int j = 0; j < defaultCanvas[0].length; j += 1) {
@@ -500,8 +502,17 @@ public class ActionListenerProvider {
 
     public static EditorPane openImageEditorOpening(JInternalFrame frame, Color[][] imageMatrix, String fileName) {
         EditorPane editor = null;
-        int height = ConfigProvider.getResolutionHeight(Project.getConfig());
-        int width = ConfigProvider.getResolutionWidth(Project.getConfig());
+        int height = ConfigProvider.getResolutionHeight(ProjectManager.getCurrent().getConfig());
+        int width = ConfigProvider.getResolutionWidth(ProjectManager.getCurrent().getConfig());
+        System.out.println("height : " + height + " width : " + width);
+        System.out.println("imageMatrix length : " + imageMatrix.length);
+        int t = imageMatrix[0].length;
+        for (int i = 0; i < imageMatrix.length; i++) {
+            if (imageMatrix[i].length != t) {
+                System.out.println("matrix mismatch ! : imageMatrix[0] : " + t + "imageMatrix[" + i + "] : "
+                        + imageMatrix[i].length);
+            }
+        }
         Color[][] resizedImage = ImageUtils.resizeColorArray(imageMatrix, width, height);
         editor = new EditorPane(resizedImage, width, height, fileName);
         return editor;

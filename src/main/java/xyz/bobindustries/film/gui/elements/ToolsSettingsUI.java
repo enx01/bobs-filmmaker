@@ -1,6 +1,6 @@
 package xyz.bobindustries.film.gui.elements;
 
-import xyz.bobindustries.film.image_editor.ToolsSettings;
+import xyz.bobindustries.film.model.tools.ToolsSettings;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.panes.EditorPane;
 
@@ -19,14 +19,14 @@ public class ToolsSettingsUI extends JPanel {
         slider = new JSlider(min, max, def);
         slider.setPaintLabels(true);
 
-        currentValue = new JLabel(""+def);
+        currentValue = new JLabel("" + def);
 
         // Ajoute un écouteur pour détecter les changements de valeur
         slider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
                 int value = slider.getValue();
-                currentValue.setText(""+value);
+                currentValue.setText("" + value);
                 EditorPane editor = (EditorPane) Workspace.getInstance().getImageEditorFrame().getContentPane();
                 ToolsSettings ts = editor.getSelectedToolsSettings();
                 ts.updateCurrentThickness(value);

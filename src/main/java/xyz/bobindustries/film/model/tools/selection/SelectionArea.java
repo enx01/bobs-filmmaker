@@ -1,6 +1,8 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model.tools.selection;
 
 import java.awt.*;
+
+import xyz.bobindustries.film.model.EditorModel;
 
 public class SelectionArea extends Rectangle {
     int rectWidth;

@@ -1,10 +1,11 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model;
 
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.ColorBox;
 import xyz.bobindustries.film.gui.panes.EditorPane;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -48,7 +49,7 @@ public class EditorModel {
         this.gridWidth = gridWidth;
         this.gridHeight = gridHeight;
 
-            drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
+        drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
         this.imageIndex = imageIndex;
         createVolatileImage();
     }
@@ -61,7 +62,6 @@ public class EditorModel {
     public BufferedImage getDraggedImage() {
         return draggedImage;
     }
-
 
     public void clearSpaceDraggedImage() {
         Rectangle selection = this.getSelectionToMove();
@@ -187,8 +187,8 @@ public class EditorModel {
                 } else {
                     copy[i][j] = Color.WHITE;
                 }
-                //System.out.println(copy[i][j].toString());
-                //System.out.println("done");
+                // System.out.println(copy[i][j].toString());
+                // System.out.println("done");
             }
         }
 
@@ -281,15 +281,17 @@ public class EditorModel {
             g2d.setColor(Color.WHITE);
             g2d.fillRect(0, 0, gridImage.getWidth(), gridImage.getHeight());
 
-            System.out.println("gridhgeight:"+gridHeight);
-            System.out.println("gridwidth:"+gridWidth);
+            System.out.println("gridhgeight:" + gridHeight);
+            System.out.println("gridwidth:" + gridWidth);
 
             for (int i = 0; i < gridHeight; i++) {
                 for (int j = 0; j < gridWidth; j++) {
                     int x = j * gridSquareSize;
                     int y = i * gridSquareSize;
-                    /*System.out.println("i:"+i);
-                    System.out.println("j:"+j);*/
+                    /*
+                     * System.out.println("i:"+i);
+                     * System.out.println("j:"+j);
+                     */
                     g2d.setColor(gridColors[i][j]);
                     g2d.fillRect(x, y, gridSquareSize, gridSquareSize);
                 }
@@ -320,10 +322,11 @@ public class EditorModel {
         int gridY = (p.y - drawingArea.y) / gridSize;
 
         if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
-            if (color!=null) {
+            if (color != null) {
                 gridColors[gridY][gridX] = color;
             } else {
-                Color currentColor = ((ColorBox) Workspace.getInstance().getEditorColors().getContentPane()).getSelectedColor();
+                Color currentColor = ((ColorBox) Workspace.getInstance().getEditorColors().getContentPane())
+                        .getSelectedColor();
                 gridColors[gridY][gridX] = currentColor;
             }
         }
@@ -390,7 +393,8 @@ public class EditorModel {
                     int gridY = centerY + dy;
 
                     if (gridX >= 0 && gridY >= 0) {
-                        Point gridPoint = new Point(drawingArea.x + gridX * gridSquareSize, drawingArea.y + gridY * gridSquareSize);
+                        Point gridPoint = new Point(drawingArea.x + gridX * gridSquareSize,
+                                drawingArea.y + gridY * gridSquareSize);
                         if (drawSet.add(gridPoint)) {
                             try {
                                 drawQueue.put(gridPoint);
@@ -467,58 +471,63 @@ public class EditorModel {
     public HashSet<Point> getDrawSet() {
         return drawSet;
     }
-    
-    /*public void mergeDraggedImageToGrid() {
-        if (draggedImage == null) return;
 
-        // dropPoint : position où l'utilisateur veut déposer l'image (en pixels affichés)
-        int realX = (int) ((selectionToMove.x - origin.x) / scale);
-        int realY = (int) ((selectionToMove.y - origin.y) / scale);
-
-        int gridStartX = (realX - drawingArea.x) / gridSquareSize;
-        int gridStartY = (realY - drawingArea.y) / gridSquareSize;
-
-        int gridCountX = selectionToMove.width / gridSquareSize;
-        int gridCountY = selectionToMove.height / gridSquareSize;
-
-        // Sécurité si la sélection n'est pas alignée sur la grille
-        if (selectionToMove.width % gridSquareSize != 0) gridCountX++;
-        if (selectionToMove.height % gridSquareSize != 0) gridCountY++;
-
-        for (int gridY = 0; gridY < gridCountY; gridY++) {
-            for (int gridX = 0; gridX < gridCountX; gridX++) {
-                int destGridX = gridStartX + gridX;
-                int destGridY = gridStartY + gridY;
-                Point gridPoint = new Point(gridX * gridSquareSize, gridY * gridSquareSize);
-                try {
-                    drawQueue.put(gridPoint);
-                } catch (InterruptedException ex) {
-                    ex.printStackTrace();
-                }
-                if (destGridX >= 0 && destGridX < gridWidth && destGridY >= 0 && destGridY < gridHeight) {
-                    // Prendre le pixel central de la zone correspondante dans draggedImage
-                    int px = gridX * gridSquareSize + gridSquareSize / 2;
-                    int py = gridY * gridSquareSize + gridSquareSize / 2;
-                    // Clamp pour éviter les débordements
-                    px = Math.min(px, draggedImage.getWidth() - 1);
-                    py = Math.min(py, draggedImage.getHeight() - 1);
-                    int rgb = draggedImage.getRGB(px, py);
-                    Color color = new Color(rgb, true);
-                    gridColors[destGridY][destGridX] = color;
-                }
-            }
-        }
-        drawGridImage();
-        parent.repaint();
-    }*/
+    /*
+     * public void mergeDraggedImageToGrid() {
+     * if (draggedImage == null) return;
+     * 
+     * // dropPoint : position où l'utilisateur veut déposer l'image (en pixels
+     * affichés)
+     * int realX = (int) ((selectionToMove.x - origin.x) / scale);
+     * int realY = (int) ((selectionToMove.y - origin.y) / scale);
+     * 
+     * int gridStartX = (realX - drawingArea.x) / gridSquareSize;
+     * int gridStartY = (realY - drawingArea.y) / gridSquareSize;
+     * 
+     * int gridCountX = selectionToMove.width / gridSquareSize;
+     * int gridCountY = selectionToMove.height / gridSquareSize;
+     * 
+     * // Sécurité si la sélection n'est pas alignée sur la grille
+     * if (selectionToMove.width % gridSquareSize != 0) gridCountX++;
+     * if (selectionToMove.height % gridSquareSize != 0) gridCountY++;
+     * 
+     * for (int gridY = 0; gridY < gridCountY; gridY++) {
+     * for (int gridX = 0; gridX < gridCountX; gridX++) {
+     * int destGridX = gridStartX + gridX;
+     * int destGridY = gridStartY + gridY;
+     * Point gridPoint = new Point(gridX * gridSquareSize, gridY * gridSquareSize);
+     * try {
+     * drawQueue.put(gridPoint);
+     * } catch (InterruptedException ex) {
+     * ex.printStackTrace();
+     * }
+     * if (destGridX >= 0 && destGridX < gridWidth && destGridY >= 0 && destGridY <
+     * gridHeight) {
+     * // Prendre le pixel central de la zone correspondante dans draggedImage
+     * int px = gridX * gridSquareSize + gridSquareSize / 2;
+     * int py = gridY * gridSquareSize + gridSquareSize / 2;
+     * // Clamp pour éviter les débordements
+     * px = Math.min(px, draggedImage.getWidth() - 1);
+     * py = Math.min(py, draggedImage.getHeight() - 1);
+     * int rgb = draggedImage.getRGB(px, py);
+     * Color color = new Color(rgb, true);
+     * gridColors[destGridY][destGridX] = color;
+     * }
+     * }
+     * }
+     * drawGridImage();
+     * parent.repaint();
+     * }
+     */
 
     public void mergeDraggedImageToGrid() {
         saveStateForUndo();
-        if (draggedImage == null) return;
+        if (draggedImage == null)
+            return;
 
-        System.out.println("height:"+selectionToMove.getHeight()+"width:"+selectionToMove.getWidth());
+        System.out.println("height:" + selectionToMove.getHeight() + "width:" + selectionToMove.getWidth());
 
-        System.out.println("origin:"+origin.x+","+origin.y);
+        System.out.println("origin:" + origin.x + "," + origin.y);
 
         // real coordinates of the selection to move
 
@@ -535,8 +544,8 @@ public class EditorModel {
 
         for (int i = gridStartX; i < gridStartX + gridCountX; i++) {
             for (int j = gridStartY; j < gridStartY + gridCountY; j++) {
-                int relX = (i - gridStartX)*10;
-                int relY = (j - gridStartY)*10;
+                int relX = (i - gridStartX) * 10;
+                int relY = (j - gridStartY) * 10;
                 int rgb = draggedImage.getRGB(relX, relY);
                 int red = (rgb >> 16) & 0xFF;
                 int green = (rgb >> 8) & 0xFF;
@@ -559,7 +568,7 @@ public class EditorModel {
             }
         }
         if (zoom) {
-            scale=0.1;
+            scale = 0.1;
             int centerX = drawingArea.x + drawingArea.width / 2;
             int centerY = drawingArea.y + drawingArea.height / 2;
 
@@ -594,5 +603,9 @@ public class EditorModel {
             reDrawGrid(next, false);
             parent.repaint();
         }
+    }
+
+    public void mouseReleasedAction(MouseEvent e) {
+        resetDrawSet();
     }
 }

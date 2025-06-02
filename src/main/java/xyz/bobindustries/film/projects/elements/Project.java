@@ -24,7 +24,7 @@ public class Project {
     private final Path projectDir;
     private final String projectName;
 
-    private static Properties config;
+    private Properties config;
     private String scenarioContent;
     private final List<ImageFile> images;
 
@@ -50,7 +50,7 @@ public class Project {
         this.images = new ArrayList<>();
     }
 
-    public static Properties getConfig() {
+    public Properties getConfig() {
         return config;
     }
 

@@ -1,7 +1,9 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model.tools.drawing;
 
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.ColorBox;
+import xyz.bobindustries.film.model.EditorModel;
+import xyz.bobindustries.film.model.tools.Tools;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

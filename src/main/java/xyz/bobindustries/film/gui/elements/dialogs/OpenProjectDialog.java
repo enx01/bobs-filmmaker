@@ -70,7 +70,7 @@ public class OpenProjectDialog extends JDialog {
                 recentProjectsLabel.setVisible(false);
                 recentProjectsComboBox.setVisible(false);
                 toggleButton.setText("Choose a recent project");
-                browseProjectsSelected=true;
+                browseProjectsSelected = true;
             } else {
                 locationLabel.setVisible(false);
                 locationField.setVisible(false);
@@ -78,7 +78,7 @@ public class OpenProjectDialog extends JDialog {
                 recentProjectsLabel.setVisible(true);
                 recentProjectsComboBox.setVisible(true);
                 toggleButton.setText("Choose a project location");
-                browseProjectsSelected=false;
+                browseProjectsSelected = false;
             }
         });
 
@@ -96,7 +96,7 @@ public class OpenProjectDialog extends JDialog {
                         isSuccess = true;
                         dispose();
                     } catch (IOException | InvalidProjectDirectoryException ex) {
-                        SimpleErrorDialog.show("Error opening project: invalid project directory");
+                        SimpleErrorDialog.show("Error opening project: " + ex.getMessage());
                         isSuccess = false;
                         dispose();
                     }

@@ -1,7 +1,9 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model.tools;
 
 public interface ToolsSettings {
     int[] getSliderBounds();
+
     int getCurrentThickness();
+
     void updateCurrentThickness(int thickness);
 }

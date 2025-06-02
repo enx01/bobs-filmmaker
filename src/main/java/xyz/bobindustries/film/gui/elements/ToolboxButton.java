@@ -1,6 +1,6 @@
 package xyz.bobindustries.film.gui.elements;
 
-import xyz.bobindustries.film.image_editor.ToolsList;
+import xyz.bobindustries.film.model.tools.ToolsList;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 
 import javax.imageio.ImageIO;
@@ -16,7 +16,7 @@ public class ToolboxButton extends JButton {
         setPreferredSize(new Dimension(40, 40));
         setToolTipText("Outil " + tool);
 
-        try (InputStream is = ToolboxButton.class.getResourceAsStream(tool.name().toLowerCase()+".jpg")) {
+        try (InputStream is = ToolboxButton.class.getResourceAsStream(tool.name().toLowerCase() + ".jpg")) {
             if (is != null) {
                 BufferedImage img = ImageIO.read(is);
                 Image scaledImg = img.getScaledInstance(40, 40, Image.SCALE_SMOOTH);

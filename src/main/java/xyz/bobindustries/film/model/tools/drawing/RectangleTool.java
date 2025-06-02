@@ -1,8 +1,12 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model.tools.drawing;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+
+import xyz.bobindustries.film.model.EditorModel;
+import xyz.bobindustries.film.model.tools.Tools;
+import xyz.bobindustries.film.model.tools.ToolsSettings;
 
 public class RectangleTool implements Tools, ToolsSettings {
     private Point startPoint = null;
@@ -22,10 +26,12 @@ public class RectangleTool implements Tools, ToolsSettings {
     @Override
     public void mouseReleasedAction(MouseEvent e, EditorModel model) {
         model.saveStateForUndo();
-        if (startPoint == null) return;
+        if (startPoint == null)
+            return;
 
         Point endPoint = getAdjustedPoint(e, model);
-        if (!model.getDrawingArea().contains(endPoint)) return;
+        if (!model.getDrawingArea().contains(endPoint))
+            return;
 
         int x1 = Math.min(startPoint.x, endPoint.x);
         int y1 = Math.min(startPoint.y, endPoint.y);
@@ -34,9 +40,8 @@ public class RectangleTool implements Tools, ToolsSettings {
 
         for (int y = y1; y <= y2; y++) {
             for (int x = x1; x <= x2; x++) {
-                boolean isBorder =
-                    (x >= x1 && x < x1 + thickness) || (x <= x2 && x > x2 - thickness) ||
-                    (y >= y1 && y < y1 + thickness) || (y <= y2 && y > y2 - thickness);
+                boolean isBorder = (x >= x1 && x < x1 + thickness) || (x <= x2 && x > x2 - thickness) ||
+                        (y >= y1 && y < y1 + thickness) || (y <= y2 && y > y2 - thickness);
                 if (isBorder) {
                     Point p = new Point(x, y);
                     if (model.getDrawingArea().contains(p)) {
@@ -53,7 +58,8 @@ public class RectangleTool implements Tools, ToolsSettings {
 
     @Override
     public void mouseDraggedAction(MouseEvent e, EditorModel model) {
-        if (startPoint == null) return;
+        if (startPoint == null)
+            return;
         currentDragPoint = getAdjustedPoint(e, model);
     }
 
@@ -82,9 +88,8 @@ public class RectangleTool implements Tools, ToolsSettings {
 
             for (int y = y1; y <= y2; y++) {
                 for (int x = x1; x <= x2; x++) {
-                    boolean isBorder =
-                        (x >= x1 && x < x1 + thickness) || (x <= x2 && x > x2 - thickness) ||
-                        (y >= y1 && y < y1 + thickness) || (y <= y2 && y > y2 - thickness);
+                    boolean isBorder = (x >= x1 && x < x1 + thickness) || (x <= x2 && x > x2 - thickness) ||
+                            (y >= y1 && y < y1 + thickness) || (y <= y2 && y > y2 - thickness);
                     if (isBorder) {
                         Point p = new Point(x, y);
                         if (model.getDrawingArea().contains(p)) {
@@ -118,13 +123,12 @@ public class RectangleTool implements Tools, ToolsSettings {
     private Point getAdjustedPoint(MouseEvent e, EditorModel model) {
         return new Point(
                 (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-                (int) ((e.getY() - model.getOrigin().y) / model.getScale())
-        );
+                (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
     }
 
     @Override
     public int[] getSliderBounds() {
-        return new int[]{1, 20, thickness};
+        return new int[] { 1, 20, thickness };
     }
 
     @Override

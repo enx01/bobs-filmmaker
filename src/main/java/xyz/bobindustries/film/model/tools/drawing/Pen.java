@@ -1,8 +1,11 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model.tools.drawing;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+
+import xyz.bobindustries.film.model.EditorModel;
+import xyz.bobindustries.film.model.tools.Tools;
 
 public class Pen implements Tools {
     @Override

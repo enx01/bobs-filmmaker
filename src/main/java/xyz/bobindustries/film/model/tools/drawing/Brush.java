@@ -1,15 +1,21 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model.tools.drawing;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
-public class Erase implements Tools, ToolsSettings {
-    private int radius;
-    ArrayList<Point> brushOffsets;
+import xyz.bobindustries.film.model.EditorModel;
+import xyz.bobindustries.film.model.tools.ToolsSettings;
+import xyz.bobindustries.film.model.tools.Tools;
 
-    public Erase(int radius) {
+public class Brush implements Tools, ToolsSettings {
+
+    private int radius;
+    private ArrayList<Point> brushOffsets;
+    private int thickness;
+
+    public Brush(int radius) {
         this.radius = radius;
         generateBrush(radius);
     }
@@ -72,10 +78,13 @@ public class Erase implements Tools, ToolsSettings {
         if (model.getDrawingArea().contains(adjustedPoint)) {
             Point lastPoint = model.getLastDragPoint();
 
-      /*if (lastPoint != null && lastPoint.distance(adjustedPoint) < getBrushStepThreshold()*100) {
-        System.out.println("skip point");
-        return; // Trop proche, on saute
-      }*/
+            /*
+             * if (lastPoint != null && lastPoint.distance(adjustedPoint) <
+             * getBrushStepThreshold()*100) {
+             * System.out.println("skip point");
+             * return; // Trop proche, on saute
+             * }
+             */
 
             if (lastPoint != null) {
                 model.interpolatePoints(lastPoint, adjustedPoint, radius);
@@ -88,7 +97,6 @@ public class Erase implements Tools, ToolsSettings {
             model.setLastDragPoint(null);
         }
     }
-
 
     private void applyBrushAt(Point point, EditorModel model) {
         int squareSize = model.getGridSquareSize();
@@ -150,7 +158,7 @@ public class Erase implements Tools, ToolsSettings {
 
     @Override
     public int[] getSliderBounds() {
-        return new int[]{0,100,20};
+        return new int[] { 0, 100, 20 };
     }
 
     @Override
@@ -164,4 +172,3 @@ public class Erase implements Tools, ToolsSettings {
         generateBrush(radius);
     }
 }
-

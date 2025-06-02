@@ -1,8 +1,11 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model.tools.selection;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
+
+import xyz.bobindustries.film.model.EditorModel;
+import xyz.bobindustries.film.model.tools.Tools;
 
 public class MoveSelectionArea implements Tools {
     private Point dragStartPoint = null;
@@ -21,7 +24,8 @@ public class MoveSelectionArea implements Tools {
 
     @Override
     public void mouseDraggedAction(MouseEvent e, EditorModel model) {
-        if (!isDragging || dragStartPoint == null || originalSelectionBounds == null) return;
+        if (!isDragging || dragStartPoint == null || originalSelectionBounds == null)
+            return;
 
         Point current = getAdjustedPoint(e, model);
         int dx = current.x - dragStartPoint.x;
@@ -65,7 +69,6 @@ public class MoveSelectionArea implements Tools {
     private Point getAdjustedPoint(MouseEvent e, EditorModel model) {
         return new Point(
                 (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-                (int) ((e.getY() - model.getOrigin().y) / model.getScale())
-        );
+                (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
     }
 }

@@ -1,11 +1,15 @@
-package xyz.bobindustries.film.image_editor;
+package xyz.bobindustries.film.model.tools.drawing;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
-public class Circle implements Tools, ToolsSettings{
+import xyz.bobindustries.film.model.EditorModel;
+import xyz.bobindustries.film.model.tools.Tools;
+import xyz.bobindustries.film.model.tools.ToolsSettings;
+
+public class Circle implements Tools, ToolsSettings {
     private Point startPoint = null;
     private Point currentDragPoint = null;
     private int thickness = 1; // Valeur par défaut pour l'épaisseur
@@ -23,10 +27,12 @@ public class Circle implements Tools, ToolsSettings{
     @Override
     public void mouseReleasedAction(MouseEvent e, EditorModel model) {
         model.saveStateForUndo();
-        if (startPoint == null) return;
+        if (startPoint == null)
+            return;
 
         Point endPoint = getAdjustedPoint(e, model);
-        if (!model.getDrawingArea().contains(endPoint)) return;
+        if (!model.getDrawingArea().contains(endPoint))
+            return;
 
         ArrayList<Point> points = getCirclePoints(startPoint, endPoint, thickness);
 
@@ -43,7 +49,8 @@ public class Circle implements Tools, ToolsSettings{
 
     @Override
     public void mouseDraggedAction(MouseEvent e, EditorModel model) {
-        if (startPoint == null) return;
+        if (startPoint == null)
+            return;
 
         currentDragPoint = getAdjustedPoint(e, model);
     }
@@ -100,8 +107,7 @@ public class Circle implements Tools, ToolsSettings{
     private Point getAdjustedPoint(MouseEvent e, EditorModel model) {
         return new Point(
                 (int) ((e.getX() - model.getOrigin().x) / model.getScale()),
-                (int) ((e.getY() - model.getOrigin().y) / model.getScale())
-        );
+                (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
     }
 
     private void drawFilledCircle(Graphics2D g, Point center, int radius) {
@@ -136,7 +142,7 @@ public class Circle implements Tools, ToolsSettings{
 
     @Override
     public int[] getSliderBounds() {
-        return new int[]{1, 100, thickness};
+        return new int[] { 1, 100, thickness };
     }
 
     @Override

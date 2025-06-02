@@ -29,16 +29,18 @@ public class ProjectManager {
     public static Project openProject(String projectLocation) throws IOException, InvalidProjectDirectoryException {
         File projectDir = new File(projectLocation);
 
-        if (!projectDir.exists() || !verifyLocationContent(projectDir)) {
-            throw new InvalidProjectDirectoryException();
+        if (!projectDir.exists()) {
+            throw new IOException();
         }
+
+        verifyLocationContent(projectDir);
 
         String projectName = projectDir.getName();
 
         return new Project(projectName, projectDir, false);
     }
 
-    private static boolean verifyLocationContent(File file) {
+    private static boolean verifyLocationContent(File file) throws InvalidProjectDirectoryException {
         if (!file.isDirectory()) {
             return false;
         }
@@ -68,10 +70,18 @@ public class ProjectManager {
             }
         }
 
-        if (contents.length == 2) {
-            return hasImagesDir && hasTxtFile;
-        } else if (contents.length == 3) {
-            return hasImagesDir && hasTxtFile && hasOutputDir || hasImagesDir && hasTxtFile && hasConfigFile;
+        if (!hasImagesDir) {
+            throw new InvalidProjectDirectoryException("No images directory found in project directory.");
+        }
+        if (!hasTxtFile) {
+            throw new InvalidProjectDirectoryException("No scenario.txt file found in project directory.");
+        }
+        if (!hasConfigFile) {
+            throw new InvalidProjectDirectoryException("No .config.properties file found in project directory.");
+        }
+
+        if (contents.length == 3) {
+            return hasImagesDir && hasTxtFile && hasConfigFile;
         } else if (contents.length == 4) {
             return hasImagesDir && hasTxtFile && hasOutputDir && hasConfigFile;
         }

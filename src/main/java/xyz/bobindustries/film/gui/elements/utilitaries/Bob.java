@@ -31,7 +31,6 @@ public class Bob extends JPanel {
         setScale(scale);
     }
 
-    @SuppressWarnings("unused")
     public Bob(boolean helper) {
         this();
         this.helper = helper;
@@ -85,7 +84,8 @@ public class Bob extends JPanel {
 
             /* Yellow rectangle on Bob's left */
             g2d.setColor(new Color(255, 245, 153));
-            g2d.rotate(Math.toRadians(15), (int) (95 * scale + 7.5 * scale), (int) (15 * scale + 40 * scale)); // Rotate around rectangle center
+            g2d.rotate(Math.toRadians(15), (int) (95 * scale + 7.5 * scale), (int) (15 * scale + 40 * scale));
+
             g2d.fillRect((int) (95 * scale), (int) (15 * scale), (int) (15 * scale), (int) (80 * scale));
             g2d.setColor(Color.BLACK);
             g2d.setStroke(new BasicStroke(1));
@@ -94,10 +94,9 @@ public class Bob extends JPanel {
                         (int) (100 * scale),
                         (int) (15 * scale + i * 10 * scale),
                         (int) (110 * scale),
-                        (int) (15 * scale + i * 10 * scale)
-                );
+                        (int) (15 * scale + i * 10 * scale));
             }
-            g2d.rotate(-Math.toRadians(15), (int) (95 * scale + 7.5 * scale), (int) (15 * scale + 40 * scale)); // Reset rotation
+            g2d.rotate(-Math.toRadians(15), (int) (95 * scale + 7.5 * scale), (int) (15 * scale + 40 * scale));
 
         }
 
