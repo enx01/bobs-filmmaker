@@ -18,21 +18,28 @@ import xyz.bobindustries.film.gui.elements.CoordinateBar;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 
 import javax.swing.*;
+import xyz.bobindustries.film.gui.helpers.Pair;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
 public class EditorPane extends JPanel {
 
     // private ArrayList<EditorModel> openedImages;
-    private HashMap<Integer, String> openedFiles;
-    private HashMap<Integer, EditorModel> openedFilesModels;
+    // private HashMap<Integer, String> openedFiles;
+    // private HashMap<Integer, EditorModel> openedFilesModels;
+
+    private ArrayList<Pair<String, EditorModel>> openedFiles;
+
     private int currentImageIndex;
     private EditorModel data;
+
     private static Tools selectedTool = new Pen();
     private ToolsList currentTools = ToolsList.PEN;
     private JSlider scaleSlider;
@@ -42,14 +49,15 @@ public class EditorPane extends JPanel {
 
     public EditorPane(Color[][] gridColors, int gridWidth, int gridHeight, String currentFile) {
 
-        openedFiles = new HashMap<>();
-        openedFilesModels = new HashMap<>();
+        openedFiles = new ArrayList<>();
+        // openedFilesModels = new HashMap<>();
 
         currentImageIndex = 0;
-        openedFiles.put(currentImageIndex, currentFile);
+        // openedFiles.put(currentImageIndex, currentFile);
 
         data = new EditorModel(this, gridColors, gridWidth, gridHeight);
-        openedFilesModels.put(currentImageIndex, data);
+        // openedFilesModels.put(currentImageIndex, data);
+        openedFiles.add(new Pair<String, EditorModel>(currentFile, data));
 
         coordinatToolbar = new CoordinateBar();
         coordinatToolbar.setFileName(currentFile);
@@ -82,7 +90,7 @@ public class EditorPane extends JPanel {
     }
 
     public String getCurrentFileName() {
-        return openedFiles.get(currentImageIndex);
+        return openedFiles.get(currentImageIndex).key();
     }
 
     public ToolsSettings getSelectedToolsSettings() {
@@ -176,7 +184,11 @@ public class EditorPane extends JPanel {
     }
 
     public void setFileName(String fileName) {
-        openedFiles.put(currentImageIndex, fileName);
+        // openedFiles.put(currentImageIndex, fileName);
+
+        Pair<String, EditorModel> temp = new Pair<>(fileName, openedFiles.get(currentImageIndex).value());
+        openedFiles.remove(currentImageIndex);
+        openedFiles.add(currentImageIndex, temp);
         coordinatToolbar.setFileName(fileName);
     }
 
@@ -221,22 +233,12 @@ public class EditorPane extends JPanel {
                 data.redo();
             }
             case PREVIOUS_FRAME -> {
-                if (openedFilesModels.containsKey(currentImageIndex - 1)
-                        && openedFiles.containsKey(currentImageIndex - 1)) {
-                    changeCurrentImage(currentImageIndex - 1);
-                    data.reDrawGrid(data.getGridColors(), true);
-                } else {
-                    SimpleErrorDialog.show("no previous frame available");
-                }
+                changeCurrentImage(currentImageIndex - 1);
+                data.reDrawGrid(data.getGridColors(), true);
             }
             case NEXT_FRAME -> {
-                if (openedFilesModels.containsKey(currentImageIndex + 1)
-                        && openedFiles.containsKey(currentImageIndex + 1)) {
-                    changeCurrentImage(currentImageIndex + 1);
-                    data.reDrawGrid(data.getGridColors(), true);
-                } else {
-                    SimpleErrorDialog.show("no next frame available");
-                }
+                changeCurrentImage(currentImageIndex + 1);
+                data.reDrawGrid(data.getGridColors(), true);
             }
             default -> throw new IllegalArgumentException("Outil non reconnu : " + chosenToolsList);
         }
@@ -252,19 +254,39 @@ public class EditorPane extends JPanel {
     }
 
     public void addNewImage(Color[][] gridColors, String name) {
-        if (openedFiles.containsValue(name)) {
-            EditorModel newData = new EditorModel(this, gridColors, gridColors[0].length, gridColors.length);
-            openedFiles.put(Collections.max(openedFilesModels.keySet()) + 1, name);
-            openedFilesModels.put(Collections.max(openedFilesModels.keySet()) + 1, newData);
-        } else {
-            SimpleErrorDialog.show("Erreur: l'image existe déjà");
+        // if (openedFiles.containsValue(name)) {
+        // EditorModel newData = new EditorModel(this, gridColors, gridColors[0].length,
+        // gridColors.length);
+        // openedFiles.put(Collections.max(openedFilesModels.keySet()) + 1, name);
+        // openedFilesModels.put(Collections.max(openedFilesModels.keySet()) + 1,
+        // newData);
+        // } else {
+        // SimpleErrorDialog.show("Erreur: l'image existe déjà");
+        // }
+        //
+        Pair<String, EditorModel> toAdd = null;
+        for (Pair<String, EditorModel> p : openedFiles) {
+            if (p.key().equals(name)) {
+                SimpleErrorDialog.show("Error : image is already opened");
+            } else {
+                EditorModel newData = new EditorModel(this,
+                        gridColors, gridColors[0].length, gridColors.length);
+
+                toAdd = new Pair<>(name, newData);
+            }
+        }
+
+        if (toAdd != null) {
+            openedFiles.addLast(toAdd);
         }
     }
 
     public void changeCurrentImage(int idImage) {
-        currentImageIndex = idImage;
-        coordinatToolbar.setFileName(openedFiles.get(currentImageIndex));
-        data = openedFilesModels.get(currentImageIndex);
+        int actualIndex = ((idImage) % openedFiles.size() + openedFiles.size()) % openedFiles.size();
+
+        currentImageIndex = actualIndex;
+        coordinatToolbar.setFileName(openedFiles.get(currentImageIndex).key());
+        data = openedFiles.get(currentImageIndex).value();
     }
 
 }
