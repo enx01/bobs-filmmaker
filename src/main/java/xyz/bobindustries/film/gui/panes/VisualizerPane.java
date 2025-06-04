@@ -27,6 +27,7 @@ import javax.swing.event.ChangeListener;
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.utilitaries.ConstantsProvider;
 import xyz.bobindustries.film.gui.helpers.Pair;
+import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 
 /**
@@ -252,6 +253,7 @@ public class VisualizerPane extends JPanel {
                 imageLabel.setIcon(new ImageIcon(scaledImg));
                 imageLabel.setText(null);
             } else {
+                updateState();
                 imageLabel.setIcon(null);
                 imageLabel.setText("<html><center>Invalid Image Data<br>(" + file.getFileName() + ")</center></html>");
             }

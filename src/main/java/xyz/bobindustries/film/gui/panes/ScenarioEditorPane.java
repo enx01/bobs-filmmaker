@@ -6,11 +6,14 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+
+import org.jcodec.platform.Platform;
 
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.Workspace;
@@ -20,6 +23,7 @@ import xyz.bobindustries.film.gui.elements.popups.SimpleValueChangerPopUp;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.helpers.Pair;
+import xyz.bobindustries.film.gui.panes.ScenarioEditorPane.TimelinePane.TimelineElement;
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
@@ -607,6 +611,10 @@ public class ScenarioEditorPane extends JPanel {
             return state;
         }
 
+        int getElementsCount() {
+            return elements.size();
+        }
+
         JScrollPane getScrollPane() {
             return scrollPane;
         }
@@ -751,6 +759,15 @@ public class ScenarioEditorPane extends JPanel {
             }
         });
 
+        // VOODOO : Ignore.
+        for (int i = 0; i < timelinePane.getElementsCount(); i++) {
+            timelinePane.moveSelectedIndexToRight();
+            setCurrentImageView(timelinePane.getCurrentSelectedItem().getData());
+        }
+
+        setCurrentImageView(null);
+        timelinePane.setCurrentSelectedItem(null);
+
         enableDragAndDrop();
 
         // visualizerPane.removeAll();
@@ -827,11 +844,21 @@ public class ScenarioEditorPane extends JPanel {
     private void resizeComponents() {
         Dimension currentSize = getSize();
 
-        imagesListPane.setPreferredSize(new Dimension((int) (currentSize.width * 0.3), currentSize.height));
+        imagesListPane.setPreferredSize(new Dimension((int) (currentSize.width *
+                0.3), currentSize.height));
 
         timelinePane.updateLayout();
-        timelinePane.setPreferredSize(new Dimension(0, (int) (currentSize.height * 0.4)));
+        timelinePane.setPreferredSize(new Dimension(0, (int) (currentSize.height *
+                0.4)));
 
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                TimelineElement current = timelinePane.getCurrentSelectedItem();
+                if (current != null)
+                    setCurrentImageView(current.getData());
+            }
+        });
         revalidate();
         repaint();
     }
@@ -897,11 +924,24 @@ public class ScenarioEditorPane extends JPanel {
 
     private void setCurrentImageView(ImageFile imageFile) {
         if (imageFile != null && imageFile.getImage() != null) {
-            ImageIcon scaledIcon = new ImageIcon(scaleImage(
-                    imageFile.getImage(),
-                    currentImageView.getWidth(),
-                    currentImageView.getHeight()));
-            currentImageView.setIcon(scaledIcon);
+            // int panelH, panelW;
+            // Dimension pref = visualizerPane.getSize();
+            // ImageIcon scaledIcon = new ImageIcon(scaleImage(
+            // imageFile.getImage(),
+            // currentImageView.getPref(),
+            // currentImageView.getHeight()));
+            // currentImageView.setIcon(scaledIcon);
+            BufferedImage img = imageFile.getBufferedImage();
+
+            int panelW = visualizerPane.getWidth() > 0 ? visualizerPane.getWidth() : 400;
+            int panelH = visualizerPane.getHeight() > 0 ? visualizerPane.getHeight() : 300;
+            Image scaledImg = img.getScaledInstance(-1, panelH, Image.SCALE_SMOOTH);
+            if (scaledImg.getWidth(null) > panelW) {
+                scaledImg = img.getScaledInstance(panelW, -1, Image.SCALE_SMOOTH);
+            }
+            currentImageView.setIcon(new ImageIcon(scaledImg));
+            currentImageView.setText(null);
+
         } else {
             currentImageView.setIcon(null);
         }
