@@ -9,13 +9,14 @@ import java.awt.*;
 public class YesNoDialog extends JDialog {
     public static final int YES = 1;
     public static final int NO = 0;
+    public static final int CANCEL = 2;
 
-    private boolean choice = false;
+    private int choice = -1;
 
-    public YesNoDialog(Frame owner, String query) {
+    public YesNoDialog(Frame owner, String query, boolean cancel) {
         super(owner, true);
 
-        setSize(400, 150);
+        setSize(600, 150);
         setResizable(false);
         setMinimumSize(new Dimension(600, 150));
         setLocationRelativeTo(null); // Center the dialog on the screen
@@ -23,38 +24,44 @@ public class YesNoDialog extends JDialog {
 
         setUndecorated(true);
 
-        // Add label to display the query
         JLabel queryLabel = new JLabel(query, JLabel.CENTER);
         add(queryLabel, BorderLayout.CENTER);
 
-        // Create panel for buttons
         JPanel buttonPanel = new JPanel(new FlowLayout());
 
-        // Yes button
         JButton yesButton = new JButton("yes");
         yesButton.addActionListener(e -> {
-            choice = true;
+            choice = YES;
             setVisible(false);
         });
 
-        // No button
         JButton noButton = new JButton("no");
         noButton.addActionListener(e -> {
-            choice = false;
+            choice = NO;
             setVisible(false);
         });
 
-        // Add buttons to panel
         buttonPanel.add(yesButton);
         buttonPanel.add(noButton);
+
+        if (cancel) {
+            JButton cancelButton = new JButton("cancel");
+            cancelButton.addActionListener(e -> {
+                choice = CANCEL;
+                setVisible(false);
+            });
+
+            buttonPanel.add(cancelButton);
+        }
+
         add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
     }
 
-    public static int show(Frame parent, String query) {
-        YesNoDialog dialog = new YesNoDialog(parent, query);
+    public static int show(Frame parent, String query, boolean cancel) {
+        YesNoDialog dialog = new YesNoDialog(parent, query, cancel);
         dialog.setVisible(true);
-        return dialog.choice ? YES : NO; // Return the result
+        return dialog.choice;
     }
 }

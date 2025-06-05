@@ -7,6 +7,8 @@ import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -26,20 +28,30 @@ public class OpenProjectDialog extends JDialog {
     private boolean isSuccess = false;
 
     public OpenProjectDialog(Frame owner) {
-        super(owner, "Open Project", true);
+        super(owner, "open project", true);
 
         pathsShortened = new HashMap<>();
 
-        setSize(400, 200);
+        setSize(600, 200);
         setResizable(false);
         setMinimumSize(new Dimension(600, 200));
-        setLocationRelativeTo(null);
-        setLayout(new GridBagLayout());
+        setLocationRelativeTo(owner);
+        // setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
-        JLabel locationLabel = new JLabel("Location:");
+        setLayout(new BorderLayout());
+
+        JPanel locationPanel = new JPanel(new BorderLayout());
+        JPanel recentPanel = new JPanel(new BorderLayout());
+
+        JLabel locationLabel = new JLabel("location:");
         JTextField locationField = new JTextField(30);
+        locationField.setMaximumSize(new Dimension(450, 50));
+        locationField.setPreferredSize(new Dimension(450, 50));
+        locationField.setBorder(BorderFactory.createEtchedBorder());
         JButton browseButton = new JButton("...");
+        browseButton.setMaximumSize(new Dimension(30, 30));
+        browseButton.setPreferredSize(new Dimension(30, 30));
 
         browseButton.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -51,38 +63,52 @@ public class OpenProjectDialog extends JDialog {
             }
         });
 
-        JLabel recentProjectsLabel = new JLabel("Recent Projects:");
+        JLabel recentProjectsLabel = new JLabel("recent projects:");
         JComboBox<String> recentProjectsComboBox = getRecentsProjectsJComboBox(pathsShortened);
 
-        JButton toggleButton = new JButton("Choose a recent project");
+        JButton toggleButton = new JButton("choose a recent project");
 
-        locationLabel.setVisible(true);
-        locationField.setVisible(true);
-        browseButton.setVisible(true);
-        recentProjectsLabel.setVisible(false);
-        recentProjectsComboBox.setVisible(false);
+        // locationLabel.setVisible(true);
+        // locationField.setVisible(true);
+        // browseButton.setVisible(true);
+        // recentProjectsLabel.setVisible(false);
+        // recentProjectsComboBox.setVisible(false);
 
         toggleButton.addActionListener(e -> {
             if (!browseProjectsSelected) {
-                locationLabel.setVisible(true);
-                locationField.setVisible(true);
-                browseButton.setVisible(true);
-                recentProjectsLabel.setVisible(false);
-                recentProjectsComboBox.setVisible(false);
-                toggleButton.setText("Choose a recent project");
+                // locationLabel.setVisible(true);
+                // locationField.setVisible(true);
+                // browseButton.setVisible(true);
+                // recentProjectsLabel.setVisible(false);
+                // recentProjectsComboBox.setVisible(false);
+                // locationPanel.setVisible(true);
+                // recentPanel.setVisible(false);
+
+                remove(recentPanel);
+                add(locationPanel, BorderLayout.CENTER);
+                toggleButton.setText("choose a recent project");
+                repaint();
+                revalidate();
                 browseProjectsSelected = true;
             } else {
-                locationLabel.setVisible(false);
-                locationField.setVisible(false);
-                browseButton.setVisible(false);
-                recentProjectsLabel.setVisible(true);
-                recentProjectsComboBox.setVisible(true);
-                toggleButton.setText("Choose a project location");
+                // locationLabel.setVisible(false);
+                // locationField.setVisible(false);
+                // browseButton.setVisible(false);
+                // recentProjectsLabel.setVisible(true);
+                // recentProjectsComboBox.setVisible(true);
+                // locationPanel.setVisible(false);
+                // recentPanel.setVisible(true);
+
+                remove(locationPanel);
+                add(recentPanel, BorderLayout.CENTER);
+                toggleButton.setText("choose a project location");
+                repaint();
+                revalidate();
                 browseProjectsSelected = false;
             }
         });
 
-        JButton openButton = new JButton("Open");
+        JButton openButton = new JButton("open");
 
         openButton.addActionListener(e -> {
             if (!browseProjectsSelected) {
@@ -130,41 +156,55 @@ public class OpenProjectDialog extends JDialog {
             }
         });
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        add(locationLabel, gbc);
+        // gbc.gridx = 0;
+        // gbc.gridy = 1;
+        // gbc.anchor = GridBagConstraints.WEST;
+        // add(locationLabel, gbc);
 
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(locationField, gbc);
+        // gbc.gridx = 1;
+        // gbc.gridy = 1;
+        // gbc.fill = GridBagConstraints.HORIZONTAL;
+        // add(locationField, gbc);
 
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(browseButton, gbc);
+        // gbc.gridx = 2;
+        // gbc.gridy = 1;
+        // gbc.fill = GridBagConstraints.HORIZONTAL;
+        // add(browseButton, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        add(toggleButton, gbc);
+        // gbc.gridx = 0;
+        // gbc.gridy = 0;
+        // gbc.anchor = GridBagConstraints.NORTHWEST;
+        // gbc.gridwidth = 1;
+        // add(toggleButton, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        add(recentProjectsLabel, gbc);
+        // gbc.gridx = 0;
+        // gbc.gridy = 1;
+        // gbc.anchor = GridBagConstraints.WEST;
+        // add(recentProjectsLabel, gbc);
 
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(recentProjectsComboBox, gbc);
+        // gbc.gridx = 1;
+        // gbc.gridy = 2;
+        // gbc.fill = GridBagConstraints.HORIZONTAL;
+        // add(recentProjectsComboBox, gbc);
 
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
-        add(openButton, gbc);
+        // gbc.gridx = 1;
+        // gbc.gridy = 4;
+        // gbc.fill = GridBagConstraints.SOUTH;
+        // gbc.anchor = GridBagConstraints.SOUTH;
+        // add(openButton, gbc);
+
+        locationPanel.add(locationLabel, BorderLayout.WEST);
+        locationPanel.add(locationField, BorderLayout.CENTER);
+        locationPanel.add(browseButton, BorderLayout.EAST);
+
+        locationPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
+
+        recentPanel.add(recentProjectsLabel, BorderLayout.NORTH);
+        recentPanel.add(recentProjectsComboBox, BorderLayout.CENTER);
+
+        add(toggleButton, BorderLayout.PAGE_START);
+        add(locationPanel, BorderLayout.CENTER);
+        add(openButton, BorderLayout.SOUTH);
     }
 
     private static JComboBox<String> getRecentsProjectsJComboBox(HashMap<String, String> pathsShortened) {

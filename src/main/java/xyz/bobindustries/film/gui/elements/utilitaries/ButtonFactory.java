@@ -32,6 +32,9 @@ public class ButtonFactory {
         label.setVerticalAlignment(JLabel.BOTTOM);
         label.setHorizontalAlignment(JLabel.CENTER);
 
+        label.setToolTipText(text);
+        button.setToolTipText(text);
+
         button.add(label, BorderLayout.SOUTH);
         button.setVerticalTextPosition(SwingConstants.BOTTOM);
         button.setHorizontalTextPosition(SwingConstants.CENTER);

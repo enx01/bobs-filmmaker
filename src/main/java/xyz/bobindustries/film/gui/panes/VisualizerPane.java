@@ -88,7 +88,7 @@ public class VisualizerPane extends JPanel {
         imageLabel.setVerticalAlignment(SwingConstants.CENTER);
 
         imageLabel.putClientProperty("JComponent.setBackground.respectUI", Boolean.FALSE);
-        imageLabel.setBackground(Color.WHITE);
+        // imageLabel.setBackground(Color.WHITE);
         imageLabel.setOpaque(true);
         imageLabel.repaint();
 

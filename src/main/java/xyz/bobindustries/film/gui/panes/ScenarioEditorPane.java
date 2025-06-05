@@ -890,7 +890,8 @@ public class ScenarioEditorPane extends JPanel {
                             int userResponse = YesNoDialog.show(App.getFrame(),
                                     "<html><body>do you really want to delete this image?<br>"
                                             + imf.getFileName()
-                                            + "</body></html>");
+                                            + "</body></html>",
+                                    false);
 
                             if (userResponse == YesNoDialog.YES) {
                                 Project curProject = ProjectManager.getCurrent();

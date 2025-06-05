@@ -58,7 +58,7 @@ public class App {
             protected Void doInBackground() throws Exception {
                 /* Creation de la fenetre */
                 frame = new JFrame("bob's filmmaker");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
                 frame.setIconImage(Toolkit.getDefaultToolkit().getImage(App.class.getResource("bob_filmmaker.png")));
 
@@ -74,11 +74,18 @@ public class App {
                             int userResponse = YesNoDialog.show(frame,
                                     "would you like to save project \"" +
                                             curProject.getProjectName() +
-                                            "\" before exiting ?");
+                                            "\" before exiting ?",
+                                    true);
                             if (userResponse == YesNoDialog.YES) {
                                 ActionListenerProvider.saveCurrentProjectWithoutSuccessFeedback(null);
+                            } else if (userResponse == YesNoDialog.CANCEL) {
+                                return;
                             }
+
                         }
+
+                        frame.dispose();
+                        System.exit(0);
                     }
                 });
 
@@ -101,7 +108,8 @@ public class App {
                     }
                 });
 
-                Thread.sleep(3000);
+                // TODO : De-comment
+                // Thread.sleep(3000);
 
                 frame.setSize(screenSize.width, screenSize.height);
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH);

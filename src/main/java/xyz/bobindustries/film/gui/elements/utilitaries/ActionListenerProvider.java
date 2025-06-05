@@ -170,7 +170,7 @@ public class ActionListenerProvider {
     }
 
     public static void closeCurrentProject(ActionEvent ignoredActionEvent) {
-        int result = YesNoDialog.show(App.getFrame(), "Would you like to save the project before closing it ?");
+        int result = YesNoDialog.show(App.getFrame(), "would you like to save the project before closing it ?", true);
 
         LoadingWindow loadingWindow = new LoadingWindow("closing project...", 200, 100);
 
@@ -180,6 +180,8 @@ public class ActionListenerProvider {
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
+                if (result == YesNoDialog.CANCEL)
+                    return null;
                 if (result == YesNoDialog.YES) {
                     Workspace workspace = Workspace.getInstance();
                     Project project = ProjectManager.getCurrent();
@@ -373,7 +375,6 @@ public class ActionListenerProvider {
         workspace.getScenarioEditorPane().refresh();
     }
 
-    // TODO : Investigate : Erreur : l'image existe deja.
     public static void openExistingFrames(ActionEvent ignoredActionEvent) {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
