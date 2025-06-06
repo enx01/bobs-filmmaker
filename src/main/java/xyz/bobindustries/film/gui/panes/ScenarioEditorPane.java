@@ -7,6 +7,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ import org.jcodec.platform.Platform;
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
+import xyz.bobindustries.film.gui.elements.dialogs.BrokenProjectRecoveryDialog;
 import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
 import xyz.bobindustries.film.gui.elements.popups.SimpleValueChangerPopUp;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
@@ -28,6 +30,7 @@ import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.CouldntDeleteImageException;
+import xyz.bobindustries.film.projects.elements.exceptions.ImageNotFoundInDirectoryException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 
 public class ScenarioEditorPane extends JPanel {
@@ -319,7 +322,7 @@ public class ScenarioEditorPane extends JPanel {
         private final JPanel contentPane;
         private final JPanel dummy;
 
-        TimelinePane(String scenarioContent) throws InvalidScenarioContentException {
+        TimelinePane(String scenarioContent) throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
             setLayout(new BorderLayout());
             elements = new ArrayList<>();
 
@@ -398,7 +401,8 @@ public class ScenarioEditorPane extends JPanel {
             loadScenarioContent(scenarioContent);
         }
 
-        private void loadScenarioContent(String scenarioContent) throws InvalidScenarioContentException {
+        private void loadScenarioContent(String scenarioContent)
+                throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
             Project current = ProjectManager.getCurrent();
             elements.clear();
 
@@ -438,8 +442,9 @@ public class ScenarioEditorPane extends JPanel {
                                 }
                             }
                             if (!foundFile) {
-                                throw new InvalidScenarioContentException(
-                                        "Error line " + i + ". : File : " + lineData[0].trim() + " not found.");
+                                throw new ImageNotFoundInDirectoryException(
+                                        "Error line " + i + ". : File : " + lineData[0].trim() + " not found.",
+                                        lineData[0].trim());
                             }
                         }
                         i++;
@@ -678,7 +683,7 @@ public class ScenarioEditorPane extends JPanel {
 
     }
 
-    private void initializeComponents() throws InvalidScenarioContentException {
+    private void initializeComponents() throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
         imagesListPane = new JPanel();
         visualizerPane = new JPanel();
         // visualizerPane.setFocusable(false);
@@ -727,8 +732,7 @@ public class ScenarioEditorPane extends JPanel {
         visualizerPane.add(currentImageView);
     }
 
-    public ScenarioEditorPane() throws InvalidScenarioContentException {
-
+    public ScenarioEditorPane() throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
         setLayout(new BorderLayout());
         initializeComponents();
         layoutComponents();
@@ -888,8 +892,9 @@ public class ScenarioEditorPane extends JPanel {
                         .addSeparator()
                         .addItem("delete image", e -> {
                             int userResponse = YesNoDialog.show(App.getFrame(),
-                                    "<html><body>do you really want to delete this image?<br>"
+                                    "<html><body>do you really want to delete this image?<br><br>"
                                             + imf.getFileName()
+                                            + "<br><br>as this will delete its corresponding file<br>as well as all its occurences in scenario.txt."
                                             + "</body></html>",
                                     false);
 
@@ -898,8 +903,8 @@ public class ScenarioEditorPane extends JPanel {
 
                                 try {
                                     curProject.deleteImage(imf);
-                                } catch (CouldntDeleteImageException cdie) {
-                                    SimpleErrorDialog.show(cdie.getMessage());
+                                } catch (CouldntDeleteImageException | IOException ex) {
+                                    SimpleErrorDialog.show(ex.getMessage());
                                 }
 
                                 populateImageList();
@@ -908,6 +913,8 @@ public class ScenarioEditorPane extends JPanel {
                                     timelinePane.loadScenarioContent(curProject.getScenarioContent());
                                 } catch (InvalidScenarioContentException ex) {
                                     throw new RuntimeException(ex);
+                                } catch (ImageNotFoundInDirectoryException ex) {
+                                    BrokenProjectRecoveryDialog.show(ex);
                                 }
                             }
                         })

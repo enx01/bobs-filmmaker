@@ -14,6 +14,7 @@ import xyz.bobindustries.film.gui.panes.AboutPane;
 import xyz.bobindustries.film.gui.panes.ProjectWelcomePane;
 import xyz.bobindustries.film.gui.panes.ScenarioEditorPane;
 import xyz.bobindustries.film.gui.panes.VisualizerPane;
+import xyz.bobindustries.film.projects.elements.exceptions.ImageNotFoundInDirectoryException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 import xyz.bobindustries.film.gui.panes.*;
 
@@ -126,7 +127,7 @@ public class Workspace extends JDesktopPane {
         return toolsSettings;
     }
 
-    public Workspace() throws InvalidScenarioContentException {
+    public Workspace() throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
 
         desktopManager = new BoundedDesktopManager();
         setDesktopManager(desktopManager);
@@ -351,7 +352,7 @@ public class Workspace extends JDesktopPane {
         return instance;
     }
 
-    public static Workspace newInstance() throws InvalidScenarioContentException {
+    public static Workspace newInstance() throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
         /* Return a clean instance of the workspace */
         instance = new Workspace();
         return instance;

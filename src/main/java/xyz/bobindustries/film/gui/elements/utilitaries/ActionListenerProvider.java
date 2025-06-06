@@ -17,6 +17,7 @@ import xyz.bobindustries.film.projects.ConfigProvider;
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
+import xyz.bobindustries.film.projects.elements.exceptions.ImageNotFoundInDirectoryException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 import xyz.bobindustries.film.gui.panes.*;
 import xyz.bobindustries.film.utils.ImageUtils;
@@ -107,11 +108,10 @@ public class ActionListenerProvider {
 
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
-            protected Void doInBackground() {
+            protected Void doInBackground() throws InterruptedException {
                 Workspace workspace = Workspace.getInstance();
                 Project project = ProjectManager.getCurrent();
                 ScenarioEditorPane sep = workspace.getScenarioEditorPane();
-                EditorPane ep = (EditorPane) workspace.getImageEditorFrame().getContentPane();
 
                 project.setScenarioContent(sep.extractScenarioContent());
 
@@ -120,6 +120,8 @@ public class ActionListenerProvider {
                 } catch (IOException ioe) {
                     SimpleErrorDialog.show("Failed to save project :(");
                 }
+
+                Thread.sleep(300);
 
                 return null;
             }
@@ -465,6 +467,15 @@ public class ActionListenerProvider {
                         instance = Workspace.newInstance();
                     } catch (InvalidScenarioContentException isce) {
                         SimpleErrorDialog.show(isce.getMessage());
+                    } catch (ImageNotFoundInDirectoryException infide) {
+                        BrokenProjectRecoveryDialog.show(infide);
+
+                        // Assume the project is now repaired
+                        try {
+                            instance = Workspace.newInstance();
+                        } catch (InvalidScenarioContentException | ImageNotFoundInDirectoryException e) {
+                            SimpleErrorDialog.show(e.getMessage());
+                        }
                     }
 
                     if (instance != null) {
@@ -474,6 +485,7 @@ public class ActionListenerProvider {
 
                         App.getFrame().revalidate();
                     } else {
+                        ProjectManager.setCurrent(null);
                         SimpleErrorDialog.show("Failed to load project :(");
                     }
                     return null;

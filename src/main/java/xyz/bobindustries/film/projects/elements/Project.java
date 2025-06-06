@@ -1,5 +1,6 @@
 package xyz.bobindustries.film.projects.elements;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -8,6 +9,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -19,6 +22,7 @@ import xyz.bobindustries.film.projects.ConfigProvider;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.elements.exceptions.CouldntDeleteImageException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
+import xyz.bobindustries.film.utils.ImageUtils;
 
 public class Project {
     private final Path projectDir;
@@ -150,18 +154,22 @@ public class Project {
             throw new IOException("Data is empty!");
         }
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd_MM_yy_HH:mm");
+        LocalDateTime now = LocalDateTime.now();
+        String timestamp = now.format(formatter);
         Path outputDir = Paths.get(projectDir + "/output/");
         if (!Files.exists(outputDir)) {
             Files.createDirectories(outputDir);
         }
 
-        System.out.println("[?] rendering video (20fps) at " + projectDir + "/output/" + projectName
+        System.out.println("[?] rendering video (20fps) at " + projectDir + "/output/" + projectName + timestamp
                 + ".mp4 \n data size: " + data.size());
 
         AWTSequenceEncoder encoder;
 
         try {
-            encoder = AWTSequenceEncoder.createSequenceEncoder(new File(projectDir + "/output/" + projectName + ".mp4"),
+            encoder = AWTSequenceEncoder.createSequenceEncoder(
+                    new File(projectDir + "/output/" + projectName + timestamp + ".mp4"),
                     20);
 
             for (int i = 0; i < data.size(); i++) {
@@ -207,13 +215,7 @@ public class Project {
         }
     }
 
-    public void deleteImage(ImageFile imf) throws CouldntDeleteImageException {
-        if (!images.contains(imf)) {
-            throw new CouldntDeleteImageException("image not found in project memory.");
-        }
-
-        images.remove(imf);
-
+    public void deleteImage(ImageFile imf) throws CouldntDeleteImageException, IOException {
         Path imagePath = projectDir.resolve("images/" + imf.getFileName());
         if (!Files.exists(imagePath)) {
             throw new CouldntDeleteImageException("image file not found.");
@@ -226,12 +228,21 @@ public class Project {
             }
 
             Path garbageFilePath = garbageDir.resolve(imf.getFileName());
+            if (Files.exists(garbageFilePath)) {
+                Files.delete(garbageFilePath);
+            }
             Files.copy(imagePath, garbageFilePath);
 
             Files.delete(imagePath);
         } catch (IOException e) {
             throw new CouldntDeleteImageException("error deleting image file: " + e.getMessage());
         }
+
+        if (!images.contains(imf)) {
+            throw new CouldntDeleteImageException("image not found in project memory.");
+        }
+
+        images.remove(imf);
 
         if (scenarioContent != null) {
             String[] lines = scenarioContent.split(System.lineSeparator());
@@ -244,6 +255,22 @@ public class Project {
             scenarioContent = updatedContent.toString().trim();
         }
 
+        save();
+
         System.out.println("[+] deleted image " + imf.getFileName());
+    }
+
+    public void createNewEmptyFile(String imageName) {
+        int height = ConfigProvider.getResolutionHeight(getConfig());
+        int width = ConfigProvider.getResolutionWidth(getConfig());
+        Color[][] defaultCanvas = new Color[height][width];
+        for (int i = 0; i < defaultCanvas.length; i += 1) {
+            for (int j = 0; j < defaultCanvas[0].length; j += 1) {
+                defaultCanvas[i][j] = new Color(255, 255, 255);
+            }
+        }
+
+        String projectPath = getProjectDir().toString();
+        ImageUtils.exportImage(defaultCanvas, projectPath + "/images/" + imageName);
     }
 }
