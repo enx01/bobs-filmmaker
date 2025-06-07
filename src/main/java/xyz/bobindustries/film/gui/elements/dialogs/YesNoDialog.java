@@ -25,6 +25,7 @@ public class YesNoDialog extends JDialog {
         setUndecorated(true);
 
         JLabel queryLabel = new JLabel(query, JLabel.CENTER);
+        queryLabel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 20));
         add(queryLabel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
