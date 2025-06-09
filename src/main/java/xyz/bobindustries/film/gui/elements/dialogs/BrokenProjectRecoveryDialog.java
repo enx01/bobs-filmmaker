@@ -1,7 +1,6 @@
 package xyz.bobindustries.film.gui.elements.dialogs;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.GridLayout;
 
 import javax.swing.JButton;
@@ -9,11 +8,8 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import xyz.bobindustries.film.projects.ConfigProvider;
 import xyz.bobindustries.film.projects.ProjectManager;
-import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.exceptions.ImageNotFoundInDirectoryException;
-import xyz.bobindustries.film.utils.ImageUtils;
 
 public class BrokenProjectRecoveryDialog extends JDialog {
 

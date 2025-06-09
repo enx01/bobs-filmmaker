@@ -14,8 +14,8 @@ public class OpenEditor extends JPanel {
         buttonsPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         JButton createImage = ButtonFactory.createButton("create image", "base_image.png", 125, 125);
-        JButton openImage = ButtonFactory.createButton("open image", "base_image.png", 125, 125);
-        JButton openExistingFrames = ButtonFactory.createButton("open existing Frames", "base_image.png", 125, 125);
+        JButton openImage = ButtonFactory.createButton("open file", "base_image.png", 125, 125);
+        JButton openExistingFrames = ButtonFactory.createButton("open frames", "base_image.png", 125, 125);
 
         createImage.addActionListener(ActionListenerProvider::createImageAction);
 

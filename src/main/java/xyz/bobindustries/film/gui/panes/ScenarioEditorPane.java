@@ -749,7 +749,6 @@ public class ScenarioEditorPane extends JPanel {
 
             @Override
             public void componentMoved(ComponentEvent e) {
-                resizeComponents();
             }
 
             @Override

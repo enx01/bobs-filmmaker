@@ -1,17 +1,12 @@
 package xyz.bobindustries.film.gui.elements.dialogs;
 
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
-import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class OpenExistingFramesDialog extends JDialog {
@@ -19,9 +14,6 @@ public class OpenExistingFramesDialog extends JDialog {
     private DefaultListModel<String> modeleListe;
     private JButton boutonEnregistrer;
     private ArrayList<String> selectedFrames;
-
-    public static final int SUCCESS = 1;
-    public static final int FAILURE = 0;
 
     private boolean isSuccess = false;
 
@@ -51,7 +43,7 @@ public class OpenExistingFramesDialog extends JDialog {
                     setSelectedFrames((ArrayList<String>) liste.getSelectedValuesList());
                     isSuccess = true;
                 } else {
-                   SimpleErrorDialog.show("Erreur, aucune frame sélectionnée");
+                    SimpleErrorDialog.show("Erreur, aucune frame sélectionnée");
                     isSuccess = false;
                 }
                 dispose();
@@ -77,6 +69,9 @@ public class OpenExistingFramesDialog extends JDialog {
     public static ArrayList<String> show(Frame parent, ArrayList<ImageFile> images) {
         OpenExistingFramesDialog dialog = new OpenExistingFramesDialog(parent, images);
         dialog.setVisible(true); // Show the dialog modally
-        return dialog.selectedFrames;
+        if (!dialog.isSuccess)
+            return null;
+        else
+            return dialog.selectedFrames;
     }
 }

@@ -29,7 +29,7 @@ public class ImageUtils {
         try {
             ImageIO.write(exportedImage, "png", new File(outputPath));
             ProjectManager.getCurrent().addImage(new ImageFile(outputPath));
-            System.out.println("Image exportée avec succès à : " + outputPath);
+            System.out.println("[+] image exportée avec succès à : " + outputPath);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
