@@ -466,7 +466,14 @@ public class ActionListenerProvider {
                     try {
                         instance = Workspace.newInstance();
                     } catch (InvalidScenarioContentException isce) {
-                        SimpleErrorDialog.show(isce.getMessage());
+                        BrokenProjectRecoveryDialog.show(isce);
+
+                        // Assume the project is now repaired
+                        try {
+                            instance = Workspace.newInstance();
+                        } catch (InvalidScenarioContentException | ImageNotFoundInDirectoryException e) {
+                            SimpleErrorDialog.show(e.getMessage());
+                        }
                     } catch (ImageNotFoundInDirectoryException infide) {
                         BrokenProjectRecoveryDialog.show(infide);
 

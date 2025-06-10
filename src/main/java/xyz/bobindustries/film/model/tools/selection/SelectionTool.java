@@ -187,6 +187,8 @@ public class SelectionTool implements Tools {
                 x2 = p.x;
                 y2 = p.y;
             }
+            case NONE -> {
+            }
         }
 
         model.setSelectionToMove(createGridAlignedRect(new Point(x1, y1), new Point(x2, y2), model)); // ALIGN TO GRID

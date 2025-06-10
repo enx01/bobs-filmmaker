@@ -21,7 +21,9 @@ import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.projects.ConfigProvider;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.elements.exceptions.CouldntDeleteImageException;
+import xyz.bobindustries.film.projects.elements.exceptions.ImageNotFoundInDirectoryException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
+import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 import xyz.bobindustries.film.utils.ImageUtils;
 
 public class Project {
@@ -31,6 +33,9 @@ public class Project {
     private Properties config;
     private String scenarioContent;
     private final List<ImageFile> images;
+
+    public final static double MAX_TIME = 1,
+            MIN_TIME = 0.1;
 
     public Project(String projectName, String projectDirPath, boolean create)
             throws IOException, InvalidProjectDirectoryException {
@@ -199,6 +204,13 @@ public class Project {
         }
     }
 
+    /**
+     * Get a formatted html String which can be set as a tooltip to serve as an
+     * image preview.
+     * 
+     * @param imageFile the image to preview
+     * @return the formatted html String
+     */
     public String getToolTipImageText(ImageFile imageFile) {
         File file = new File(projectDir + "/images/" + imageFile.getFileName());
 
@@ -215,6 +227,13 @@ public class Project {
         }
     }
 
+    /**
+     * Deletes an image from the project.
+     * This moves the image file to a images/.garbage directory
+     * and deletes all its occurences from the scenario content.
+     * 
+     * @param imf ImageFile to delete.
+     */
     public void deleteImage(ImageFile imf) throws CouldntDeleteImageException, IOException {
         Path imagePath = projectDir.resolve("images/" + imf.getFileName());
         if (!Files.exists(imagePath)) {
@@ -260,6 +279,11 @@ public class Project {
         System.out.println("[+] deleted image " + imf.getFileName());
     }
 
+    /**
+     * Creates a new empty image in the images/ directory.
+     * 
+     * @param imageName name of the new blank image.
+     */
     public void createNewEmptyFile(String imageName) {
         int height = ConfigProvider.getResolutionHeight(getConfig());
         int width = ConfigProvider.getResolutionWidth(getConfig());
@@ -272,5 +296,204 @@ public class Project {
 
         String projectPath = getProjectDir().toString();
         ImageUtils.exportImage(defaultCanvas, projectPath + "/images/" + imageName);
+    }
+
+    /**
+     * Deletes all lines where the image name corresponds to the given name.
+     * 
+     * @param imageName name of the image to remove from the scenario content.
+     */
+    public void deleteOccurrencesFromScenario(String imageName) {
+        if (scenarioContent != null) {
+            String[] lines = scenarioContent.split(System.lineSeparator());
+            StringBuilder updatedContent = new StringBuilder();
+            for (String line : lines) {
+                if (!line.split(",")[0].equals(imageName)) {
+                    updatedContent.append(line).append(System.lineSeparator());
+                }
+            }
+            scenarioContent = updatedContent.toString().trim();
+
+        }
+    }
+
+    /**
+     * Deletes a given line from the scenario content.
+     * 
+     * @param line index of the line to delete.
+     */
+    public void deleteLineFromScenario(int line) {
+        if (scenarioContent != null) {
+            String[] lines = scenarioContent.split(System.lineSeparator());
+            StringBuilder updatedContent = new StringBuilder();
+            for (int i = 0; i < lines.length; i++) {
+                if (i == line)
+                    continue;
+                else
+                    updatedContent.append(lines[i]).append(System.lineSeparator());
+            }
+
+            scenarioContent = updatedContent.toString().trim();
+
+        }
+    }
+
+    /**
+     * Changes the given line's content with the provided content.
+     * 
+     * @param line    index of the line to change.
+     * @param newLine new content of the line.
+     */
+    public void changeLineInScenario(int line, String newLine) {
+        if (scenarioContent != null) {
+            String[] lines = scenarioContent.split(System.lineSeparator());
+            StringBuilder updatedContent = new StringBuilder();
+            for (int i = 0; i < lines.length; i++) {
+                if (i == line)
+                    updatedContent.append(newLine).append(System.lineSeparator());
+                else
+                    updatedContent.append(lines[i]).append(System.lineSeparator());
+            }
+
+            scenarioContent = updatedContent.toString().trim();
+
+        }
+    }
+
+    /**
+     * Verifies the current scenario content and throws the appropriate exceptions.
+     * 
+     * @return true if the content is valid.
+     * @throws InvalidScenarioContentException   with the correct exceptions
+     *                                           attributes set.
+     * @throws ImageNotFoundInDirectoryException if an image is in the scenario
+     *                                           content but no corresponding file
+     *                                           exists.
+     */
+    public boolean verifyScenarioContent() throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
+        String[] lines = scenarioContent.split("\\r?\n");
+
+        if (lines.length >= 1 && !lines[0].isEmpty()) {
+            int i = 0;
+            for (String line : lines) {
+                String[] lineData = line.split(",");
+
+                if (lineData.length != 2) {
+                    throw new InvalidScenarioContentException("Error line " + i + ". : Wrong file format.",
+                            InvalidScenarioContentException.INVALID_LINE_FORMAT, i, line);
+                } else {
+                    String fileName = lineData[0].trim();
+                    double time;
+
+                    try {
+                        time = Double.parseDouble(lineData[1].trim());
+                    } catch (NumberFormatException nfe) {
+                        throw new InvalidScenarioContentException(
+                                "Error line " + i + ". : Invalid specified time.",
+                                InvalidScenarioContentException.INVALID_TIME, i, line);
+                    }
+
+                    if (fileName.isEmpty())
+                        throw new InvalidScenarioContentException("Error line " + i + ". : Empty file name.",
+                                InvalidScenarioContentException.EMPTY_FILENAME, i, line);
+
+                    if (time > MAX_TIME || time < MIN_TIME)
+                        throw new InvalidScenarioContentException(
+                                "Error line " + i + ". : Invalid time. Must be < 1 && > .2",
+                                InvalidScenarioContentException.INVALID_TIME, i, line);
+
+                    boolean foundFile = false;
+                    for (ImageFile imf : images) {
+                        if (imf.getFileName().equals(lineData[0].trim())) {
+                            foundFile = true;
+                            break;
+                        }
+                    }
+                    if (!foundFile) {
+                        throw new ImageNotFoundInDirectoryException(
+                                "Error line " + i + ". : File : " + lineData[0].trim() + " not found.",
+                                lineData[0].trim());
+                    }
+                }
+                i++;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Verifies if given line could fit in the scenario content.
+     * 
+     * @return true if line is correct, else false.
+     */
+    public boolean verifyLine(String line) {
+        String[] lineData = line.split(",");
+
+        if (lineData.length != 2) {
+            return false;
+        }
+
+        if (lineData[0].isEmpty() || lineData[0].isBlank())
+            return false;
+
+        double time;
+        try {
+            time = Double.parseDouble(lineData[1].trim());
+        } catch (Exception e) {
+            return false;
+        }
+
+        if (time > MAX_TIME || time < MIN_TIME)
+            return false;
+
+        boolean foundFile = false;
+        for (ImageFile imf : images) {
+            if (imf.getFileName().equals(lineData[0].trim())) {
+                foundFile = true;
+                break;
+            }
+        }
+        if (!foundFile)
+            return false;
+
+        return true;
+    }
+
+    /**
+     * Iterates through the scenario content to return the corresponding images and
+     * times.
+     * 
+     * @return An ordered List of Pairs of the images and their corresponding time
+     *         in the
+     *         scenario content.
+     */
+    public List<Pair<ImageFile, Double>> getOrderedImagesWithTime()
+            throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
+        List<Pair<ImageFile, Double>> result = new ArrayList<>();
+
+        if (!verifyScenarioContent())
+            return null;
+
+        String[] lines = scenarioContent.split("\\r?\n");
+
+        if (lines.length >= 1 && !lines[0].isEmpty()) {
+            int i = 0;
+            for (String line : lines) {
+                String[] lineData = line.split(",");
+
+                for (ImageFile imf : images) {
+                    if (imf.getFileName().equals(lineData[0].trim())) {
+                        result.add(new Pair<ImageFile, Double>(
+                                imf,
+                                Double.parseDouble(lineData[1].trim())));
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        return result;
     }
 }

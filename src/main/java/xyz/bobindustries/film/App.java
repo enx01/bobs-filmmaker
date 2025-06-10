@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.plaf.synth.SynthLookAndFeel;
 
 import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
-import xyz.bobindustries.film.gui.elements.popups.HelperBobPopUp;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.ConstantsProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;

@@ -6,8 +6,6 @@ import javax.swing.*;
 
 public class WorkspaceMenuBar extends JMenuBar {
 
-    private boolean toolboxOpened = false;
-
     public WorkspaceMenuBar() {
         displayDefaultOptions();
     }

@@ -14,10 +14,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.border.Border;
 
-import org.jcodec.platform.Platform;
-
 import xyz.bobindustries.film.App;
-import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
 import xyz.bobindustries.film.gui.elements.dialogs.BrokenProjectRecoveryDialog;
 import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
@@ -407,48 +404,10 @@ public class ScenarioEditorPane extends JPanel {
             elements.clear();
 
             if (current != null) {
-                List<ImageFile> images = current.getImages();
+                List<Pair<ImageFile, Double>> orderedImages = current.getOrderedImagesWithTime();
 
-                String[] lines = scenarioContent.split("\\r?\n");
-
-                if (lines.length >= 1 && !lines[0].isEmpty()) {
-                    int i = 0;
-                    for (String line : lines) {
-                        String[] lineData = line.split(",");
-
-                        if (lineData.length != 2) {
-                            throw new InvalidScenarioContentException("Error line " + i + ". : Wrong file format.");
-                        } else {
-                            String fileName = lineData[0].trim();
-                            double time = Double.parseDouble(lineData[1].trim());
-
-                            if (fileName.isEmpty())
-                                throw new InvalidScenarioContentException("Error line " + i + ". : Empty file name.");
-
-                            if (time > TimelineElement.MAX_TIME || time < TimelineElement.MIN_TIME)
-                                throw new InvalidScenarioContentException(
-                                        "Error line " + i + ". : Invalid time. Must be < 1 && > .2");
-
-                            boolean foundFile = false;
-                            for (ImageFile imf : images) {
-                                if (imf.getFileName().equals(lineData[0].trim())) {
-                                    elements.add(
-                                            new TimelineElement(
-                                                    this,
-                                                    imf,
-                                                    Double.parseDouble(lineData[1].trim())));
-                                    foundFile = true;
-                                    break;
-                                }
-                            }
-                            if (!foundFile) {
-                                throw new ImageNotFoundInDirectoryException(
-                                        "Error line " + i + ". : File : " + lineData[0].trim() + " not found.",
-                                        lineData[0].trim());
-                            }
-                        }
-                        i++;
-                    }
+                for (Pair<ImageFile, Double> p : orderedImages) {
+                    elements.add(new TimelineElement(this, p.key(), p.value()));
                 }
             }
 
@@ -954,32 +913,6 @@ public class ScenarioEditorPane extends JPanel {
             currentImageView.setIcon(null);
         }
 
-    }
-
-    // Helper method to scale images
-    private Image scaleImage(Image image, int maxWidth, int maxHeight) {
-        if (image == null)
-            return null; // handle null
-        int originalWidth = image.getWidth(null);
-        int originalHeight = image.getHeight(null);
-
-        if (originalWidth <= maxWidth && originalHeight <= maxHeight) {
-            return image; // No scaling needed
-        }
-
-        int newWidth = originalWidth;
-        int newHeight = originalHeight;
-
-        if (originalWidth > maxWidth) {
-            newWidth = maxWidth;
-            newHeight = (newWidth * originalHeight) / originalWidth;
-        }
-
-        if (newHeight > maxHeight) {
-            newHeight = maxHeight;
-            newWidth = (newHeight * originalWidth) / originalHeight;
-        }
-        return image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
     }
 
     public String extractScenarioContent() {

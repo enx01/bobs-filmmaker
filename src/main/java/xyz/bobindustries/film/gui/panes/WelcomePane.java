@@ -6,21 +6,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import javax.swing.*;
-import java.awt.*;
 
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.ButtonFactory;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
-import javax.swing.border.Border;
-
-import xyz.bobindustries.film.App;
-import xyz.bobindustries.film.gui.elements.ToolBoxUI;
-import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
-import xyz.bobindustries.film.utils.ImageUtils;
 
 /**
  * Welcome view of the application showing two buttons :
