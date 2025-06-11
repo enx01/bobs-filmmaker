@@ -167,7 +167,7 @@
             </executions>
             <configuration>
               <shadedArtifactAttached>true</shadedArtifactAttached>
-              <finalName>${project.artifactId}-${project.version}-${git.commit.id.abbrev}-executable</finalName>
+              <finalName>${project.artifactId}-${project.version}-${git.commit.id.abbrev}</finalName>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>${exec.mainClass}</mainClass>
