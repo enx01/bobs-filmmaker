@@ -36,7 +36,6 @@ public class OpenProjectDialog extends JDialog {
         setResizable(false);
         setMinimumSize(new Dimension(600, 200));
         setLocationRelativeTo(owner);
-        // setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
 
         setLayout(new BorderLayout());
@@ -68,22 +67,8 @@ public class OpenProjectDialog extends JDialog {
 
         JButton toggleButton = new JButton("choose a recent project");
 
-        // locationLabel.setVisible(true);
-        // locationField.setVisible(true);
-        // browseButton.setVisible(true);
-        // recentProjectsLabel.setVisible(false);
-        // recentProjectsComboBox.setVisible(false);
-
         toggleButton.addActionListener(e -> {
             if (!browseProjectsSelected) {
-                // locationLabel.setVisible(true);
-                // locationField.setVisible(true);
-                // browseButton.setVisible(true);
-                // recentProjectsLabel.setVisible(false);
-                // recentProjectsComboBox.setVisible(false);
-                // locationPanel.setVisible(true);
-                // recentPanel.setVisible(false);
-
                 remove(recentPanel);
                 add(locationPanel, BorderLayout.CENTER);
                 toggleButton.setText("choose a recent project");
@@ -91,14 +76,6 @@ public class OpenProjectDialog extends JDialog {
                 revalidate();
                 browseProjectsSelected = true;
             } else {
-                // locationLabel.setVisible(false);
-                // locationField.setVisible(false);
-                // browseButton.setVisible(false);
-                // recentProjectsLabel.setVisible(true);
-                // recentProjectsComboBox.setVisible(true);
-                // locationPanel.setVisible(false);
-                // recentPanel.setVisible(true);
-
                 remove(locationPanel);
                 add(recentPanel, BorderLayout.CENTER);
                 toggleButton.setText("choose a project location");
@@ -155,43 +132,6 @@ public class OpenProjectDialog extends JDialog {
                 }
             }
         });
-
-        // gbc.gridx = 0;
-        // gbc.gridy = 1;
-        // gbc.anchor = GridBagConstraints.WEST;
-        // add(locationLabel, gbc);
-
-        // gbc.gridx = 1;
-        // gbc.gridy = 1;
-        // gbc.fill = GridBagConstraints.HORIZONTAL;
-        // add(locationField, gbc);
-
-        // gbc.gridx = 2;
-        // gbc.gridy = 1;
-        // gbc.fill = GridBagConstraints.HORIZONTAL;
-        // add(browseButton, gbc);
-
-        // gbc.gridx = 0;
-        // gbc.gridy = 0;
-        // gbc.anchor = GridBagConstraints.NORTHWEST;
-        // gbc.gridwidth = 1;
-        // add(toggleButton, gbc);
-
-        // gbc.gridx = 0;
-        // gbc.gridy = 1;
-        // gbc.anchor = GridBagConstraints.WEST;
-        // add(recentProjectsLabel, gbc);
-
-        // gbc.gridx = 1;
-        // gbc.gridy = 2;
-        // gbc.fill = GridBagConstraints.HORIZONTAL;
-        // add(recentProjectsComboBox, gbc);
-
-        // gbc.gridx = 1;
-        // gbc.gridy = 4;
-        // gbc.fill = GridBagConstraints.SOUTH;
-        // gbc.anchor = GridBagConstraints.SOUTH;
-        // add(openButton, gbc);
 
         locationPanel.add(locationLabel, BorderLayout.WEST);
         locationPanel.add(locationField, BorderLayout.CENTER);

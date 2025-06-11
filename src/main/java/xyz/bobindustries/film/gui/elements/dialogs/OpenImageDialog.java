@@ -8,116 +8,74 @@ import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.helpers.Pair;
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
+import xyz.bobindustries.film.projects.elements.exceptions.InvalidFileFormatException;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class OpenImageDialog extends JDialog {
-    public static final int SUCCESS = 1;
-    public static final int FAILURE = 0;
-
-    private boolean isSuccess = false;
+    private static boolean isSuccess = false;
 
     private static Color[][] gridResult;
     private static String imageLoc;
 
-//    private static final ImageLayers layers = new ImageLayers();
+    // private static final ImageLayers layers = new ImageLayers();
 
     public OpenImageDialog(Frame owner) {
-        super(owner, "open project", true);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        int returnValue = fileChooser.showOpenDialog(OpenImageDialog.this);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedDirectory = fileChooser.getSelectedFile();
+            String imageLocation = selectedDirectory.getAbsolutePath().trim();
 
-        setSize(400, 150);
-        setResizable(false);
-        setMinimumSize(new Dimension(600, 150));
-        setLocationRelativeTo(null); // Center the dialog on the screen
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        JLabel nameLabel = new JLabel("name:");
-        JTextField nameField = new JTextField(30);
-        JLabel locationLabel = new JLabel("location:");
-        JTextField locationField = new JTextField(30); // Set width to 15 columns
-
-        JButton browseButton = new JButton("...");
-
-        // Browse button action
-        browseButton.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            int returnValue = fileChooser.showOpenDialog(OpenImageDialog.this);
-            if (returnValue == JFileChooser.APPROVE_OPTION) {
-                File selectedDirectory = fileChooser.getSelectedFile();
-                locationField.setText(selectedDirectory.getAbsolutePath());
-            }
-        });
-
-        JButton createButton = new JButton("open");
-
-        // Create button action
-        createButton.addActionListener(e -> {
-            String imageLocation = locationField.getText().trim();
-            Path paths = Paths.get(imageLocation);
-            String imageName = paths.getFileName().toString();
-
-            if (!imageName.isEmpty() && !imageLocation.isEmpty()) {
+            if (!imageLocation.isEmpty()) {
                 try {
                     ImageFile image = new ImageFile(imageLocation);
 
-                    gridResult = image.getColorMatrix();
+                    try {
+                        gridResult = image.getColorMatrix();
+                    } catch (InvalidFileFormatException iffe) {
+                        SimpleErrorDialog.show(iffe.getMessage());
+                        isSuccess = false;
+                        dispose();
+                        return;
+                    }
+
                     imageLoc = imageLocation;
                     isSuccess = true;
                     dispose();
+                    return;
 
                 } catch (IOException ex) {
-                    SimpleErrorDialog.show("Error creating project : invalid project directory");
+                    SimpleErrorDialog.show("Error opening file : Invalid file");
                     isSuccess = false;
                     dispose();
+                    return;
                 }
 
-                dispose();
             } else {
                 SimpleErrorDialog.show("Please provide a valid project name and location.");
                 isSuccess = false;
                 dispose();
+                return;
             }
-
-        });
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        add(locationLabel, gbc);
-
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(locationField, gbc);
-
-        gbc.gridx = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        add(browseButton, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER; // Center the button
-        add(createButton, gbc);
-    }
-
-    public Color[][] getGridResult() {
-        return gridResult;
-    }
-
-    public String getImageLoc() {
-        return imageLoc;
+        } else if (returnValue == JFileChooser.ERROR_OPTION || returnValue == JFileChooser.CANCEL_OPTION) {
+            isSuccess = false;
+            dispose();
+            return;
+        }
     }
 
     public static Pair<Color[][], String> show(Frame parent) {
         OpenImageDialog dialog = new OpenImageDialog(parent);
-        dialog.setVisible(true); // Show the dialog modally
-        return new Pair<>(dialog.getGridResult(), dialog.getImageLoc());
+        // dialog.setVisible(true); // Show the dialog modally
+
+        if (!isSuccess)
+            return null;
+        else
+            return new Pair<>(gridResult, imageLoc);
     }
 
 }

@@ -305,9 +305,10 @@ public class ActionListenerProvider {
 
         Pair<Color[][], String> result = OpenImageDialog.show(App.getFrame());
 
-        EditorPane editor = openImageEditorOpening(editorFrame, result.key(), result.value());
-        editorFrame.setContentPane(editor);
-
+        if (result != null) {
+            EditorPane editor = openImageEditorOpening(editorFrame, result.key(), result.value());
+            editorFrame.setContentPane(editor);
+        }
     }
 
     public static void openEditorToolbox(ActionEvent ignorActionEvent) {
@@ -384,7 +385,6 @@ public class ActionListenerProvider {
         ArrayList<String> selectedFrames = new ArrayList<>();
         EditorPane editor = null;
         selectedFrames = OpenExistingFramesDialog.show(App.getFrame(), (ArrayList<ImageFile>) current.getImages());
-        System.out.println("selected frames size : " + selectedFrames.size());
         if (selectedFrames != null) {
             for (String currentFrame : selectedFrames) {
                 if (editor == null) {
@@ -524,8 +524,6 @@ public class ActionListenerProvider {
         EditorPane editor = null;
         int height = ConfigProvider.getResolutionHeight(ProjectManager.getCurrent().getConfig());
         int width = ConfigProvider.getResolutionWidth(ProjectManager.getCurrent().getConfig());
-        System.out.println("height : " + height + " width : " + width);
-        System.out.println("imageMatrix length : " + imageMatrix.length);
         int t = imageMatrix[0].length;
         for (int i = 0; i < imageMatrix.length; i++) {
             if (imageMatrix[i].length != t) {
