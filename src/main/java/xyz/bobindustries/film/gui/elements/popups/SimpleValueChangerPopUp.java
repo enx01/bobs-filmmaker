@@ -21,14 +21,14 @@ final class Value<T> {
 }
 
 public class SimpleValueChangerPopUp extends JDialog {
-    Value value;
+    Value<String> value;
     JTextField txtField;
 
-    public Value getValue() {
+    public Value<String> getValue() {
         return value;
     }
 
-    private SimpleValueChangerPopUp(int fieldLength, Value initialValue, Frame owner, boolean center) {
+    private SimpleValueChangerPopUp(int fieldLength, Value<String> initialValue, Frame owner, boolean center) {
         super(owner, true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setLayout(new FlowLayout());
@@ -40,7 +40,7 @@ public class SimpleValueChangerPopUp extends JDialog {
 
         txtField.addActionListener(e -> {
             try {
-                value = new Value(txtField.getText());
+                value = new Value<String>(txtField.getText());
             } catch (NumberFormatException ex) {
                 value = initialValue;
             }
@@ -73,14 +73,16 @@ public class SimpleValueChangerPopUp extends JDialog {
      * @return new value
      */
     public static double show(double initialValue, Frame owner) {
-        SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(10, new Value(initialValue), owner, false);
+        SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(10, new Value<String>(String.valueOf(initialValue)),
+                owner, false);
 
         svcpu.setVisible(true);
         return Double.parseDouble(((String) svcpu.getValue().getV()));
     }
 
     public static double show(double initialValue, Frame owner, boolean center) {
-        SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(10, new Value(initialValue), owner, center);
+        SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(10, new Value<String>(String.valueOf(initialValue)),
+                owner, center);
 
         svcpu.setVisible(true);
         return Double.parseDouble(((String) svcpu.getValue().getV()));
@@ -93,7 +95,7 @@ public class SimpleValueChangerPopUp extends JDialog {
      */
     public static String show(String initialValue, Frame owner) {
         SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(initialValue.length(),
-                new Value(initialValue),
+                new Value<String>(initialValue),
                 owner, false);
 
         svcpu.setVisible(true);
@@ -102,7 +104,7 @@ public class SimpleValueChangerPopUp extends JDialog {
 
     public static String show(String initialValue, Frame owner, boolean center) {
         SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(initialValue.length(),
-                new Value(initialValue),
+                new Value<String>(initialValue),
                 owner, center);
 
         svcpu.setVisible(true);

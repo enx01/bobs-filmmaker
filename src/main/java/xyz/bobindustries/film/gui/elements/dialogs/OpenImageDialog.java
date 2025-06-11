@@ -2,11 +2,8 @@ package xyz.bobindustries.film.gui.elements.dialogs;
 
 import javax.swing.*;
 
-import xyz.bobindustries.film.gui.Workspace;
-import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.SimpleErrorDialog;
 import xyz.bobindustries.film.gui.helpers.Pair;
-import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidFileFormatException;
 

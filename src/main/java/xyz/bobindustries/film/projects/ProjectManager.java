@@ -3,11 +3,9 @@ package xyz.bobindustries.film.projects;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
-import xyz.bobindustries.film.projects.elements.exceptions.ImageNotFoundInDirectoryException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidProjectDirectoryException;
 
 public class ProjectManager {

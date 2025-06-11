@@ -172,7 +172,15 @@ public class ActionListenerProvider {
     }
 
     public static void closeCurrentProject(ActionEvent ignoredActionEvent) {
-        int result = YesNoDialog.show(App.getFrame(), "would you like to save the project before closing it ?", true);
+        int userChoice;
+        if (ProjectManager.getCurrent().isDirty()) {
+            userChoice = YesNoDialog.show(App.getFrame(), "would you like to save the project before closing it ?",
+                    true);
+        } else {
+            userChoice = YesNoDialog.NO;
+        }
+
+        int result = userChoice;
 
         LoadingWindow loadingWindow = new LoadingWindow("closing project...", 200, 100);
 

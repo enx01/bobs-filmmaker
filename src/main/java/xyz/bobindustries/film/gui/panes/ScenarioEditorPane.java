@@ -121,6 +121,7 @@ public class ScenarioEditorPane extends JPanel {
 
                         double newTime = timeAtDragStart + deltaTime;
                         setTime(newTime);
+                        ProjectManager.getCurrent().markDirty();
                         pane.updateLayout();
                     }
                 }
@@ -189,7 +190,8 @@ public class ScenarioEditorPane extends JPanel {
                             double newTime = SimpleValueChangerPopUp.show(time, App.getFrame());
 
                             if (newTime >= MIN_TIME && newTime <= MAX_TIME) {
-                                time = newTime;
+                                setTime(newTime);
+                                ProjectManager.getCurrent().markDirty();
                                 timelinePane.updateLayout();
                             }
                         })
@@ -605,10 +607,12 @@ public class ScenarioEditorPane extends JPanel {
                     else if (e.isControlDown() && !e.isAltDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
                                 timelinePane.getCurrentSelectedItem().getTime() + 0.05);
+                        ProjectManager.getCurrent().markDirty();
                         timelinePane.updateLayout();
                     } else if (e.isControlDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
                                 timelinePane.getCurrentSelectedItem().getTime() + 0.1);
+                        ProjectManager.getCurrent().markDirty();
                         timelinePane.updateLayout();
                     } else
                         timelinePane.moveSelectedIndexToRight();
@@ -619,10 +623,12 @@ public class ScenarioEditorPane extends JPanel {
                     else if (e.isControlDown() && !e.isAltDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
                                 timelinePane.getCurrentSelectedItem().getTime() - 0.05);
+                        ProjectManager.getCurrent().markDirty();
                         timelinePane.updateLayout();
                     } else if (e.isControlDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
                                 timelinePane.getCurrentSelectedItem().getTime() - 0.1);
+                        ProjectManager.getCurrent().markDirty();
                         timelinePane.updateLayout();
                     } else
                         timelinePane.moveSelectedIndexToLeft();

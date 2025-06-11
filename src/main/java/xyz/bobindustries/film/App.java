@@ -69,7 +69,7 @@ public class App {
                     @Override
                     public void windowClosing(WindowEvent e) {
                         Project curProject = ProjectManager.getCurrent();
-                        if (curProject != null) {
+                        if (curProject != null && curProject.isDirty()) {
                             int userResponse = YesNoDialog.show(frame,
                                     "would you like to save project \"" +
                                             curProject.getProjectName() +
@@ -97,7 +97,7 @@ public class App {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         Project curProject = ProjectManager.getCurrent();
-                        if (curProject != null) {
+                        if (curProject != null && curProject.isDirty()) {
                             try {
                                 ActionListenerProvider.saveCurrentProjectWithoutSuccessFeedback(null);
                             } catch (Exception ex) {

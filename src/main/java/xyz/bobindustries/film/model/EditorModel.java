@@ -50,7 +50,6 @@ public class EditorModel {
         this.gridHeight = gridHeight;
 
         drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
-        this.imageIndex = imageIndex;
         createVolatileImage();
     }
 

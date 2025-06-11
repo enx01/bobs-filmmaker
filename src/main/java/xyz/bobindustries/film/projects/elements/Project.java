@@ -34,6 +34,8 @@ public class Project {
     private String scenarioContent;
     private final List<ImageFile> images;
 
+    private boolean dirty = false;
+
     public final static double MAX_TIME = 1,
             MIN_TIME = 0.1;
 
@@ -57,6 +59,14 @@ public class Project {
         this.projectDir = null;
         this.projectName = "null_project";
         this.images = new ArrayList<>();
+    }
+
+    public void markDirty() {
+        dirty = true;
+    }
+
+    public boolean isDirty() {
+        return dirty;
     }
 
     public Properties getConfig() {
@@ -122,6 +132,7 @@ public class Project {
 
     public void setScenarioContent(String scenarioContent) {
         this.scenarioContent = scenarioContent;
+        markDirty();
     }
 
     public List<ImageFile> getImages() {
@@ -152,6 +163,8 @@ public class Project {
             Path imagePath = imagesDir.resolve(img.getFileName());
             Files.write(imagePath, img.getContent());
         }
+
+        dirty = false;
     }
 
     public void exportAsVideo(List<Pair<ImageFile, Double>> data) throws IOException {
@@ -314,6 +327,7 @@ public class Project {
             }
             scenarioContent = updatedContent.toString().trim();
 
+            markDirty();
         }
     }
 
@@ -335,6 +349,7 @@ public class Project {
 
             scenarioContent = updatedContent.toString().trim();
 
+            markDirty();
         }
     }
 
@@ -357,6 +372,7 @@ public class Project {
 
             scenarioContent = updatedContent.toString().trim();
 
+            markDirty();
         }
     }
 

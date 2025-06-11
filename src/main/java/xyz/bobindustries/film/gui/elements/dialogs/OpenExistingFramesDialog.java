@@ -60,6 +60,7 @@ public class OpenExistingFramesDialog extends JDialog {
         this.selectedFrames = selectedFrames;
     }
 
+    @SuppressWarnings("unused")
     private void enregistrerSelections(ArrayList<String> selections, ArrayList<String> selectedFrames) {
         int[] selectedIndices = liste.getSelectedIndices();
         isSuccess = true;
