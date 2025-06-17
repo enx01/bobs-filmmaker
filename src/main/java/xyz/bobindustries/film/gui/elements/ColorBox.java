@@ -6,23 +6,24 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Random;
 
 public class ColorBox extends JPanel {
     private Color selectedColor = Color.RED; // Couleur initiale
+    @SuppressWarnings("unused")
     private final int squareSize = 30; // Taille des carrés
+    @SuppressWarnings("unused")
     private final Color[] colors = {
             Color.RED, Color.GREEN,
             Color.BLUE, Color.YELLOW,
             Color.PINK, Color.ORANGE,
             Color.BLACK, Color.WHITE
     }; // Palette de couleurs
+    @SuppressWarnings("unused")
     private JPanel colorPanel; // Panneau qui contiendra la grille des couleurs
 
     public ColorBox(JInternalFrame parent) {
-        setPreferredSize(new Dimension(100,100));
+        setPreferredSize(new Dimension(100, 100));
         setLayout(new BorderLayout());
-
 
         // Ajouter un écouteur de clics pour chaque carré
         addMouseListener(new MouseAdapter() {

@@ -50,7 +50,6 @@ public class EditorModel {
         this.gridHeight = gridHeight;
 
         drawingArea = new Rectangle(50, 50, gridSquareSize * gridWidth, gridSquareSize * gridHeight);
-        this.imageIndex = imageIndex;
         createVolatileImage();
     }
 
@@ -187,8 +186,6 @@ public class EditorModel {
                 } else {
                     copy[i][j] = Color.WHITE;
                 }
-                // System.out.println(copy[i][j].toString());
-                // System.out.println("done");
             }
         }
 
@@ -281,17 +278,10 @@ public class EditorModel {
             g2d.setColor(Color.WHITE);
             g2d.fillRect(0, 0, gridImage.getWidth(), gridImage.getHeight());
 
-            System.out.println("gridhgeight:" + gridHeight);
-            System.out.println("gridwidth:" + gridWidth);
-
             for (int i = 0; i < gridHeight; i++) {
                 for (int j = 0; j < gridWidth; j++) {
                     int x = j * gridSquareSize;
                     int y = i * gridSquareSize;
-                    /*
-                     * System.out.println("i:"+i);
-                     * System.out.println("j:"+j);
-                     */
                     g2d.setColor(gridColors[i][j]);
                     g2d.fillRect(x, y, gridSquareSize, gridSquareSize);
                 }
@@ -525,17 +515,10 @@ public class EditorModel {
         if (draggedImage == null)
             return;
 
-        System.out.println("height:" + selectionToMove.getHeight() + "width:" + selectionToMove.getWidth());
-
-        System.out.println("origin:" + origin.x + "," + origin.y);
-
         // real coordinates of the selection to move
 
         int gridStartX = (selectionToMove.x - drawingArea.x) / gridSquareSize;
         int gridStartY = (selectionToMove.y - drawingArea.y) / gridSquareSize;
-
-        System.out.println("gridStartXY");
-        System.out.println(gridStartX + " " + gridStartY);
 
         // width and height of the selection to move
 

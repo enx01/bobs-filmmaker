@@ -25,16 +25,16 @@ public class NewProjectDialog extends JDialog {
         super(parent, "new project", true);
         setSize(600, 300);
         setResizable(true);
-        setMinimumSize(new Dimension(825, 300));
+        setMinimumSize(new Dimension(600, 300));
         setLocationRelativeTo(null); // Center the dialog on the screen
-        setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        // gbc.insets = new Insets(2, 5, 5, 5); // Add padding around components
+        setLayout(new GridLayout(4, 0));
 
         JLabel nameLabel = new JLabel("name:");
         JTextField nameField = new JTextField(30); // Set width to 15 columns
+        nameField.setBorder(BorderFactory.createEtchedBorder());
         JLabel locationLabel = new JLabel("location:");
         JTextField locationField = new JTextField(30); // Set width to 15 columns
+        locationField.setBorder(BorderFactory.createEtchedBorder());
 
         JButton browseButton = new JButton("...");
 
@@ -51,49 +51,43 @@ public class NewProjectDialog extends JDialog {
 
         JButton createButton = new JButton("create");
 
-        // Add components to the layout
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST; // Align to the left
-        add(nameLabel, gbc);
+        JPanel locationPanel = new JPanel(new BorderLayout());
 
-        gbc.gridx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(nameField, gbc);
+        locationPanel.add(locationLabel, BorderLayout.WEST);
+        locationPanel.add(locationField, BorderLayout.CENTER);
+        locationPanel.add(browseButton, BorderLayout.EAST);
 
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        add(locationLabel, gbc);
+        locationPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
-        gbc.gridx = 1;
-        add(locationField, gbc);
+        JPanel namePanel = new JPanel(new BorderLayout());
 
-        gbc.gridx = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        add(browseButton, gbc);
+        namePanel.add(nameLabel, BorderLayout.WEST);
+        namePanel.add(nameField, BorderLayout.CENTER);
+
+        namePanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 
         JLabel resolutionLabel = new JLabel("resolution (WxH):");
         JTextField widthField = new JTextField("800", 6);
+        widthField.setBorder(BorderFactory.createEtchedBorder());
         JTextField heightField = new JTextField("600", 6);
+        heightField.setBorder(BorderFactory.createEtchedBorder());
         JLabel xLabel = new JLabel("x");
 
-        // Add components to the layout
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        add(resolutionLabel, gbc);
-
-        gbc.gridx = 1;
-        JPanel resolutionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        JPanel resolutionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         resolutionPanel.add(widthField);
         resolutionPanel.add(xLabel);
         resolutionPanel.add(heightField);
-        add(resolutionPanel, gbc);
+        resolutionPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER; // Center the button
-        add(createButton, gbc);
+        JPanel resLabelAndInput = new JPanel(new BorderLayout());
+
+        resLabelAndInput.add(resolutionLabel, BorderLayout.WEST);
+        resLabelAndInput.add(resolutionPanel, BorderLayout.CENTER);
+
+        add(namePanel);
+        add(locationPanel);
+        add(resLabelAndInput);
+        add(createButton);
 
         // Create button action
         createButton.addActionListener(e -> {

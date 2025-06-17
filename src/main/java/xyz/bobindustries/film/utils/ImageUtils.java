@@ -4,10 +4,8 @@ import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -29,7 +27,7 @@ public class ImageUtils {
         try {
             ImageIO.write(exportedImage, "png", new File(outputPath));
             ProjectManager.getCurrent().addImage(new ImageFile(outputPath));
-            System.out.println("Image exportée avec succès à : " + outputPath);
+            System.out.println("[+] image exportée avec succès à : " + outputPath);
             return true;
         } catch (IOException e) {
             e.printStackTrace();

@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 public class RecentProjectsProvider {
@@ -33,20 +32,20 @@ public class RecentProjectsProvider {
                 }
             }
 
-            boolean alreayExists=false;
+            boolean alreayExists = false;
 
-            //replacement du path courant en haut de la liste
+            // replacement du path courant en haut de la liste
             for (int i = 0; i < existingPaths.size(); i++) {
                 if (existingPaths.get(i).equals(projToAdd)) {
                     existingPaths.remove(i);
                     existingPaths.add(0, projToAdd);
-                    alreayExists=true;
+                    alreayExists = true;
                     break;
                 }
             }
 
             if (!alreayExists) {
-                if (existingPaths.size()==10) {
+                if (existingPaths.size() == 10) {
                     existingPaths.remove(9);
                 }
                 existingPaths.add(0, projToAdd);

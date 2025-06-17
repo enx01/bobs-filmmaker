@@ -17,6 +17,7 @@ import xyz.bobindustries.film.projects.ConfigProvider;
 import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
+import xyz.bobindustries.film.projects.elements.exceptions.ImageNotFoundInDirectoryException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 import xyz.bobindustries.film.gui.panes.*;
 import xyz.bobindustries.film.utils.ImageUtils;
@@ -107,11 +108,10 @@ public class ActionListenerProvider {
 
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
-            protected Void doInBackground() {
+            protected Void doInBackground() throws InterruptedException {
                 Workspace workspace = Workspace.getInstance();
                 Project project = ProjectManager.getCurrent();
                 ScenarioEditorPane sep = workspace.getScenarioEditorPane();
-                EditorPane ep = (EditorPane) workspace.getImageEditorFrame().getContentPane();
 
                 project.setScenarioContent(sep.extractScenarioContent());
 
@@ -120,6 +120,8 @@ public class ActionListenerProvider {
                 } catch (IOException ioe) {
                     SimpleErrorDialog.show("Failed to save project :(");
                 }
+
+                Thread.sleep(300);
 
                 return null;
             }
@@ -170,7 +172,15 @@ public class ActionListenerProvider {
     }
 
     public static void closeCurrentProject(ActionEvent ignoredActionEvent) {
-        int result = YesNoDialog.show(App.getFrame(), "Would you like to save the project before closing it ?");
+        int userChoice;
+        if (ProjectManager.getCurrent().isDirty()) {
+            userChoice = YesNoDialog.show(App.getFrame(), "would you like to save the project before closing it ?",
+                    true);
+        } else {
+            userChoice = YesNoDialog.NO;
+        }
+
+        int result = userChoice;
 
         LoadingWindow loadingWindow = new LoadingWindow("closing project...", 200, 100);
 
@@ -180,6 +190,8 @@ public class ActionListenerProvider {
         SwingWorker<Void, Void> worker = new SwingWorker<>() {
             @Override
             protected Void doInBackground() {
+                if (result == YesNoDialog.CANCEL)
+                    return null;
                 if (result == YesNoDialog.YES) {
                     Workspace workspace = Workspace.getInstance();
                     Project project = ProjectManager.getCurrent();
@@ -301,9 +313,10 @@ public class ActionListenerProvider {
 
         Pair<Color[][], String> result = OpenImageDialog.show(App.getFrame());
 
-        EditorPane editor = openImageEditorOpening(editorFrame, result.key(), result.value());
-        editorFrame.setContentPane(editor);
-
+        if (result != null) {
+            EditorPane editor = openImageEditorOpening(editorFrame, result.key(), result.value());
+            editorFrame.setContentPane(editor);
+        }
     }
 
     public static void openEditorToolbox(ActionEvent ignorActionEvent) {
@@ -373,7 +386,6 @@ public class ActionListenerProvider {
         workspace.getScenarioEditorPane().refresh();
     }
 
-    // TODO : Investigate : Erreur : l'image existe deja.
     public static void openExistingFrames(ActionEvent ignoredActionEvent) {
         Workspace workspace = Workspace.getInstance();
         JInternalFrame editorFrame = workspace.getImageEditorFrame();
@@ -381,7 +393,6 @@ public class ActionListenerProvider {
         ArrayList<String> selectedFrames = new ArrayList<>();
         EditorPane editor = null;
         selectedFrames = OpenExistingFramesDialog.show(App.getFrame(), (ArrayList<ImageFile>) current.getImages());
-        System.out.println("selected frames size : " + selectedFrames.size());
         if (selectedFrames != null) {
             for (String currentFrame : selectedFrames) {
                 if (editor == null) {
@@ -463,7 +474,23 @@ public class ActionListenerProvider {
                     try {
                         instance = Workspace.newInstance();
                     } catch (InvalidScenarioContentException isce) {
-                        SimpleErrorDialog.show(isce.getMessage());
+                        BrokenProjectRecoveryDialog.show(isce);
+
+                        // Assume the project is now repaired
+                        try {
+                            instance = Workspace.newInstance();
+                        } catch (InvalidScenarioContentException | ImageNotFoundInDirectoryException e) {
+                            SimpleErrorDialog.show(e.getMessage());
+                        }
+                    } catch (ImageNotFoundInDirectoryException infide) {
+                        BrokenProjectRecoveryDialog.show(infide);
+
+                        // Assume the project is now repaired
+                        try {
+                            instance = Workspace.newInstance();
+                        } catch (InvalidScenarioContentException | ImageNotFoundInDirectoryException e) {
+                            SimpleErrorDialog.show(e.getMessage());
+                        }
                     }
 
                     if (instance != null) {
@@ -473,6 +500,7 @@ public class ActionListenerProvider {
 
                         App.getFrame().revalidate();
                     } else {
+                        ProjectManager.setCurrent(null);
                         SimpleErrorDialog.show("Failed to load project :(");
                     }
                     return null;
@@ -504,8 +532,6 @@ public class ActionListenerProvider {
         EditorPane editor = null;
         int height = ConfigProvider.getResolutionHeight(ProjectManager.getCurrent().getConfig());
         int width = ConfigProvider.getResolutionWidth(ProjectManager.getCurrent().getConfig());
-        System.out.println("height : " + height + " width : " + width);
-        System.out.println("imageMatrix length : " + imageMatrix.length);
         int t = imageMatrix[0].length;
         for (int i = 0; i < imageMatrix.length; i++) {
             if (imageMatrix[i].length != t) {

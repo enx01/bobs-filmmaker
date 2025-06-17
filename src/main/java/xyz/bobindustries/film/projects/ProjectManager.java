@@ -3,7 +3,6 @@ package xyz.bobindustries.film.projects;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
@@ -26,7 +25,8 @@ public class ProjectManager {
         return new Project(projectName, projectDir, true);
     }
 
-    public static Project openProject(String projectLocation) throws IOException, InvalidProjectDirectoryException {
+    public static Project openProject(String projectLocation)
+            throws IOException, InvalidProjectDirectoryException {
         File projectDir = new File(projectLocation);
 
         if (!projectDir.exists()) {
@@ -40,7 +40,8 @@ public class ProjectManager {
         return new Project(projectName, projectDir, false);
     }
 
-    private static boolean verifyLocationContent(File file) throws InvalidProjectDirectoryException {
+    private static boolean verifyLocationContent(File file)
+            throws InvalidProjectDirectoryException {
         if (!file.isDirectory()) {
             return false;
         }

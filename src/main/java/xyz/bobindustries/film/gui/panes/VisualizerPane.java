@@ -10,7 +10,6 @@ import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.awt.*;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -27,7 +26,6 @@ import javax.swing.event.ChangeListener;
 import xyz.bobindustries.film.App;
 import xyz.bobindustries.film.gui.elements.utilitaries.ConstantsProvider;
 import xyz.bobindustries.film.gui.helpers.Pair;
-import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 
 /**
@@ -88,7 +86,7 @@ public class VisualizerPane extends JPanel {
         imageLabel.setVerticalAlignment(SwingConstants.CENTER);
 
         imageLabel.putClientProperty("JComponent.setBackground.respectUI", Boolean.FALSE);
-        imageLabel.setBackground(Color.WHITE);
+        // imageLabel.setBackground(Color.WHITE);
         imageLabel.setOpaque(true);
         imageLabel.repaint();
 

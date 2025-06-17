@@ -7,6 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+
+import xyz.bobindustries.film.projects.elements.exceptions.InvalidFileFormatException;
+
 import java.io.ByteArrayInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,7 +28,6 @@ public class ImageFile {
         Path imgPath = Paths.get(path);
         fileName = imgPath.getFileName().toString();
         this.path = path;
-        System.out.println("pathcst;" + path);
     }
 
     public String getPath() {
@@ -44,19 +46,15 @@ public class ImageFile {
         this.content = content;
     }
 
-    public Color[][] getColorMatrix() {
+    public Color[][] getColorMatrix() throws InvalidFileFormatException {
         try {
-            System.out.println("path;" + path);
             BufferedImage image = ImageIO.read(new File(path));
             if (image == null) {
-                System.out.println("L'image n'a pas pu être lue. Vérifie le format.");
-                return null;
+                throw new InvalidFileFormatException("Unsupported file format.", fileName);
             }
 
             int width = image.getWidth();
             int height = image.getHeight();
-            System.out.println("width: " + width);
-            System.out.println("height: " + height);
 
             Color[][] colorArray = new Color[height][width];
 
@@ -67,12 +65,10 @@ public class ImageFile {
                 }
             }
 
-            System.out.println("Image importée avec succès dans un tableau de couleurs.");
             return colorArray;
 
         } catch (IOException e) {
-            System.out.println("Une erreur est survenue lors de la lecture de l'image");
-            e.printStackTrace();
+            System.out.println("[-] error : " + e.getMessage());
             return null;
         }
 

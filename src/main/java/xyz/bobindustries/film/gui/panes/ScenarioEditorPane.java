@@ -7,17 +7,16 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 
-import org.jcodec.platform.Platform;
-
 import xyz.bobindustries.film.App;
-import xyz.bobindustries.film.gui.Workspace;
 import xyz.bobindustries.film.gui.elements.contextualmenu.ContextualMenu;
+import xyz.bobindustries.film.gui.elements.dialogs.BrokenProjectRecoveryDialog;
 import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
 import xyz.bobindustries.film.gui.elements.popups.SimpleValueChangerPopUp;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
@@ -28,6 +27,7 @@ import xyz.bobindustries.film.projects.ProjectManager;
 import xyz.bobindustries.film.projects.elements.ImageFile;
 import xyz.bobindustries.film.projects.elements.Project;
 import xyz.bobindustries.film.projects.elements.exceptions.CouldntDeleteImageException;
+import xyz.bobindustries.film.projects.elements.exceptions.ImageNotFoundInDirectoryException;
 import xyz.bobindustries.film.projects.elements.exceptions.InvalidScenarioContentException;
 
 public class ScenarioEditorPane extends JPanel {
@@ -121,6 +121,7 @@ public class ScenarioEditorPane extends JPanel {
 
                         double newTime = timeAtDragStart + deltaTime;
                         setTime(newTime);
+                        ProjectManager.getCurrent().markDirty();
                         pane.updateLayout();
                     }
                 }
@@ -189,7 +190,8 @@ public class ScenarioEditorPane extends JPanel {
                             double newTime = SimpleValueChangerPopUp.show(time, App.getFrame());
 
                             if (newTime >= MIN_TIME && newTime <= MAX_TIME) {
-                                time = newTime;
+                                setTime(newTime);
+                                ProjectManager.getCurrent().markDirty();
                                 timelinePane.updateLayout();
                             }
                         })
@@ -319,7 +321,7 @@ public class ScenarioEditorPane extends JPanel {
         private final JPanel contentPane;
         private final JPanel dummy;
 
-        TimelinePane(String scenarioContent) throws InvalidScenarioContentException {
+        TimelinePane(String scenarioContent) throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
             setLayout(new BorderLayout());
             elements = new ArrayList<>();
 
@@ -398,52 +400,16 @@ public class ScenarioEditorPane extends JPanel {
             loadScenarioContent(scenarioContent);
         }
 
-        private void loadScenarioContent(String scenarioContent) throws InvalidScenarioContentException {
+        private void loadScenarioContent(String scenarioContent)
+                throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
             Project current = ProjectManager.getCurrent();
             elements.clear();
 
             if (current != null) {
-                List<ImageFile> images = current.getImages();
+                List<Pair<ImageFile, Double>> orderedImages = current.getOrderedImagesWithTime();
 
-                String[] lines = scenarioContent.split("\\r?\n");
-
-                if (lines.length >= 1 && !lines[0].isEmpty()) {
-                    int i = 0;
-                    for (String line : lines) {
-                        String[] lineData = line.split(",");
-
-                        if (lineData.length != 2) {
-                            throw new InvalidScenarioContentException("Error line " + i + ". : Wrong file format.");
-                        } else {
-                            String fileName = lineData[0].trim();
-                            double time = Double.parseDouble(lineData[1].trim());
-
-                            if (fileName.isEmpty())
-                                throw new InvalidScenarioContentException("Error line " + i + ". : Empty file name.");
-
-                            if (time > TimelineElement.MAX_TIME || time < TimelineElement.MIN_TIME)
-                                throw new InvalidScenarioContentException(
-                                        "Error line " + i + ". : Invalid time. Must be < 1 && > .2");
-
-                            boolean foundFile = false;
-                            for (ImageFile imf : images) {
-                                if (imf.getFileName().equals(lineData[0].trim())) {
-                                    elements.add(
-                                            new TimelineElement(
-                                                    this,
-                                                    imf,
-                                                    Double.parseDouble(lineData[1].trim())));
-                                    foundFile = true;
-                                    break;
-                                }
-                            }
-                            if (!foundFile) {
-                                throw new InvalidScenarioContentException(
-                                        "Error line " + i + ". : File : " + lineData[0].trim() + " not found.");
-                            }
-                        }
-                        i++;
-                    }
+                for (Pair<ImageFile, Double> p : orderedImages) {
+                    elements.add(new TimelineElement(this, p.key(), p.value()));
                 }
             }
 
@@ -641,10 +607,12 @@ public class ScenarioEditorPane extends JPanel {
                     else if (e.isControlDown() && !e.isAltDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
                                 timelinePane.getCurrentSelectedItem().getTime() + 0.05);
+                        ProjectManager.getCurrent().markDirty();
                         timelinePane.updateLayout();
                     } else if (e.isControlDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
                                 timelinePane.getCurrentSelectedItem().getTime() + 0.1);
+                        ProjectManager.getCurrent().markDirty();
                         timelinePane.updateLayout();
                     } else
                         timelinePane.moveSelectedIndexToRight();
@@ -655,10 +623,12 @@ public class ScenarioEditorPane extends JPanel {
                     else if (e.isControlDown() && !e.isAltDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
                                 timelinePane.getCurrentSelectedItem().getTime() - 0.05);
+                        ProjectManager.getCurrent().markDirty();
                         timelinePane.updateLayout();
                     } else if (e.isControlDown()) {
                         timelinePane.getCurrentSelectedItem().setTime(
                                 timelinePane.getCurrentSelectedItem().getTime() - 0.1);
+                        ProjectManager.getCurrent().markDirty();
                         timelinePane.updateLayout();
                     } else
                         timelinePane.moveSelectedIndexToLeft();
@@ -678,7 +648,7 @@ public class ScenarioEditorPane extends JPanel {
 
     }
 
-    private void initializeComponents() throws InvalidScenarioContentException {
+    private void initializeComponents() throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
         imagesListPane = new JPanel();
         visualizerPane = new JPanel();
         // visualizerPane.setFocusable(false);
@@ -727,8 +697,7 @@ public class ScenarioEditorPane extends JPanel {
         visualizerPane.add(currentImageView);
     }
 
-    public ScenarioEditorPane() throws InvalidScenarioContentException {
-
+    public ScenarioEditorPane() throws InvalidScenarioContentException, ImageNotFoundInDirectoryException {
         setLayout(new BorderLayout());
         initializeComponents();
         layoutComponents();
@@ -745,7 +714,6 @@ public class ScenarioEditorPane extends JPanel {
 
             @Override
             public void componentMoved(ComponentEvent e) {
-                resizeComponents();
             }
 
             @Override
@@ -888,17 +856,19 @@ public class ScenarioEditorPane extends JPanel {
                         .addSeparator()
                         .addItem("delete image", e -> {
                             int userResponse = YesNoDialog.show(App.getFrame(),
-                                    "<html><body>do you really want to delete this image?<br>"
+                                    "<html><body>do you really want to delete this image?<br><br>"
                                             + imf.getFileName()
-                                            + "</body></html>");
+                                            + "<br><br>as this will delete its corresponding file<br>as well as all its occurences in scenario.txt."
+                                            + "</body></html>",
+                                    false);
 
                             if (userResponse == YesNoDialog.YES) {
                                 Project curProject = ProjectManager.getCurrent();
 
                                 try {
                                     curProject.deleteImage(imf);
-                                } catch (CouldntDeleteImageException cdie) {
-                                    SimpleErrorDialog.show(cdie.getMessage());
+                                } catch (CouldntDeleteImageException | IOException ex) {
+                                    SimpleErrorDialog.show(ex.getMessage());
                                 }
 
                                 populateImageList();
@@ -907,6 +877,8 @@ public class ScenarioEditorPane extends JPanel {
                                     timelinePane.loadScenarioContent(curProject.getScenarioContent());
                                 } catch (InvalidScenarioContentException ex) {
                                     throw new RuntimeException(ex);
+                                } catch (ImageNotFoundInDirectoryException ex) {
+                                    BrokenProjectRecoveryDialog.show(ex);
                                 }
                             }
                         })
@@ -946,32 +918,6 @@ public class ScenarioEditorPane extends JPanel {
             currentImageView.setIcon(null);
         }
 
-    }
-
-    // Helper method to scale images
-    private Image scaleImage(Image image, int maxWidth, int maxHeight) {
-        if (image == null)
-            return null; // handle null
-        int originalWidth = image.getWidth(null);
-        int originalHeight = image.getHeight(null);
-
-        if (originalWidth <= maxWidth && originalHeight <= maxHeight) {
-            return image; // No scaling needed
-        }
-
-        int newWidth = originalWidth;
-        int newHeight = originalHeight;
-
-        if (originalWidth > maxWidth) {
-            newWidth = maxWidth;
-            newHeight = (newWidth * originalHeight) / originalWidth;
-        }
-
-        if (newHeight > maxHeight) {
-            newHeight = maxHeight;
-            newWidth = (newHeight * originalWidth) / originalHeight;
-        }
-        return image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
     }
 
     public String extractScenarioContent() {

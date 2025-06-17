@@ -8,38 +8,57 @@ import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 
-public class SimpleValueChangerPopUp extends JDialog {
-    double value;
+final class Value<T> {
+    T v;
 
-    public double getValue() {
+    Value(T v) {
+        this.v = v;
+    }
+
+    public T getV() {
+        return v;
+    }
+}
+
+public class SimpleValueChangerPopUp extends JDialog {
+    Value<String> value;
+    JTextField txtField;
+
+    public Value<String> getValue() {
         return value;
     }
 
-    private SimpleValueChangerPopUp(double initialValue, Frame owner) {
+    private SimpleValueChangerPopUp(int fieldLength, Value<String> initialValue, Frame owner, boolean center) {
         super(owner, true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         setLayout(new FlowLayout());
+        value = initialValue;
 
-        JTextField txtField = new JTextField(10);
+        txtField = new JTextField(fieldLength);
+        txtField.setText(initialValue.getV().toString());
         add(txtField);
-
-        setUndecorated(true);
 
         txtField.addActionListener(e -> {
             try {
-                value = Double.parseDouble(txtField.getText());
+                value = new Value<String>(txtField.getText());
             } catch (NumberFormatException ex) {
                 value = initialValue;
             }
             dispose();
         });
 
-        Point mousePos = MouseInfo.getPointerInfo().getLocation();
+        setUndecorated(true);
 
-        int x = mousePos.x + 10;
-        int y = mousePos.y - 50;
+        if (center) {
+            setLocationRelativeTo(null);
+        } else {
+            Point mousePos = MouseInfo.getPointerInfo().getLocation();
 
-        setLocation(x, y);
+            int x = mousePos.x + 10;
+            int y = mousePos.y - 50;
+
+            setLocation(x, y);
+        }
         pack();
 
         /* Bind ESC key to exit dialog. */
@@ -49,14 +68,47 @@ public class SimpleValueChangerPopUp extends JDialog {
     }
 
     /**
-     * Shows the value changer pop up.
+     * Shows the double value changer pop up.
      * 
      * @return new value
      */
     public static double show(double initialValue, Frame owner) {
-        SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(initialValue, owner);
+        SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(10, new Value<String>(String.valueOf(initialValue)),
+                owner, false);
+
         svcpu.setVisible(true);
-        return svcpu.getValue();
+        return Double.parseDouble(((String) svcpu.getValue().getV()));
+    }
+
+    public static double show(double initialValue, Frame owner, boolean center) {
+        SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(10, new Value<String>(String.valueOf(initialValue)),
+                owner, center);
+
+        svcpu.setVisible(true);
+        return Double.parseDouble(((String) svcpu.getValue().getV()));
+    }
+
+    /**
+     * Shows the String value changer pop up.
+     * 
+     * @return new value
+     */
+    public static String show(String initialValue, Frame owner) {
+        SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(initialValue.length(),
+                new Value<String>(initialValue),
+                owner, false);
+
+        svcpu.setVisible(true);
+        return (String) svcpu.getValue().getV();
+    }
+
+    public static String show(String initialValue, Frame owner, boolean center) {
+        SimpleValueChangerPopUp svcpu = new SimpleValueChangerPopUp(initialValue.length(),
+                new Value<String>(initialValue),
+                owner, center);
+
+        svcpu.setVisible(true);
+        return (String) svcpu.getValue().getV();
     }
 
 }

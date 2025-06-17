@@ -52,7 +52,7 @@ public class ConfigProvider {
             }
         }
         try (FileOutputStream fos = new FileOutputStream(configFile)) {
-            properties.store(fos, "Configuration du projet");
+            properties.store(fos, "bob's filmmaker project \"" + project.getProjectName() + "\" configuration file.");
         } catch (IOException e) {
             System.err.println("Erreur lors de l'écriture du fichier de configuration : " + e.getMessage());
         }

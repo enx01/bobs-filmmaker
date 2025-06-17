@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.plaf.synth.SynthLookAndFeel;
 
 import xyz.bobindustries.film.gui.elements.dialogs.YesNoDialog;
-import xyz.bobindustries.film.gui.elements.popups.HelperBobPopUp;
 import xyz.bobindustries.film.gui.elements.utilitaries.ActionListenerProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.ConstantsProvider;
 import xyz.bobindustries.film.gui.elements.utilitaries.LoadingWindow;
@@ -58,7 +57,7 @@ public class App {
             protected Void doInBackground() throws Exception {
                 /* Creation de la fenetre */
                 frame = new JFrame("bob's filmmaker");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
                 frame.setIconImage(Toolkit.getDefaultToolkit().getImage(App.class.getResource("bob_filmmaker.png")));
 
@@ -70,15 +69,22 @@ public class App {
                     @Override
                     public void windowClosing(WindowEvent e) {
                         Project curProject = ProjectManager.getCurrent();
-                        if (curProject != null) {
+                        if (curProject != null && curProject.isDirty()) {
                             int userResponse = YesNoDialog.show(frame,
                                     "would you like to save project \"" +
                                             curProject.getProjectName() +
-                                            "\" before exiting ?");
+                                            "\" before exiting ?",
+                                    true);
                             if (userResponse == YesNoDialog.YES) {
                                 ActionListenerProvider.saveCurrentProjectWithoutSuccessFeedback(null);
+                            } else if (userResponse == YesNoDialog.CANCEL) {
+                                return;
                             }
+
                         }
+
+                        frame.dispose();
+                        System.exit(0);
                     }
                 });
 
@@ -91,7 +97,7 @@ public class App {
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         Project curProject = ProjectManager.getCurrent();
-                        if (curProject != null) {
+                        if (curProject != null && curProject.isDirty()) {
                             try {
                                 ActionListenerProvider.saveCurrentProjectWithoutSuccessFeedback(null);
                             } catch (Exception ex) {
@@ -101,7 +107,8 @@ public class App {
                     }
                 });
 
-                Thread.sleep(3000);
+                // TODO : De-comment
+                // Thread.sleep(3000);
 
                 frame.setSize(screenSize.width, screenSize.height);
                 frame.setExtendedState(JFrame.MAXIMIZED_BOTH);

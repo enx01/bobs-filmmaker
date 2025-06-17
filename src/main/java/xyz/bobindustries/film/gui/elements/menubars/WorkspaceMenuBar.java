@@ -6,8 +6,6 @@ import javax.swing.*;
 
 public class WorkspaceMenuBar extends JMenuBar {
 
-    private boolean toolboxOpened = false;
-
     public WorkspaceMenuBar() {
         displayDefaultOptions();
     }
@@ -108,11 +106,16 @@ public class WorkspaceMenuBar extends JMenuBar {
     public void displayEditorOptions() {
         displayDefaultOptions();
         JMenu windowMenu = new JMenu("editor");
+        windowMenu.setMnemonic('E');
 
-        JMenuItem showToolsItem = new JMenuItem("Show tools");
-        JMenuItem showColorsItem = new JMenuItem("Show colors");
-        JMenuItem showToolsSettings = new JMenuItem("Show tools settings");
-        JMenuItem saveItem = new JMenuItem("Save image");
+        JMenuItem showToolsItem = new JMenuItem("tools");
+        showToolsItem.setMnemonic('T');
+        JMenuItem showColorsItem = new JMenuItem("color picker");
+        showColorsItem.setMnemonic('C');
+        JMenuItem showToolsSettings = new JMenuItem("tool options");
+        showToolsSettings.setMnemonic('O');
+        JMenuItem saveItem = new JMenuItem("save image");
+        saveItem.setMnemonic('S');
 
         windowMenu.add(showToolsItem);
         windowMenu.add(showColorsItem);
