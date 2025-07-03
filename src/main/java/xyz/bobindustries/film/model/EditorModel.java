@@ -27,7 +27,7 @@ public class EditorModel {
     private int hoveredGridX = -1;
     private int hoveredGridY = -1;
     private Rectangle drawingArea;
-    private final int gridSquareSize = 10;
+    private final int gridSquareSize = 1;
     private EditorPane parent;
     private int gridWidth;
     private int gridHeight;
@@ -225,7 +225,7 @@ public class EditorModel {
                 origin.y = (int) (zoomCenter.y - (zoomCenter.y - origin.y) * (scale / oldScale));
             }
         } else {
-            int scrollAmount = e.getUnitsToScroll() * 10;
+            int scrollAmount = e.getUnitsToScroll() * getGridSquareSize();
             if (0.12 <= scale) {
                 if (e.isShiftDown()) {
                     origin.x -= scrollAmount;
@@ -544,8 +544,8 @@ public class EditorModel {
 
         for (int i = gridStartX; i < gridStartX + gridCountX; i++) {
             for (int j = gridStartY; j < gridStartY + gridCountY; j++) {
-                int relX = (i - gridStartX) * 10;
-                int relY = (j - gridStartY) * 10;
+                int relX = (i - gridStartX) * getGridSquareSize();
+                int relY = (j - gridStartY) * getGridSquareSize();
                 int rgb = draggedImage.getRGB(relX, relY);
                 int red = (rgb >> 16) & 0xFF;
                 int green = (rgb >> 8) & 0xFF;

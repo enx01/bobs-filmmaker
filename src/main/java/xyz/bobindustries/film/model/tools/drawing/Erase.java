@@ -42,8 +42,8 @@ public class Erase implements Tools, ToolsSettings {
                 (int) ((e.getY() - model.getOrigin().y) / model.getScale()));
 
         if (model.getDrawingArea().contains(adjustedPoint)) {
-            model.setHoveredGridX((adjustedPoint.x - model.getDrawingArea().x) / 10);
-            model.setHoveredGridY((adjustedPoint.y - model.getDrawingArea().y) / 10);
+            model.setHoveredGridX((adjustedPoint.x - model.getDrawingArea().x) / model.getGridSquareSize());
+            model.setHoveredGridY((adjustedPoint.y - model.getDrawingArea().y) / model.getGridSquareSize());
         } else {
             model.setHoveredGridX(-1);
             model.setHoveredGridY(-1);
